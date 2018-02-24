@@ -179,13 +179,15 @@ void textRenderer::renderStatusTextRightOfWorldMap (int i, int currentCivilizati
 
     if (i == (game_variables.Civilizations.size() + 8)) { std::cout << " GOLD : " << game_variables.Civilizations[currentCivilizationIndex].Gold; }
 
-    if (i == (game_variables.Civilizations.size() + 9)) { std::cout << " - RESEARCH -"; }
+    if (i == (game_variables.Civilizations.size() + 9)) { std::cout << " GPT : " << game_variables.Civilizations[currentCivilizationIndex].GoldPerTurn; }
 
-    if (i == (game_variables.Civilizations.size() + 10)) { std::cout << " " << game_variables.Civilizations[currentCivilizationIndex].technologyBeingResearched.researchName; }
+    if (i == (game_variables.Civilizations.size() + 10)) { std::cout << " - RESEARCH -"; }
 
-    if (i == (game_variables.Civilizations.size() + 11) && game_variables.Civilizations[currentCivilizationIndex].technologyBeingResearched.researchName != "") { std::cout << " " << game_variables.Civilizations[currentCivilizationIndex].researchPoints << " / " << game_variables.Civilizations[currentCivilizationIndex].technologyBeingResearched.scienceCostToLearnResearch; }
+    if (i == (game_variables.Civilizations.size() + 11)) { std::cout << " " << game_variables.Civilizations[currentCivilizationIndex].technologyBeingResearched.researchName; }
 
-    if (i == (game_variables.Civilizations.size() + 12)) { std::cout << " HAPPINESS : " << game_variables.Civilizations[currentCivilizationIndex].Happiness; }
+    if (i == (game_variables.Civilizations.size() + 12) && game_variables.Civilizations[currentCivilizationIndex].technologyBeingResearched.researchName != "") { std::cout << " " << game_variables.Civilizations[currentCivilizationIndex].researchPoints << " / " << game_variables.Civilizations[currentCivilizationIndex].technologyBeingResearched.scienceCostToLearnResearch; }
+
+    if (i == (game_variables.Civilizations.size() + 13)) { std::cout << " HAPPINESS : " << game_variables.Civilizations[currentCivilizationIndex].Happiness; }
     std::cout << "\n";
 
 }

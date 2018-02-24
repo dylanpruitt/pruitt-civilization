@@ -15,6 +15,9 @@ class Trade
         int goldSumFromTrader = 0;
         int goldSumFromRecipient = 0;
 
+        int GPTFromTrader = 0;
+        int GPTFromRecipient = 0;
+
         std::vector<Resource> resourcesFromTrader;
         std::vector<Resource> resourcesFromRecipient;
 

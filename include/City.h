@@ -31,6 +31,8 @@ class City
 
         int GoldPerTurnFromCity = 3;
 
+        int GoldPerTurn = 0;
+
         int turnsToExpand = 5;
 
         std::string cityName;

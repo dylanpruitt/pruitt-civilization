@@ -54,6 +54,8 @@ class Civilization
 
         int ai_fairness = 0;
 
+        int GoldPerTurn = 5;
+
         std::vector<Research> technologiesToResearch;
 
         std::vector<std::string> cityNames;

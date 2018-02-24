@@ -913,7 +913,9 @@ void Game::DisplayCitiesStatusesOwnedByCivilization (int g) {
             }
             std::cout << "\e[0m] | PRODUCTION: ";
 
-            std::cout << gameVariables.Cities[i].ProductionPerTurn + gameVariables.Cities[i].ProductionFromTiles << std::endl;
+            std::cout << gameVariables.Cities[i].ProductionPerTurn + gameVariables.Cities[i].ProductionFromTiles;
+
+            std::cout << " | GPT: " << gameVariables.Cities[i].GoldPerTurn + gameVariables.Cities[i].GoldPerTurnFromCity << std::endl;
 
             std::string productionString = "";
 
@@ -1334,6 +1336,8 @@ void Game::updateCityBuildingProduction (int cityIndex, int g) {
 
         gameVariables.Cities[cityIndex].ProductionPerTurn += gameVariables.Cities[cityIndex].buildingBeingProduced.ProductionYield;
 
+        gameVariables.Cities[cityIndex].GoldPerTurn += gameVariables.Cities[cityIndex].buildingBeingProduced.GoldYield;
+
         gameVariables.Cities[cityIndex].buildings.push_back (gameVariables.Cities[cityIndex].buildingBeingProduced.name);
 
         int indexToErase = -1;
@@ -1545,6 +1549,8 @@ void Game::editTrade (int g, Trade &trade, int Choice) {
 
         std::cout << "GOLD: " << trade.goldSumFromTrader << "\nRESOURCES: " << std::endl;
 
+        std::cout << "GPT: " << trade.GPTFromTrader << std::endl;
+
         for (int i = 0; i < trade.resourcesFromTrader.size(); i++) {
 
             std::cout << resourceNames[trade.resourcesFromTrader[i].ResourceCode] << std::endl;
@@ -1555,13 +1561,15 @@ void Game::editTrade (int g, Trade &trade, int Choice) {
 
         std::cout << "GOLD: " << trade.goldSumFromRecipient << "\nRESOURCES: " << std::endl;
 
+        std::cout << "GPT: " << trade.GPTFromRecipient << std::endl;
+
         for (int i = 0; i < trade.resourcesFromRecipient.size(); i++) {
 
             std::cout << resourceNames[trade.resourcesFromRecipient[i].ResourceCode] << std::endl;
 
         }
 
-        std::cout << "\n[Z] Edit your gold sum [X] Edit their gold sum [C] Edit your resources to trade [V] Edit their resources to trade [E] Confirm trade" << std::endl;
+        std::cout << "\n[Z] Edit your gold sum [X] Edit their gold sum [C] Edit your resources to trade [V] Edit their resources to trade\n[B] Edit your GPT [N] Edit their GPT [E] Confirm trade" << std::endl;
 
         char characterInput;
 
@@ -1651,6 +1659,30 @@ void Game::editTrade (int g, Trade &trade, int Choice) {
 
         }
 
+        if (characterInput == 'B' || characterInput == 'b') {
+
+            int amountOfGoldPerTurn = 0;
+
+            std::cout << "Please input the amount of gold per turn you want to trade: ";
+
+            amountOfGoldPerTurn = sharedMethods::bindIntegerInputToRange (0, gameVariables.Civilizations[g].GoldPerTurn, 0);
+
+            trade.GPTFromTrader = amountOfGoldPerTurn;
+
+        }
+
+        if (characterInput == 'N' || characterInput == 'n') {
+
+            int amountOfGoldPerTurn = 0;
+
+            std::cout << "Please input the amount of gold per turn you want them to trade. (They have " << gameVariables.Civilizations[Choice].GoldPerTurn << "): ";
+
+            amountOfGoldPerTurn = sharedMethods::bindIntegerInputToRange (0, gameVariables.Civilizations[Choice].GoldPerTurn, 0);
+
+            trade.GPTFromRecipient = amountOfGoldPerTurn;
+
+        }
+
     }
 
 }
@@ -1696,6 +1728,8 @@ void Game::updateTrades (int g) {
 
             std::cout << "GOLD: " << trades[i].goldSumFromRecipient << "\nRESOURCES: " << std::endl;
 
+            std::cout << "GPT: " << trades[i].GPTFromRecipient << std::endl;
+
             for (int j = 0; j < trades[i].resourcesFromRecipient.size(); j++) {
 
                 std::cout << resourceNames[trades[i].resourcesFromRecipient[j].ResourceCode] << std::endl;
@@ -1705,6 +1739,8 @@ void Game::updateTrades (int g) {
             std::cout << "= THEIR ITEMS =" << std::endl;
 
             std::cout << "GOLD: " << trades[i].goldSumFromTrader << "\nRESOURCES: " << std::endl;
+
+            std::cout << "GPT: " << trades[i].GPTFromTrader << std::endl;
 
             for (int j = 0; j < trades[i].resourcesFromTrader.size(); j++) {
 
@@ -1722,7 +1758,20 @@ void Game::updateTrades (int g) {
 
                 gameVariables.Civilizations[trades[i].traderIndex].Gold -= trades[i].goldSumFromTrader;
 
+                gameVariables.Civilizations[g].Gold += trades[i].goldSumFromTrader;
+
                 gameVariables.Civilizations[g].Gold -= trades[i].goldSumFromRecipient;
+
+                gameVariables.Civilizations[trades[i].traderIndex].Gold += trades[i].goldSumFromRecipient;
+
+                gameVariables.Civilizations[trades[i].traderIndex].GoldPerTurn -= trades[i].GPTFromTrader;
+
+                gameVariables.Civilizations[g].GoldPerTurn += trades[i].GPTFromTrader;
+
+                gameVariables.Civilizations[g].GoldPerTurn -= trades[i].GPTFromRecipient;
+
+                gameVariables.Civilizations[trades[i].traderIndex].GoldPerTurn += trades[i].GPTFromRecipient;
+
 
                 for (unsigned int k = 0; k < trades[i].resourcesFromTrader.size(); k++) {
 
@@ -1754,7 +1803,19 @@ void Game::updateTrades (int g) {
 
                 gameVariables.Civilizations[trades[i].traderIndex].Gold -= trades[i].goldSumFromTrader;
 
+                gameVariables.Civilizations[g].Gold += trades[i].goldSumFromTrader;
+
                 gameVariables.Civilizations[g].Gold -= trades[i].goldSumFromRecipient;
+
+                gameVariables.Civilizations[trades[i].traderIndex].Gold += trades[i].goldSumFromRecipient;
+
+                gameVariables.Civilizations[trades[i].traderIndex].GoldPerTurn -= trades[i].GPTFromTrader;
+
+                gameVariables.Civilizations[g].GoldPerTurn += trades[i].GPTFromTrader;
+
+                gameVariables.Civilizations[g].GoldPerTurn -= trades[i].GPTFromRecipient;
+
+                gameVariables.Civilizations[trades[i].traderIndex].GoldPerTurn += trades[i].GPTFromRecipient;
 
                 for (unsigned int k = 0; k < trades[i].resourcesFromTrader.size(); k++) {
 
@@ -1785,6 +1846,25 @@ void Game::updateTrades (int g) {
 
 }
 
+void Game::updateGoldPerTurn (int g) {
+
+    int gpt = 0;
+
+    for (unsigned int i = 0; i < gameVariables.Cities.size(); i++) {
+
+        if (gameVariables.Cities[i].parentIndex == g) {
+
+            gpt += gameVariables.Cities[i].GoldPerTurn;
+            gpt += gameVariables.Cities[i].GoldPerTurnFromCity;
+
+        }
+
+    }
+
+    gameVariables.Civilizations[g].GoldPerTurn = gpt;
+
+}
+
 void Game::loop () {
 
     gameLoopVariable = true;
@@ -1810,6 +1890,10 @@ void Game::loop () {
             updateCivilizationHappiness (g);
 
             updateTrades (g);
+
+            updateGoldPerTurn (g);
+
+            gameVariables.Civilizations[g].Gold += gameVariables.Civilizations[g].GoldPerTurn;
 
             if (gameVariables.Civilizations[g].playedByHumans) {
 

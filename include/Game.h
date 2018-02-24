@@ -148,6 +148,8 @@ class Game
 
         void updateTrades (int g);
 
+        void updateGoldPerTurn (int g);
+
 };
 
 #endif // GAME_H

@@ -371,7 +371,7 @@ int AI::returnTradeValue (Trade trade) {
 
     int totalRecipientItemValue = 0, RecipientGoldValue = 0, RecipientResourceValue = 0;
 
-    TraderGoldValue = trade.goldSumFromTrader;
+    TraderGoldValue = trade.goldSumFromTrader; TraderGoldValue += trade.GPTFromTrader*25;
 
     for (unsigned int i = 0; i < trade.resourcesFromTrader.size(); i++) {
 
@@ -381,7 +381,7 @@ int AI::returnTradeValue (Trade trade) {
 
     totalTraderItemValue = TraderGoldValue + TraderResourceValue;
 
-    RecipientGoldValue = trade.goldSumFromRecipient;
+    RecipientGoldValue = trade.goldSumFromRecipient; RecipientGoldValue += trade.GPTFromRecipient*25;
 
     for (unsigned int i = 0; i < trade.resourcesFromRecipient.size(); i++) {
 
