@@ -397,13 +397,65 @@ int AI::returnTradeValue (Trade trade) {
 
 }
 
-void AI::think (int g, GameVariables &game_variables) {
+bool AI::hasLowHappiness (int g, GameVariables &game_variables) {
+
+    if (game_variables.Civilizations[g].Happiness <= 70) {
+
+        return true;
+
+    }
+
+    return false;
+
+}
+
+void AI::tradingLogic (int g, GameVariables &game_variables, std::vector<Trade> &trades) {
+
+    if (hasLowHappiness(g, game_variables)) {
+
+        int recipientIndex = -1;
+
+        for (unsigned int i = 0; i < game_variables.Civilizations.size(); i++) {
+
+            if (game_variables.Civilizations[i].resources.size() > 0) {
+
+                recipientIndex = i;
+
+                i = game_variables.Civilizations.size();
+
+            }
+
+        }
+
+        if (recipientIndex != -1) {
+
+            Trade trade;
+
+            trade.recipientIndex = recipientIndex; trade.traderIndex = g;
+
+            Resource resourceToTrade = game_variables.Civilizations[recipientIndex].resources[0];
+
+            trade.goldSumFromTrader = 35;
+            trade.goldSumFromRecipient = 0;
+            trade.resourcesFromRecipient.push_back(resourceToTrade);
+
+            trades.push_back(trade);
+
+        }
+
+    }
+
+}
+
+void AI::think (int g, GameVariables &game_variables, std::vector<Trade> &trades) {
 
     if (game_variables.Civilizations[g].technologyBeingResearched.researchName == "") {
 
         setResearchPriority (g, game_variables);
 
     }
+
+    tradingLogic (g, game_variables, trades);
 
     for (unsigned int a = 0; a < game_variables.Cities.size(); a++) {
 

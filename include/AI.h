@@ -11,7 +11,7 @@ class AI
         AI();
         virtual ~AI();
 
-        void think (int g, GameVariables &game_variables);
+        void think (int g, GameVariables &game_variables, std::vector<Trade> &trades);
         void moveAllUnitsBelongingToCiv (int g, GameVariables &game_variables);
         void setFocuses (Civilization &civ, GameVariables &game_variables);
 
@@ -45,6 +45,10 @@ class AI
         void produceBuilding (int g, int cityIndex, std::string buildingName, GameVariables &game_variables);
 
         void produce (int g, int cityIndex, GameVariables &game_variables);
+
+        bool hasLowHappiness (int g, GameVariables &game_variables);
+
+        void tradingLogic (int g, GameVariables &game_variables, std::vector<Trade> &trades);
 
 };
 

@@ -1673,6 +1673,8 @@ void Game::trade (int g) {
 
     Choice = sharedMethods::bindIntegerInputToRange (0, gameVariables.Civilizations.size() -1, 0);
 
+    std::cout << Choice;
+
     Trade trade;
 
     trade.recipientIndex = Choice;
@@ -1690,7 +1692,7 @@ void Game::updateTrades (int g) {
 
         if (trades[i].recipientIndex == g && gameVariables.Civilizations[g].playedByHumans == true) {
 
-            std::cout << gameVariables.Civilizations[g].CivName << " has requested a trade. " << std::endl;
+            std::cout << gameVariables.Civilizations[trades[i].traderIndex].CivName << " has requested a trade. " << std::endl;
 
             std::cout << "= YOUR ITEMS =" << std::endl;
 
@@ -1789,6 +1791,12 @@ void Game::loop () {
 
     gameLoopVariable = true;
 
+    for (int g = 0; g < gameVariables.Civilizations.size(); g++) {
+
+        updateResources (g);
+
+    }
+
     while (gameLoopVariable == true){
 
         renderer.worldMap = worldMap;
@@ -1820,7 +1828,7 @@ void Game::loop () {
 
             } else {
 
-                ai.think(g, gameVariables);
+                ai.think(g, gameVariables, trades);
                 ai.moveAllUnitsBelongingToCiv(g, gameVariables);
 
             }
