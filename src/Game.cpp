@@ -1673,8 +1673,6 @@ void Game::trade (int g) {
 
     Choice = sharedMethods::bindIntegerInputToRange (0, gameVariables.Civilizations.size() -1, 0);
 
-    std::cout << Choice;
-
     Trade trade;
 
     trade.recipientIndex = Choice;
