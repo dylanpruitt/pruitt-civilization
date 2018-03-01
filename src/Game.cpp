@@ -1547,9 +1547,9 @@ void Game::editTrade (int g, Trade &trade, int Choice) {
 
         std::cout << "= YOUR ITEMS =" << std::endl;
 
-        std::cout << "GOLD: " << trade.goldSumFromTrader << "\nRESOURCES: " << std::endl;
+        std::cout << "GOLD: " << trade.goldSumFromTrader << "\nGPT: " << trade.GPTFromTrader << std::endl;
 
-        std::cout << "GPT: " << trade.GPTFromTrader << std::endl;
+        std::cout << "RESOURCES: " << std::endl;
 
         for (int i = 0; i < trade.resourcesFromTrader.size(); i++) {
 
@@ -1559,9 +1559,9 @@ void Game::editTrade (int g, Trade &trade, int Choice) {
 
         std::cout << "= THEIR ITEMS =" << std::endl;
 
-        std::cout << "GOLD: " << trade.goldSumFromRecipient << "\nRESOURCES: " << std::endl;
+        std::cout << "GOLD: " << trade.goldSumFromRecipient << "\nGPT: " << trade.GPTFromRecipient << std::endl;
 
-        std::cout << "GPT: " << trade.GPTFromRecipient << std::endl;
+        std::cout << "RESOURCES: " << std::endl;
 
         for (int i = 0; i < trade.resourcesFromRecipient.size(); i++) {
 
@@ -1726,9 +1726,9 @@ void Game::updateTrades (int g) {
 
             std::cout << "= YOUR ITEMS =" << std::endl;
 
-            std::cout << "GOLD: " << trades[i].goldSumFromRecipient << "\nRESOURCES: " << std::endl;
+            std::cout << "GOLD: " << trades[i].goldSumFromRecipient << "\nGPT: " << trades[i].GPTFromRecipient << std::endl;
 
-            std::cout << "GPT: " << trades[i].GPTFromRecipient << std::endl;
+            std::cout << "RESOURCES: " << std::endl;
 
             for (int j = 0; j < trades[i].resourcesFromRecipient.size(); j++) {
 
@@ -1738,9 +1738,9 @@ void Game::updateTrades (int g) {
 
             std::cout << "= THEIR ITEMS =" << std::endl;
 
-            std::cout << "GOLD: " << trades[i].goldSumFromTrader << "\nRESOURCES: " << std::endl;
+            std::cout << "GOLD: " << trades[i].goldSumFromTrader << "\nGPT: " << trades[i].GPTFromTrader << std::endl;
 
-            std::cout << "GPT: " << trades[i].GPTFromTrader << std::endl;
+            std::cout << "RESOURCES: " << std::endl;
 
             for (int j = 0; j < trades[i].resourcesFromTrader.size(); j++) {
 
@@ -1756,6 +1756,17 @@ void Game::updateTrades (int g) {
 
             if (Choice == 'a' || Choice == 'A') {
 
+                Event tradeAccepted;
+
+                tradeAccepted.EventName = "Trade Accepted";
+
+                tradeAccepted.EventMessage = "Your trade request has been accepted.";
+
+                tradeAccepted.targetCivilizationIndex = trades[i].traderIndex;
+
+                gameEvents.push_back (tradeAccepted);
+
+
                 gameVariables.Civilizations[trades[i].traderIndex].Gold -= trades[i].goldSumFromTrader;
 
                 gameVariables.Civilizations[g].Gold += trades[i].goldSumFromTrader;
@@ -1790,6 +1801,19 @@ void Game::updateTrades (int g) {
 
 
                 }
+
+            } else {
+
+                Event tradeDenied;
+
+                tradeDenied.EventName = "Trade Denied";
+
+                tradeDenied.EventMessage = "Your trade request has been denied.";
+
+                tradeDenied.targetCivilizationIndex = trades[i].traderIndex;
+
+                gameEvents.push_back (tradeDenied);
+
 
             }
 
@@ -1801,6 +1825,16 @@ void Game::updateTrades (int g) {
 
             if (ai.returnTradeValue (trades[i]) >= 0) {
 
+                Event tradeAccepted;
+
+                tradeAccepted.EventName = "Trade Accepted";
+
+                tradeAccepted.EventMessage = "Your trade request has been accepted.";
+
+                tradeAccepted.targetCivilizationIndex = trades[i].traderIndex;
+
+                gameEvents.push_back (tradeAccepted);
+
                 gameVariables.Civilizations[trades[i].traderIndex].Gold -= trades[i].goldSumFromTrader;
 
                 gameVariables.Civilizations[g].Gold += trades[i].goldSumFromTrader;
@@ -1835,10 +1869,21 @@ void Game::updateTrades (int g) {
 
                 }
 
-                trades.erase (trades.begin() + i);
+            } else {
 
+                Event tradeDenied;
+
+                tradeDenied.EventName = "Trade Denied";
+
+                tradeDenied.EventMessage = "Your trade request has been denied.";
+
+                tradeDenied.targetCivilizationIndex = trades[i].traderIndex;
+
+                gameEvents.push_back (tradeDenied);
 
             }
+
+            trades.erase (trades.begin() + i);
 
         }
 
