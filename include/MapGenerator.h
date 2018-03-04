@@ -32,7 +32,7 @@ class MapGenerator
 
         int returnLandTiles(int x, int y);
 
-        void generateIsland(double sizeScale, int x, int y, int islandArea = 5);
+        void generateIsland(double sizeScaleX, double sizeScaleY, int x, int y, int islandArea = 5);
 
         void setGenerationParametersByInput (bool inputForIslands = true);
 

@@ -17,6 +17,8 @@ namespace sharedMethods
 
         extern int getUnitIndexByName (std::string name, GameVariables &gameVariables);
 
+        extern bool unitIsNotTrespassing (int civilizationIndex, int xPositionToMoveTo, int yPositionToMoveTo, WorldMap worldMap);
+
         extern void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civilization &civ, WorldMap worldMap);
 
         extern int getBuildingIndexByName (std::string name, GameVariables &gameVariables);

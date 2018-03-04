@@ -55,6 +55,7 @@ class City
 
         std::vector<std::string> buildings;
 
+
     protected:
     private:
 };

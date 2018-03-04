@@ -40,6 +40,9 @@ const std::string resourceNames[25] = {"None","Horses","Iron","Rubber","Copper",
 
 bool loopVariable = true;
 
+    const int cityExpansionLimit = 3;
+
+
 WorldMap worldMap;
 
 int turnNumber = 0;
@@ -1368,7 +1371,84 @@ void Game::updateCityBuildingProduction (int cityIndex, int g) {
 
 }
 
-void Game::requestAlliance (int g, int targetCivilizationIndex) {
+bool Game::isTileBorderingCivilizationTerritory (int x, int y, int civilizationIndex) {
+
+    for (int i = -1; i < 2; i++) {
+
+        for (int j = -1; j < 2; j++) {
+
+            if (x+i >= 0 && x+i <= worldMap.worldSize && y+j >= 0 && y+j <= worldMap.worldSize*4) {
+
+                if (worldMap.WorldTerritoryMap[i+x][j+y] == civilizationIndex+1 && sharedMethods::getDistance (x+i, y+j, x, y) <= 1) {
+
+                    return true;
+
+                }
+
+            }
+
+        }
+
+    }
+
+    return false;
+
+}
+
+bool Game::canCityExpand (int cityIndex, int civilizationIndex) {
+
+    for (int i = (-1*cityExpansionLimit); i < cityExpansionLimit+1; i++) {
+
+        for (int j = (-1*cityExpansionLimit); j < cityExpansionLimit+1; j++) {
+
+            if (worldMap.WorldTerritoryMap[gameVariables.Cities[cityIndex].position.x + i][gameVariables.Cities[cityIndex].position.y + j] == 0
+            && isTileBorderingCivilizationTerritory(gameVariables.Cities[cityIndex].position.x+i,
+            gameVariables.Cities[cityIndex].position.y+j,
+            civilizationIndex)) {
+
+                return true;
+
+            }
+
+        }
+
+    }
+    std::cout << "false";
+    return false;
+
+}
+
+void Game::expandCityTerritory (int cityIndex) {
+
+    if (canCityExpand(cityIndex, gameVariables.Cities[cityIndex].parentIndex)) {
+
+        bool tileFound = false;
+
+        while (!tileFound) {
+
+            int i = rand() % (cityExpansionLimit * 2) - cityExpansionLimit;
+            int j = rand() % (cityExpansionLimit * 2) - cityExpansionLimit;
+
+            if (worldMap.WorldTerritoryMap[gameVariables.Cities[cityIndex].position.x + i][gameVariables.Cities[cityIndex].position.y + j] == 0
+                && isTileBorderingCivilizationTerritory(gameVariables.Cities[cityIndex].position.x+i,
+                gameVariables.Cities[cityIndex].position.y+j,
+                gameVariables.Cities[cityIndex].parentIndex)) {
+
+                worldMap.WorldTerritoryMap[gameVariables.Cities[cityIndex].position.x + i][gameVariables.Cities[cityIndex].position.y + j] = gameVariables.Cities[cityIndex].parentIndex + 1;
+
+                tileFound = true;
+
+            }
+
+        }
+
+    }
+
+    gameVariables.Cities[cityIndex].turnsToExpand = 5;
+
+}
+
+void Game::requestAlliance (int civilizationIndex, int targetCivilizationIndex) {
 
     Event alliance;
 
@@ -1376,27 +1456,27 @@ void Game::requestAlliance (int g, int targetCivilizationIndex) {
 
     alliance.test_canBeTriggered = true;
 
-    alliance.EventName = "Alliance Request from " + gameVariables.Civilizations[g].CivName;
+    alliance.EventName = "Alliance Request from " + gameVariables.Civilizations[civilizationIndex].CivName;
 
-    alliance.EventMessage = "The wise leaders of " + gameVariables.Civilizations[g].CivName + " recognize that an alliance with us would be beneficial and request a formal alliance.";
+    alliance.EventMessage = "The wise leaders of " + gameVariables.Civilizations[civilizationIndex].CivName + " recognize that an alliance with us would be beneficial and request a formal alliance.";
 
     alliance.ResponseChoices.push_back("Accept Request");
 
     alliance.ResponseChoices.push_back("Deny Request");
 
-    alliance.initializerCivilization = g; alliance.targetCivilizationIndex = targetCivilizationIndex;
+    alliance.initializerCivilization = civilizationIndex; alliance.targetCivilizationIndex = targetCivilizationIndex;
 
     gameEvents.push_back(alliance);
 
 }
 
-void Game::playerRequestAlliance (int g) {
+void Game::playerRequestAlliance (int civilizationIndex) {
 
     std::cout << "Request an alliance with what Civilization?" << std::endl;
 
     for (unsigned int a = 0; a < gameVariables.Civilizations.size(); a++) {
 
-        if (a != g) {
+        if (a != civilizationIndex) {
 
             std::cout << "[" << a << "] " << gameVariables.Civilizations[a].CivName << std::endl;
 
@@ -1405,7 +1485,7 @@ void Game::playerRequestAlliance (int g) {
 
     int Choice = sharedMethods::bindIntegerInputToRange(0,gameVariables.Civilizations.size()-1,0);
 
-    requestAlliance (g, Choice);
+    requestAlliance (civilizationIndex, Choice);
 
 }
 
@@ -1472,6 +1552,14 @@ void Game::updateCities () {
     for (int w = 0; w < gameVariables.Cities.size(); w++) {
 
         gameVariables.Cities[w].FoodSurplus += ((gameVariables.Cities[w].FoodPerTurnFromCity + gameVariables.Cities[w].FoodPerTurnFromTiles) - (gameVariables.Cities[w].Population*2));
+
+        gameVariables.Cities[w].turnsToExpand--;
+
+        if (gameVariables.Cities[w].turnsToExpand == 0) {
+
+            expandCityTerritory(w);
+
+        }
 
         if (gameVariables.Cities[w].FoodSurplus >= (pow((gameVariables.Cities[w].Population - 1), 2) + 5)) {
             gameVariables.Cities[w].FoodSurplus -= pow((gameVariables.Cities[w].Population - 1), 2) + 5;

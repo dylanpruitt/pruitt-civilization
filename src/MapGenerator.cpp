@@ -50,7 +50,7 @@ enum resources : int {
 
 };
 
-int islandMaxSize; double sizeScale = 0.5;
+int islandMaxSize; double sizeScale = 0.78;
 
 MapGenerator::MapGenerator()
 {
@@ -231,15 +231,17 @@ int MapGenerator::getDesertTiles (int x, int y) {
 
 }
 
-void MapGenerator::generateIsland (double sizeScale, int x, int y, int islandArea) {
+void MapGenerator::generateIsland (double sizeScaleX, double sizeScaleY, int x, int y, int islandArea) {
 
     for (int i = 0; i < worldSize; i++){
 
         for (int j = 0; j < worldSize*4; j++){
 
-            int d = sharedMethods::getDistance(x, y, i, j);
+            int d = sharedMethods::getDistance(x, y, i, y);
 
-            int tilePlopChance = (pow(sizeScale, d) * 100);
+            int e = sharedMethods::getDistance(x, y, x, j);
+
+            int tilePlopChance = ((pow(sizeScaleX, d)) * (pow(sizeScaleY, e))) * 100;
 
             int random = rand() % 99 + 1;
 
@@ -403,7 +405,7 @@ void MapGenerator::generateFeatures () {
                 int random = rand() % 999 + 1;
                 int chance = 3;
 
-                if (random <= chance){ generateIsland(0.60, i, j, 1); tinyIslands++; }
+                if (random <= chance){ generateIsland(0.70, 0.70, i, j, 1); tinyIslands++; }
 
             }
 
@@ -465,29 +467,29 @@ void MapGenerator::generateWorld_Continents (WorldMap &mapToGenerateFor) {
 
     setGenerationParametersByInput();
 
-    islandMaxSize*=8;
+    islandMaxSize*=6;
     ForestChanceOutOf100*=10;
     MountainBaseChanceOutOf100*=10;
-    tinyIslandLimit*=2;
-    sizeScale += (0.08*islandMaxSize/6);
+    tinyIslandLimit*=8;
 
     setMapDefaults (isAreaAlreadyUsed);
 
         int limit = 5;
-        int numberOfIslands = rand() % (limit - 4) + 4; std::cout << "NUM:" << numberOfIslands << std::endl;
+        int numberOfIslands = rand() % (limit - 4) + 4;
 
-        int x = 0; int y = 0; double variance = 0.14;
+        int x = 0; int y = 0; double xvariance = 0.00, yvariance = 0.00;
 
         for (int i = 0; i < numberOfIslands; i++){
+            xvariance = (0.01) * (rand() % 14);
+            yvariance = (0.01) * (rand() % 14);
 
-            variance = (0.01) * (rand() % 40 - 20);
 
             bool loop = true; bool canFillArea = false;
 
             while (loop) {
 
-                x = rand() % worldSize;
-                y = rand() % worldSize*4;
+                x = rand() % (worldSize - 5) + 5;
+                y = rand() % (worldSize*4 - 5) + 5;
 
                 int PassedTileChecks = 0; int TotalChecks = 0;
 
@@ -525,7 +527,7 @@ void MapGenerator::generateWorld_Continents (WorldMap &mapToGenerateFor) {
 
                 }
 
-            generateIsland((sizeScale+variance), x, y, islandMaxSize); std::cout << x << ", " << y << " : " << sizeScale+variance << std::endl;
+            generateIsland((sizeScale+xvariance), (sizeScale+yvariance), x, y, islandMaxSize);  std::cout << xvariance << " " << yvariance << std::endl;
 
         }
 

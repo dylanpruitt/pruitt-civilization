@@ -66,11 +66,30 @@ int getUnitIndexByName (std::string name, GameVariables &gameVariables) {
 
 }
 
+bool unitIsNotTrespassing (int civilizationIndex, int xPositionToMoveTo, int yPositionToMoveTo, WorldMap worldMap) {
+
+    if (worldMap.WorldTerritoryMap[xPositionToMoveTo][yPositionToMoveTo] == 0 ||
+    worldMap.WorldTerritoryMap[xPositionToMoveTo][yPositionToMoveTo] == civilizationIndex+1) {
+
+        return true;
+
+    } else {
+
+        return false;
+
+    }
+
+}
+
 void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civilization &civ, WorldMap worldMap) {
 
     bool isFlatTerrain = true;
 
-    if (((unit.canCoastalEmbark == false && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::COAST) || unit.canCoastalEmbark) && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::OCEAN) {
+    if (((unit.canCoastalEmbark == false
+    && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::COAST) || unit.canCoastalEmbark)
+    && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::OCEAN
+    && unitIsNotTrespassing(unit.parentCivilizationIndex, xPositionToMoveTo, yPositionToMoveTo, worldMap)) {
+
         if (worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == worldMap.mapTiles::MOUNTAIN || worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == worldMap.mapTiles::FOREST) {
             isFlatTerrain = false;
         }

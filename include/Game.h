@@ -86,7 +86,9 @@ class Game
         *
         **/
 
-        void CivilizationCheckAndExpandTerritory ();
+        bool isTileBorderingCivilizationTerritory (int x, int y, int civilizationIndex);
+        bool canCityExpand (int cityIndex, int civilizationIndex);
+        void expandCityTerritory (int cityIndex);
         void UpdateCivilizationExploredTerritory (int g);
         void DisplayCivilizationExplorationProgress (int g);
         void DisplayCitiesStatusesOwnedByCivilization (int g);
@@ -124,9 +126,9 @@ class Game
         *
         **/
 
-        void requestAlliance (int g, int targetCivilizationIndex);
+        void requestAlliance (int civilizationIndex, int targetCivilizationIndex);
 
-        void playerRequestAlliance (int g);
+        void playerRequestAlliance (int civilizationIndex);
 
         void updateEvents (int g);
 
