@@ -30,6 +30,8 @@ class Research
         /// This focus tells the AI how important the technology is no matter what type of AI it is.
         /// For example, Embarking allows units to cross coasts and oceans, a major step up important to all AI.
 
+        std::vector<std::string> unlockableUnits;
+
         void resetResearchfocus () {
  /*flag (R: unnecessary after tests*/
             aiFocus_offense = 0;

@@ -3,6 +3,7 @@
 
 #include "Civilization.h"
 #include "Position.h"
+#include "TerrainModifier.h"
 
 class Unit
 {
@@ -21,6 +22,12 @@ class Unit
         int combat = 5;
 
         int terrainMoveCost = 2;
+
+        TerrainModifier grasslandModifier;
+        TerrainModifier mountainModifier;
+        TerrainModifier forestModifier;
+        TerrainModifier snowModifier;
+        TerrainModifier desertModifier;
 
         int movementPoints = 2;
 

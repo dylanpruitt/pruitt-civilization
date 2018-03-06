@@ -341,14 +341,14 @@ int returnCivMilitaryPower (int civ_index, std::vector<Civilization> civs) {
 
 }
 
-void Game::loadTechnologiesFromFile (std::string filename, int g) {
+void Game::loadTechnologiesFromFile (std::string filename, int civilizationIndex) {
 
     std::string line;
     ifstream file (filename);
 
     if (file.is_open())  {
 
-    int techSize = 0; int prereqSize = 0; Research temp;
+    int techSize = 0, prereqSize = 0, numberOfUnlockableUnits = 0; Research temp;
 
     file >> techSize;
 
@@ -377,7 +377,17 @@ void Game::loadTechnologiesFromFile (std::string filename, int g) {
            file >> temp.aiFocus_religion;
            file >> temp.aiFocus_overall_importance;
 
-           gameVariables.Civilizations[g].technologiesToResearch.push_back(temp);
+           file >> numberOfUnlockableUnits;
+
+           for (int j = 0; j < numberOfUnlockableUnits; j++) {
+
+                std::string x;
+                file >> x;
+                temp.unlockableUnits.push_back(x);
+
+           }
+
+           gameVariables.Civilizations[civilizationIndex].technologiesToResearch.push_back(temp);
 
     }
 
@@ -420,6 +430,17 @@ void Game::loadUnitsFromFile (std::string filename) {
               file >> temp.rangedCombat;
 
            }
+
+           file >> temp.grasslandModifier.attackModifier;
+           file >> temp.grasslandModifier.defenseModifier;
+           file >> temp.forestModifier.attackModifier;
+           file >> temp.forestModifier.defenseModifier;
+           file >> temp.mountainModifier.attackModifier;
+           file >> temp.mountainModifier.defenseModifier;
+           file >> temp.snowModifier.attackModifier;
+           file >> temp.snowModifier.defenseModifier;
+           file >> temp.desertModifier.attackModifier;
+           file >> temp.desertModifier.defenseModifier;
 
            gameVariables.Units.push_back(temp);
 
@@ -598,6 +619,16 @@ bool Game::IsUnitIsOnAncientRuin (int unitIndex) {
 
 }
 
+void Game::unlockUnitsFromResearchCompletion (Research research, int civilizationIndex) {
+
+    for (unsigned int i = 0; i < research.unlockableUnits.size(); i++) {
+
+        gameVariables.Civilizations[i].AvailableUnitsToCreate.push_back (research.unlockableUnits[i]);
+
+    }
+
+}
+
 void Game::updateResearch (int g) {
 
     if (isResearchComplete(g)) {
@@ -606,6 +637,7 @@ void Game::updateResearch (int g) {
 
         gameVariables.Civilizations[g].researchPoints -= gameVariables.Civilizations[g].technologyBeingResearched.scienceCostToLearnResearch;
 
+        unlockUnitsFromResearchCompletion (gameVariables.Civilizations[g].technologyBeingResearched, g);
 
         std::cout << gameVariables.Civilizations[g].CivName << " finished researching " << gameVariables.Civilizations[g].technologyBeingResearched.researchName << "!" << std::endl;
 

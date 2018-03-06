@@ -30,7 +30,7 @@ class Game
     protected:
     private:
 
-        void loadTechnologiesFromFile (std::string filename, int g);
+        void loadTechnologiesFromFile (std::string filename, int civilizationIndex);
 
         void loadUnitsFromFile (std::string filename);
 
@@ -73,6 +73,8 @@ class Game
         **/
 
         bool isResearchComplete (int g);
+
+        void unlockUnitsFromResearchCompletion (Research research, int civilizationIndex);
 
         void updateResearch (int g);
 
