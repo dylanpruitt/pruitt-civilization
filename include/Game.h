@@ -74,6 +74,8 @@ class Game
 
         bool isResearchComplete (int g);
 
+        bool unitIsNotAlreadyUnlocked (int civilizationIndex, std::string unitName);
+
         void unlockUnitsFromResearchCompletion (Research research, int civilizationIndex);
 
         void updateResearch (int g);

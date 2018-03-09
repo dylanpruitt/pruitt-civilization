@@ -354,6 +354,9 @@ void Game::loadTechnologiesFromFile (std::string filename, int civilizationIndex
 
         for (int i = 0; i < techSize; i++) {
 
+           temp.unlockableUnits.clear();
+           temp.prerequisiteTechnologiesRequired.clear();
+
            file >> temp.researchName;
            file >> temp.scienceCostToLearnResearch;
            file >> prereqSize;
@@ -418,6 +421,9 @@ void Game::loadUnitsFromFile (std::string filename) {
            file >> temp.terrainMoveCost;
            file >> temp.productionCost;
            file >> temp.goldCost;
+
+           file >> line; /// just used to skip over lines, need to fix
+
            file >> temp.aiFocus_defense;
            file >> temp.aiFocus_economic;
            file >> temp.aiFocus_exploration;
@@ -430,6 +436,8 @@ void Game::loadUnitsFromFile (std::string filename) {
               file >> temp.rangedCombat;
 
            }
+
+           file >> line; /// just used to skip over lines, need to fix
 
            file >> temp.grasslandModifier.attackModifier;
            file >> temp.grasslandModifier.defenseModifier;
@@ -619,11 +627,31 @@ bool Game::IsUnitIsOnAncientRuin (int unitIndex) {
 
 }
 
+bool Game::unitIsNotAlreadyUnlocked (int civilizationIndex, std::string unitName) {
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.size(); i++) {
+
+        if (unitName == gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i]) {
+
+            return false;
+
+        }
+
+    }
+
+    return true;
+
+}
+
 void Game::unlockUnitsFromResearchCompletion (Research research, int civilizationIndex) {
 
     for (unsigned int i = 0; i < research.unlockableUnits.size(); i++) {
 
-        gameVariables.Civilizations[i].AvailableUnitsToCreate.push_back (research.unlockableUnits[i]);
+        if (unitIsNotAlreadyUnlocked (civilizationIndex, research.unlockableUnits[i])) {
+
+            gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.push_back (research.unlockableUnits[i]);
+
+        }
 
     }
 
