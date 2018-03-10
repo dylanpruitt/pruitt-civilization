@@ -21,6 +21,10 @@ namespace sharedMethods
 
         extern void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civilization &civ, WorldMap worldMap);
 
+        bool UnitisOnAnAncientRuin (Unit &unit, WorldMap worldMap);
+
+        void getAncientRuinBenefits (Unit &unit, Civilization &civ, WorldMap worldMap);
+
         extern int getBuildingIndexByName (std::string name, GameVariables &gameVariables);
 
         extern int getResearchIndexByName (int g, std::string techName, GameVariables &game_variables);

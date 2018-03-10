@@ -415,7 +415,7 @@ void Game::loadUnitsFromFile (std::string filename) {
     for (int i = 0; i < unitSize; i++) {
 
            file >> temp.name;
-           file >> temp.health;
+           file >> temp.health; temp.maxHealth = temp.health;
            file >> temp.combat;
            file >> temp.maxMovePoints;
            file >> temp.terrainMoveCost;
@@ -606,22 +606,6 @@ void Game::promoteUnitsToAllowCoastalEmbarkment (int g) {
             gameVariables.UnitsInGame[i].canCoastalEmbark = true;
 
         }
-
-    }
-
-}
-
-bool Game::IsUnitIsOnAncientRuin (int unitIndex) {
-
-    std::cout << worldMap.featureMap[25][100];
-    if (worldMap.featureMap[gameVariables.Units[unitIndex].position.x][gameVariables.Units[unitIndex].position.y] == worldMap.mapTiles::RUINS) {
-
-        std::cout << "on a ruin!" << std::endl;
-        return true;
-
-    } else {
-
-        return false;
 
     }
 
@@ -1168,9 +1152,6 @@ void Game::getPlayerChoiceAndReact (int g) {
                 if (d == 2 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.y < worldMap.worldSize*4) { sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]], gameVariables.UnitsInGame[unitIndices[whichOne]].position.x, gameVariables.UnitsInGame[unitIndices[whichOne]].position.y+1, gameVariables.Civilizations[g], worldMap); }
                 if (d == 3 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.x > 0) { sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]], gameVariables.UnitsInGame[unitIndices[whichOne]].position.x-1, gameVariables.UnitsInGame[unitIndices[whichOne]].position.y, gameVariables.Civilizations[g], worldMap); }
                 if (d == 4 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.y > 0) { sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]], gameVariables.UnitsInGame[unitIndices[whichOne]].position.x, gameVariables.UnitsInGame[unitIndices[whichOne]].position.y-1, gameVariables.Civilizations[g], worldMap); }
-
-                IsUnitIsOnAncientRuin (unitIndices[whichOne]);
-
             }
         }
 
@@ -1659,6 +1640,19 @@ void Game::displayCivilizationResources (int g) {
 
     }
 
+}
+
+void Game::displayUnitDetails (Unit unit) {
+
+    std::cout << unit.name << " - " << unit.position.x << ", " << unit.position.y << std::endl;
+    std::cout << "HEALTH: " << unit.health << " / " << unit.maxHealth << std::endl;
+    std::cout << "TERRAIN MODIFIERS\n~ Grassland\n  ~ Attack " << unit.grasslandModifier.attackModifier*100 << " | Defense " << unit.grasslandModifier.defenseModifier*100 << std::endl;
+    std::cout << "~ Forest\n  ~ Attack " << unit.forestModifier.attackModifier*100 << " | Defense " << unit.forestModifier.defenseModifier*100 << std::endl;
+    std::cout << "~ Mountain\n  ~ Attack " << unit.mountainModifier.attackModifier*100 << " | Defense " << unit.mountainModifier.defenseModifier*100 << std::endl;
+    std::cout << "~ Desert\n  ~ Attack " << unit.desertModifier.attackModifier*100 << " | Defense " << unit.desertModifier.defenseModifier*100 << std::endl;
+    std::cout << "~ Snow\n  ~ Attack " << unit.snowModifier.attackModifier*100 << " | Defense " << unit.snowModifier.defenseModifier*100 << std::endl;
+
+    std::cin.ignore();
 }
 
 int Game::inputResourcesToTrade (int g, Trade &trade) {

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 #include <climits>
+#include <random>
 
 
 namespace sharedMethods {
@@ -81,6 +82,33 @@ bool unitIsNotTrespassing (int civilizationIndex, int xPositionToMoveTo, int yPo
 
 }
 
+bool UnitisOnAnAncientRuin (Unit &unit, WorldMap worldMap) {
+
+    const int RUINS_CODE = 5;
+
+    if (worldMap.featureMap[unit.position.x][unit.position.y] == RUINS_CODE) {
+
+        return true;
+
+    } else {
+
+        return false;
+
+    }
+
+}
+
+void getAncientRuinBenefits (Unit &unit, Civilization &civ, WorldMap worldMap) {
+
+    if (UnitisOnAnAncientRuin(unit, worldMap)) {
+
+        civ.researchPoints = civ.technologyBeingResearched.scienceCostToLearnResearch;
+        std::cout << "Inside the ruins, your civilization finds a new technology!" << std::endl;
+
+    }
+
+}
+
 void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civilization &civ, WorldMap worldMap) {
 
     bool isFlatTerrain = true;
@@ -97,6 +125,8 @@ void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civiliz
         if (isFlatTerrain) { unit.movementPoints--; } else { unit.movementPoints -= unit.terrainMoveCost; }
 
         unit.position.setCoordinates(xPositionToMoveTo, yPositionToMoveTo);
+
+        getAncientRuinBenefits (unit, civ, worldMap);
     }
 
     for (int i = 0; i < worldMap.worldSize; i++) {

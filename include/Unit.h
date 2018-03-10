@@ -17,7 +17,7 @@ class Unit
 
         int parentCivilizationIndex = 0;
 
-        int health = 10;
+        int health = 10; int maxHealth = 10;
 
         int combat = 5;
 

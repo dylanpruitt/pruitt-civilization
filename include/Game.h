@@ -124,12 +124,6 @@ class Game
 
         void updateCityBuildingProduction (int cityIndex, int g);
 
-        /**
-        *
-        * MISC GAME VARIABLES
-        *
-        **/
-
         void requestAlliance (int civilizationIndex, int targetCivilizationIndex);
 
         void playerRequestAlliance (int civilizationIndex);
@@ -155,6 +149,8 @@ class Game
         void updateTrades (int g);
 
         void updateGoldPerTurn (int g);
+
+        void displayUnitDetails (Unit unit);
 
 };
 
