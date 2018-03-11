@@ -1,6 +1,10 @@
 #ifndef BUILDING_H
 #define BUILDING_H
+<<<<<<< HEAD
 #include <string>
+=======
+
+>>>>>>> e640d05feb606a4369aee60633a48af9bc130064
 
 struct Building
 {

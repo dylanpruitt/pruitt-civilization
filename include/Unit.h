@@ -5,8 +5,11 @@
 #include "Position.h"
 #include "TerrainModifier.h"
 
+<<<<<<< HEAD
 #include <vector>
 
+=======
+>>>>>>> e640d05feb606a4369aee60633a48af9bc130064
 class Unit
 {
     public:
@@ -52,8 +55,11 @@ class Unit
 
         int aiFocus_overall_importance = 1;
 
+<<<<<<< HEAD
         std::vector<int> moveDirectionQueue;
 
+=======
+>>>>>>> e640d05feb606a4369aee60633a48af9bc130064
     protected:
     private:
 };
