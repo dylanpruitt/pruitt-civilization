@@ -22,7 +22,7 @@ class AI
     protected:
     private:
 
-        int getDistance(int x, int y, int x2, int y2);
+        void mapUnitPathToRuin (int civilizationIndex, GameVariables &game_variables, int unitIndex);
 
         int returnUnexploredTiles (int x, int y, int g, int range, GameVariables &game_variables);
 

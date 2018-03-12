@@ -301,7 +301,7 @@ void MapGenerator::setGenerationParametersByInput (bool inputForIslands) {
 
 void MapGenerator::generateRuins () {
 
-    const int ruinChanceOutOf10000 = 40;
+    const int ruinChanceOutOf10000 = 400;
 
     for (int i = 0; i < worldSize; i++) {
 

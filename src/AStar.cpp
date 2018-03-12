@@ -6,26 +6,19 @@
 #include <string.h>
 #include <cfloat>
 #include <iostream>
+#include <algorithm>
 
-AStar::AStar()
-{
-    //ctor
-}
+namespace AStar {
 
-AStar::~AStar()
-{
-    //dtor
-}
-
-bool AStar::isValid(int row, int col)
+bool isValid(int row, int col)
 {
 
-    return (row >= 0) && (row < worldSize) &&
-           (col >= 0) && (col < worldSize*4);
+    return (row >= 0) && (row < WORLDSIZE) &&
+           (col >= 0) && (col < WORLDSIZE*4);
 
 }
 
-bool AStar::isDestination(int row, int col, position dest)
+bool isDestination(int row, int col, position dest)
 {
     if (row == dest.first && col == dest.second)
         return (true);
@@ -33,54 +26,101 @@ bool AStar::isDestination(int row, int col, position dest)
         return (false);
 }
 
-double AStar::calculateHValue(int row, int col, position dest)
+int returnTerrainMovementCost (int grid[WORLDSIZE][WORLDSIZE*4], int row, int col) {
+
+    int featureType = grid[row][col];
+
+    switch (featureType) {
+
+        case 0:
+            return 1000000000; //// A cheap and quick fix for pathfinding testing. Units should avoid the ocean.
+        break;
+
+        case 2:
+            return 2;
+        break;
+
+        case 3:
+            return 2;
+        break;
+
+        case 6:
+            return 2;
+        break;
+
+        case 7:
+            return 2;
+        break;
+
+        default:
+            return 1;
+        break;
+    }
+
+}
+
+double calculateHValue(int row, int col, position dest)
 {
 
     return ((double)sqrt ((row-dest.first)*(row-dest.first)
                           + (col-dest.second)*(col-dest.second)));
 }
 
-void AStar::tracePath(cell cellDetails[worldSize][worldSize*4], position dest)
+void tracePath(cell cellDetails[WORLDSIZE][WORLDSIZE*4], position dest, Unit &unit)
 {
     int row = dest.first;
     int col = dest.second;
 
-    std::stack<position> Path;
+    unit.moveDirectionQueue.clear();
 
     while (!(cellDetails[row][col].parentX == row
              && cellDetails[row][col].parentY == col ))
     {
-        Path.push (std::make_pair (row, col));
         int temp_row = cellDetails[row][col].parentX;
         int temp_col = cellDetails[row][col].parentY;
+
+        /// Direction logic
+
+        int deltaX = temp_row - row;
+        int deltaY = temp_col - col;
+
+        int direction = 0;
+
+        /// 1=north,2=west,3=south,4=east
+        if (deltaX == -1 && deltaY == 0) { direction = 1; }
+        if (deltaX == 0 && deltaY == -1) { direction = 2; }
+        if (deltaX == 1 && deltaY == 0) { direction = 3; }
+        if (deltaX == 0 && deltaY == 1) { direction = 4; }
+
+        /// Make sure Direction number is 1-4
+        if (direction >= 1 && direction <= 4) {
+
+            unit.moveDirectionQueue.push_back(direction);
+
+        }
+
         row = temp_row;
         col = temp_col;
     }
 
-    Path.push (std::make_pair (row, col));
-    while (!Path.empty())
-    {
-        std::pair<int,int> p = Path.top();
-        Path.pop();
-
-    }
+    std::reverse (unit.moveDirectionQueue.begin(), unit.moveDirectionQueue.end());
 
     return;
 }
 
-void AStar::aStarSearch(int grid[worldSize][worldSize*4], position src, position dest)
+void aStarSearch(int grid[WORLDSIZE][WORLDSIZE*4], position src, position dest, Unit &unit)
 {
 
-    bool closedList[worldSize][worldSize*4];
+    bool closedList[WORLDSIZE][WORLDSIZE*4];
     memset(closedList, false, sizeof (closedList));
 
-    cell cellDetails[worldSize][worldSize*4];
+    cell cellDetails[WORLDSIZE][WORLDSIZE*4];
 
     int i, j;
 
-    for (i = 0; i < worldSize; i++)
+    for (i = 0; i < WORLDSIZE; i++)
     {
-        for (j = 0; j < worldSize*4; j++)
+        for (j = 0; j < WORLDSIZE*4; j++)
         {
             cellDetails[i][j].f = FLT_MAX;
             cellDetails[i][j].g = FLT_MAX;
@@ -125,14 +165,14 @@ void AStar::aStarSearch(int grid[worldSize][worldSize*4], position src, position
             {
                 cellDetails[i-1][j].parentX = i;
                 cellDetails[i-1][j].parentY = j;
-                tracePath (cellDetails, dest);
+                tracePath (cellDetails, dest, unit);
                 foundDest = true;
                 return;
             }
 
             else if (closedList[i-1][j] == false)
             {
-                gNew = cellDetails[i][j].g + grid[i-1][j];
+                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i-1, j);
                 hNew = calculateHValue (i-1, j, dest);
                 fNew = gNew + hNew;
 
@@ -160,14 +200,14 @@ void AStar::aStarSearch(int grid[worldSize][worldSize*4], position src, position
             {
                 cellDetails[i+1][j].parentX = i;
                 cellDetails[i+1][j].parentY = j;
-                tracePath(cellDetails, dest);
+                tracePath(cellDetails, dest, unit);
                 foundDest = true;
                 return;
             }
 
             else if (closedList[i+1][j] == false)
             {
-                gNew = cellDetails[i][j].g + grid[i+1][j];
+                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i+1, j);
                 hNew = calculateHValue(i+1, j, dest);
                 fNew = gNew + hNew;
 
@@ -193,7 +233,7 @@ void AStar::aStarSearch(int grid[worldSize][worldSize*4], position src, position
             {
                 cellDetails[i][j+1].parentX = i;
                 cellDetails[i][j+1].parentY = j;
-                tracePath(cellDetails, dest);
+                tracePath(cellDetails, dest, unit);
                 foundDest = true;
                 return;
             }
@@ -201,7 +241,7 @@ void AStar::aStarSearch(int grid[worldSize][worldSize*4], position src, position
 
             else if (closedList[i][j+1] == false)
             {
-                gNew = cellDetails[i][j].g + grid[i][j+1];
+                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i, j+1);
                 hNew = calculateHValue (i, j+1, dest);
                 fNew = gNew + hNew;
 
@@ -230,14 +270,14 @@ void AStar::aStarSearch(int grid[worldSize][worldSize*4], position src, position
             {
                 cellDetails[i][j-1].parentX = i;
                 cellDetails[i][j-1].parentY = j;
-                tracePath(cellDetails, dest);
+                tracePath(cellDetails, dest, unit);
                 foundDest = true;
                 return;
             }
 
             else if (closedList[i][j-1] == false)
             {
-                gNew = cellDetails[i][j].g + grid[i][j-1];
+                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i, j-1);
                 hNew = calculateHValue(i, j-1, dest);
                 fNew = gNew + hNew;
 
@@ -265,3 +305,7 @@ void AStar::aStarSearch(int grid[worldSize][worldSize*4], position src, position
 
     return;
 }
+
+
+}
+

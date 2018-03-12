@@ -1,8 +1,9 @@
 #ifndef ASTAR_H
 #define ASTAR_H
 #include <utility>
+#include "Unit.h"
 
-#define worldSize 50
+#define WORLDSIZE 50
 
 typedef std::pair<int, int> position;
 
@@ -18,19 +19,19 @@ struct cell
 
 };
 
-class AStar
-{
-    public:
-        AStar();
-        virtual ~AStar();
+namespace AStar {
 
-    protected:
-    private:
         bool isValid (int row, int column);
         bool isDestination (int row, int col, position dest);
+
+        int returnTerrainMovementCost (int grid[WORLDSIZE][WORLDSIZE*4], int row, int col);
+
         double calculateHValue (int row, int col, position dest);
-        void tracePath(cell cellDetails[worldSize][worldSize*4], position dest);
-        void aStarSearch (int MovementCostGrid[worldSize][worldSize*4], position src, position dest);
+
+        void tracePath(cell cellDetails[WORLDSIZE][WORLDSIZE*4], position dest, Unit &Unit);
+
+        extern void aStarSearch (int grid[WORLDSIZE][WORLDSIZE*4], position src, position dest, Unit &Unit);
+
 };
 
 #endif // ASTAR_H

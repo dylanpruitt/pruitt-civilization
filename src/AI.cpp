@@ -3,6 +3,7 @@
 #include <vector>
 #include "AI.h"
 #include "sharedMethods.h"
+#include "AStar.h"
 
 AI::AI()
 {
@@ -15,10 +16,10 @@ AI::~AI()
 }
 
 enum directions : int {
-    NORTH,
-    WEST,
-    SOUTH,
-    EAST,
+    NORTH = 1,
+    WEST = 2,
+    SOUTH = 3,
+    EAST = 4,
 };
 
 int AI::returnUnexploredTiles (int x, int y, int g, int range, GameVariables &game_variables) {
@@ -71,7 +72,8 @@ int AI::checkForUnexploredTerritory (int unitIndex, int g, GameVariables &game_v
     }
 
     if (searchStartY > 0 && (worldMap.featureMap[searchStartX][searchStartY-1] != worldMap.mapTiles::OCEAN
-    && ((worldMap.featureMap[searchStartX][searchStartY-1] != worldMap.mapTiles::COAST && game_variables.UnitsInGame[unitIndex].canCoastalEmbark == false)
+    && ((worldMap.featureMap[searchStartX][searchStartY-1] != worldMap.mapTiles::COAST
+    && game_variables.UnitsInGame[unitIndex].canCoastalEmbark == false)
     || game_variables.UnitsInGame[unitIndex].canCoastalEmbark == true))
     && sharedMethods::unitIsNotTrespassing(g, searchStartX, searchStartY-1, worldMap)) {
 
@@ -152,9 +154,61 @@ int AI::checkForUnexploredTerritory (int unitIndex, int g, GameVariables &game_v
     return Direction;
 }
 
+void AI::mapUnitPathToRuin (int civilizationIndex, GameVariables &game_variables, int unitIndex) {
+
+    for (int i = 0; i < worldMap.worldSize; i++) {
+
+        for (int j = 0; j < worldMap.worldSize*4; j++) {
+
+            if (worldMap.featureMap[i][j] == worldMap.mapTiles::RUINS
+            && game_variables.Civilizations[civilizationIndex].WorldExplorationMap[i][j] == 1) {
+
+                position RuinPosition = std::make_pair (i, j);
+
+                position Source = std::make_pair (game_variables.UnitsInGame[unitIndex].position.x,
+                game_variables.UnitsInGame[unitIndex].position.x);
+
+                std::cout << game_variables.UnitsInGame[unitIndex].position.x << ", " << game_variables.UnitsInGame[unitIndex].position.y << " <-> " << i << ", " << j << std::endl;
+
+                AStar::aStarSearch (worldMap.featureMap, Source, RuinPosition, game_variables.UnitsInGame[unitIndex]);
+
+                game_variables.UnitsInGame[unitIndex].destinationHasBeenAssigned = true;
+
+                std::cout << civilizationIndex << " < destination found" << std::endl;
+
+                return;
+
+            }
+
+        }
+
+    }
+
+}
+
 void AI::moveUnit (int unitIndex, int g, GameVariables &game_variables) {
 
-    int directionToMoveIn = checkForUnexploredTerritory (unitIndex, g, game_variables);
+    int directionToMoveIn = -1;
+
+    if (game_variables.UnitsInGame[unitIndex].destinationHasBeenAssigned == false) {
+
+        mapUnitPathToRuin (g, game_variables, unitIndex);
+
+    }
+
+    if (game_variables.UnitsInGame[unitIndex].moveDirectionQueue.size() == 0) {
+
+        game_variables.UnitsInGame[unitIndex].destinationHasBeenAssigned = false;
+
+        directionToMoveIn = checkForUnexploredTerritory (unitIndex, g, game_variables);
+
+    } else {
+
+        directionToMoveIn = game_variables.UnitsInGame[unitIndex].moveDirectionQueue[0];
+
+        game_variables.UnitsInGame[unitIndex].moveDirectionQueue.erase (game_variables.UnitsInGame[unitIndex].moveDirectionQueue.begin());
+
+    }
 
     switch (directionToMoveIn) {
 
@@ -173,6 +227,12 @@ void AI::moveUnit (int unitIndex, int g, GameVariables &game_variables) {
         case -1:
             game_variables.UnitsInGame[unitIndex].movementPoints = 0;
         break;
+
+    }
+
+    if (sharedMethods::UnitisOnAnAncientRuin(game_variables.UnitsInGame[unitIndex], worldMap)) {
+
+        std::cout << game_variables.Civilizations[g].CivName << " Found a ruin!" << std::endl;
 
     }
 
