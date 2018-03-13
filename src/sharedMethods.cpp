@@ -103,9 +103,10 @@ void getAncientRuinBenefits (Unit &unit, Civilization &civ, WorldMap worldMap) {
     if (UnitisOnAnAncientRuin(unit, worldMap)) {
 
         civ.researchPoints = civ.technologyBeingResearched.scienceCostToLearnResearch;
-        std::cout << "Inside the ruins, your civilization finds a new technology!" << std::endl;
 
     }
+
+    worldMap.featureMap[unit.position.x][unit.position.y] = worldMap.mapTiles::GRASSLAND;
 
 }
 

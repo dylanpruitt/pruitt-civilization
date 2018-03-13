@@ -1155,6 +1155,31 @@ void Game::getPlayerChoiceAndReact (int g) {
             }
         }
 
+        if (Choice == 'd') {
+
+            std::cout << "\nView which unit's details? " << std::endl;
+
+            int whichOne;
+
+            whichOne = sharedMethods::bindIntegerInputToRange(0, unitIndices.size()-1, 0);
+
+            std::cout << "\n" << gameVariables.UnitsInGame[unitIndices[whichOne]].name << std::endl;
+            std::cout << "HP : " << gameVariables.UnitsInGame[unitIndices[whichOne]].health << "/ "
+            << gameVariables.UnitsInGame[unitIndices[whichOne]].maxHealth << std::endl;
+            std::cout << "- TERRAIN MODIFIERS - (Attack / Defense) -" << std::endl;
+            std::cout << "# : " << gameVariables.UnitsInGame[unitIndices[whichOne]].grasslandModifier.attackModifier*100-100 << "% / "
+            << gameVariables.UnitsInGame[unitIndices[whichOne]].grasslandModifier.defenseModifier*100-100 << "% | * : "
+            << gameVariables.UnitsInGame[unitIndices[whichOne]].forestModifier.attackModifier*100-100 << "% / "
+            << gameVariables.UnitsInGame[unitIndices[whichOne]].forestModifier.defenseModifier*100-100 << "% | ^ : "
+            << gameVariables.UnitsInGame[unitIndices[whichOne]].mountainModifier.attackModifier*100-100 << "% / "
+            << gameVariables.UnitsInGame[unitIndices[whichOne]].mountainModifier.defenseModifier*100-100 << "% | . : "
+            << gameVariables.UnitsInGame[unitIndices[whichOne]].desertModifier.attackModifier*100-100 << "% / "
+            << gameVariables.UnitsInGame[unitIndices[whichOne]].desertModifier.defenseModifier*100-100 << "% | s : "
+            << gameVariables.UnitsInGame[unitIndices[whichOne]].snowModifier.attackModifier*100-100 << "% / "
+            << gameVariables.UnitsInGame[unitIndices[whichOne]].snowModifier.defenseModifier*100-100 << "%"
+            <<  std::endl;
+        }
+
         if (Choice == 'b' || Choice == 'B') {
 
             buyUnits (g);
