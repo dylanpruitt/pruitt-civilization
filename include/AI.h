@@ -13,9 +13,8 @@ class AI
 
         void think (int g, GameVariables &game_variables, std::vector<Trade> &trades);
         void moveAllUnitsBelongingToCiv (int g, GameVariables &game_variables);
-        void setFocuses (Civilization &civ, GameVariables &game_variables);
 
-        int returnTradeValue (Trade trade);
+        int returnTradeValue (Trade trade, GameVariables &gameVariables);
 
         WorldMap worldMap;
 

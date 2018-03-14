@@ -1619,9 +1619,9 @@ void Game::updateCities () {
 
         gameVariables.Cities[w].FoodSurplus += ((gameVariables.Cities[w].FoodPerTurnFromCity + gameVariables.Cities[w].FoodPerTurnFromTiles) - (gameVariables.Cities[w].Population*2));
 
-        gameVariables.Cities[w].turnsToExpand--;
+        gameVariables.Cities[w].turnsToExpand -= gameVariables.Civilizations[gameVariables.Cities[w].parentIndex].ExpansionRate;
 
-        if (gameVariables.Cities[w].turnsToExpand == 0) {
+        if (gameVariables.Cities[w].turnsToExpand <= 0) {
 
             expandCityTerritory(w);
 
@@ -1990,7 +1990,7 @@ void Game::updateTrades (int g) {
 
         if (trades[i].recipientIndex == g && gameVariables.Civilizations[g].playedByHumans == false) {
 
-            if (ai.returnTradeValue (trades[i]) >= 0) {
+            if (ai.returnTradeValue (trades[i], gameVariables) >= 0) {
 
                 Event tradeAccepted;
 

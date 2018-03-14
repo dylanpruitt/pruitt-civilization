@@ -296,21 +296,6 @@ void AI::setTechToResearch (int g, int techIndex, GameVariables &game_variables)
 
 }
 
-void AI::setFocuses (Civilization &civ, GameVariables &game_variables) {
-
-    /// The AI focuses are set to be any value from 2-8 (or 3-8 in the case of population growth).
-    civ.aiFocus_defense = rand () % 6 + 2;
-    civ.aiFocus_diplomatic = rand () % 6 + 2;
-    civ.aiFocus_economic = rand () % 6 + 2;
-    civ.aiFocus_exploration = rand () % 6 + 2;
-    civ.aiFocus_offense = rand () % 6 + 2;
-    civ.aiFocus_population = rand () % 5 + 3;
-    civ.aiFocus_production = rand () % 6 + 2;
-    civ.aiFocus_religion = rand () % 6 + 2;
-    civ.aiFocus_scientific = rand () % 6 + 2;
-
-}
-
 void AI::setResearchPriority (int g, GameVariables &game_variables) {
 
     int HighestPriority = 0; int HighestPriorityIndex = -1;
@@ -437,7 +422,7 @@ void AI::produce (int g, int cityIndex, GameVariables &game_variables) {
 
 }
 
-int AI::returnTradeValue (Trade trade) {
+int AI::returnTradeValue (Trade trade, GameVariables &gameVariables) {
 
     int totalTraderItemValue = 0, TraderGoldValue = 0, TraderResourceValue = 0;
 
@@ -463,7 +448,7 @@ int AI::returnTradeValue (Trade trade) {
 
     totalRecipientItemValue = RecipientGoldValue + RecipientResourceValue;
 
-    int tradeValue = totalTraderItemValue - totalRecipientItemValue;
+    int tradeValue = totalTraderItemValue - (totalRecipientItemValue*((10-gameVariables.Civilizations[trade.recipientIndex].ai_fairness) / 5));
 
     return tradeValue;
 
@@ -507,7 +492,7 @@ void AI::tradingLogic (int g, GameVariables &game_variables, std::vector<Trade> 
 
             Resource resourceToTrade = game_variables.Civilizations[recipientIndex].resources[0];
 
-            trade.goldSumFromTrader = 35;
+            trade.goldSumFromTrader = 35*(game_variables.Civilizations[g].ai_fairness/5);
             trade.goldSumFromRecipient = 0;
             trade.resourcesFromRecipient.push_back(resourceToTrade);
 
