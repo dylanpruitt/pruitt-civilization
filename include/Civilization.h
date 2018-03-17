@@ -30,6 +30,8 @@ class Civilization
 
         bool playedByHumans = false;
 
+        int rgbValues[3] = {0, 0, 0};
+
         std::vector<std::string> learnedTechnologies;
 
         std::vector<std::string> AvailableUnitsToCreate;

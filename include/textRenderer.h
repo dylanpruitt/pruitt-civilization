@@ -13,9 +13,9 @@ class textRenderer
 
         WorldMap worldMap;
 
-        void render(int currentCivilizationIndex, int turnNumber, GameVariables &game_variables);
+        void render(int currentCivilizationIndex, int turnNumber, GameVariables &gameVariables);
 
-        void spectate (int turnNumber, GameVariables &game_variables);
+        void spectate (int turnNumber, GameVariables &gameVariables);
 
 
     protected:
@@ -23,18 +23,18 @@ class textRenderer
 
         void DisplayUnit (int i, int j);
 
-        bool isUnitAtPosition (int x, int y, GameVariables &game_variables);
-        bool isCityAtPosition (int x, int y, GameVariables &game_variables);
+        bool isUnitAtPosition (int x, int y, GameVariables &gameVariables);
+        bool isCityAtPosition (int x, int y, GameVariables &gameVariables);
 
-        int returnCivMilitaryPower (int civ_index, GameVariables &game_variables);
+        int returnCivMilitaryPower (int civ_index, GameVariables &gameVariables);
 
-        std::string colorTextByTerritory(int i, int j);
-        std::string colorTextByCity (int i, int j, GameVariables &game_variables);
+        std::string colorTextByTerritory(int i, int j, GameVariables &gameVariables);
+        std::string colorTextByCity (int i, int j, GameVariables &gameVariables);
 
         std::string renderTextBasedOnWorldFeature (int i, int j);
-        void DisplayTextBasedOnEntitiesAtPosition (int i, int j, int currentCivilizationIndex, GameVariables &game_variables);
+        void DisplayTextBasedOnEntitiesAtPosition (int i, int j, int currentCivilizationIndex, GameVariables &gameVariables);
 
-        void renderStatusTextRightOfWorldMap (int i, int currentCivilizationIndex, int turnNumber, GameVariables &game_variables);
+        void renderStatusTextRightOfWorldMap (int i, int currentCivilizationIndex, int turnNumber, GameVariables &gameVariables);
 
 
 };

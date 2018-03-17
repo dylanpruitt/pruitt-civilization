@@ -11,43 +11,41 @@ class AI
         AI();
         virtual ~AI();
 
-        void think (int g, GameVariables &game_variables, std::vector<Trade> &trades);
-        void moveAllUnitsBelongingToCiv (int g, GameVariables &game_variables);
+        void think (int civilizationIndex, GameVariables &gameVariables, std::vector<Trade> &trades);
+        void moveAllUnitsBelongingToCiv (int civilizationIndex, GameVariables &gameVariables);
 
         int returnTradeValue (Trade trade, GameVariables &gameVariables);
-
-        WorldMap worldMap;
 
     protected:
     private:
 
-        void mapUnitPathToRuin (int civilizationIndex, GameVariables &game_variables, int unitIndex);
+        void mapUnitPathToRuin (int civilizationIndex, GameVariables &gameVariables, int unitIndex);
 
-        int returnUnexploredTiles (int x, int y, int g, int range, GameVariables &game_variables);
+        int returnUnexploredTiles (int x, int y, int civilizationIndex, int range, GameVariables &gameVariables);
 
-        int checkForUnexploredTerritory (int unitIndex, int g, GameVariables &game_variables);
+        int checkForUnexploredTerritory (int unitIndex, int civilizationIndex, GameVariables &gameVariables);
 
-        void moveUnit (int unitIndex, int g, GameVariables &game_variables);
+        void moveUnit (int unitIndex, int civilizationIndex, GameVariables &gameVariables);
 
-        int calculateResearchPriority (Research tech, int g, GameVariables &game_variables);
+        int calculateResearchPriority (Research tech, int civilizationIndex, GameVariables &gameVariables);
 
-        void setTechToResearch (int g, int techIndex, GameVariables &game_variables);
+        void setTechToResearch (int civilizationIndex, int techIndex, GameVariables &gameVariables);
 
-        void setResearchPriority (int g, GameVariables &game_variables);
+        void setResearchPriority (int civilizationIndex, GameVariables &gameVariables);
 
-        int returnUnitPotential (int g, Unit unit, GameVariables &game_variables);
+        int returnUnitPotential (int civilizationIndex, Unit unit, GameVariables &gameVariables);
 
-        void produceUnit (int g, int cityIndex, std::string unitName, GameVariables &game_variables);
+        void produceUnit (int civilizationIndex, int cityIndex, std::string unitName, GameVariables &gameVariables);
 
-        int returnBuildingPotential (int g, Building building, GameVariables &game_variables);
+        int returnBuildingPotential (int civilizationIndex, Building building, GameVariables &gameVariables);
 
-        void produceBuilding (int g, int cityIndex, std::string buildingName, GameVariables &game_variables);
+        void produceBuilding (int civilizationIndex, int cityIndex, std::string buildingName, GameVariables &gameVariables);
 
-        void produce (int g, int cityIndex, GameVariables &game_variables);
+        void produce (int civilizationIndex, int cityIndex, GameVariables &gameVariables);
 
-        bool hasLowHappiness (int g, GameVariables &game_variables);
+        bool hasLowHappiness (int civilizationIndex, GameVariables &gameVariables);
 
-        void tradingLogic (int g, GameVariables &game_variables, std::vector<Trade> &trades);
+        void tradingLogic (int civilizationIndex, GameVariables &gameVariables, std::vector<Trade> &trades);
 
 };
 

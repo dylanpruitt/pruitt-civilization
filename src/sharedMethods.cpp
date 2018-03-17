@@ -161,11 +161,11 @@ int getBuildingIndexByName (std::string name, GameVariables &gameVariables) {
 
 }
 
-int getResearchIndexByName (int g, std::string techName, GameVariables &game_variables) {
+int getResearchIndexByName (int civilizationIndex, std::string techName, GameVariables &gameVariables) {
 
-    for (unsigned int i = 0; i < game_variables.Civilizations[g].technologiesToResearch.size(); i++) {
+    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].technologiesToResearch.size(); i++) {
 
-        if (techName == game_variables.Civilizations[g].technologiesToResearch[i].researchName) {
+        if (techName == gameVariables.Civilizations[civilizationIndex].technologiesToResearch[i].researchName) {
 
             return i;
 
@@ -177,19 +177,19 @@ int getResearchIndexByName (int g, std::string techName, GameVariables &game_var
 
 }
 
-bool CivilizationHasPrerequisiteTechs (int g, std::string techName, GameVariables &game_variables) {
+bool CivilizationHasPrerequisiteTechs (int civilizationIndex, std::string techName, GameVariables &gameVariables) {
 
     int techPrequisitesMet = 0;
 
-    int researchIndex = getResearchIndexByName (g, techName, game_variables);
+    int researchIndex = getResearchIndexByName (civilizationIndex, techName, gameVariables);
 
     if (researchIndex > -1) {
 
-        for (unsigned int i = 0; i < game_variables.Civilizations[g].technologiesToResearch[researchIndex].prerequisiteTechnologiesRequired.size(); i++) {
+        for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].technologiesToResearch[researchIndex].prerequisiteTechnologiesRequired.size(); i++) {
 
-            for (unsigned int j = 0; j < game_variables.Civilizations[g].learnedTechnologies.size(); j++) {
+            for (unsigned int j = 0; j < gameVariables.Civilizations[civilizationIndex].learnedTechnologies.size(); j++) {
 
-                if (game_variables.Civilizations[g].technologiesToResearch[researchIndex].prerequisiteTechnologiesRequired[i] == game_variables.Civilizations[g].learnedTechnologies[j]) {
+                if (gameVariables.Civilizations[civilizationIndex].technologiesToResearch[researchIndex].prerequisiteTechnologiesRequired[i] == gameVariables.Civilizations[civilizationIndex].learnedTechnologies[j]) {
 
                     techPrequisitesMet++;
 
@@ -201,7 +201,7 @@ bool CivilizationHasPrerequisiteTechs (int g, std::string techName, GameVariable
 
     }
 
-    if (techPrequisitesMet == game_variables.Civilizations[g].technologiesToResearch[researchIndex].prerequisiteTechnologiesRequired.size()) {
+    if (techPrequisitesMet == gameVariables.Civilizations[civilizationIndex].technologiesToResearch[researchIndex].prerequisiteTechnologiesRequired.size()) {
         return true;
     } else {
         return false;

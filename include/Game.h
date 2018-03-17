@@ -47,7 +47,7 @@ class Game
 
         int returnLandTiles(int x, int y);
 
-        int getCivilizationPopulation (int g);
+        int getCivilizationPopulation (int civilizationIndex);
 
         int getTileFoodYield (int i, int j);
 
@@ -55,34 +55,32 @@ class Game
 
         int returnTerritoryTiles(int x, int y, int Civ_index);
 
-        int returnUnexploredTiles (int x, int y, int g, int range);
+        int returnUnexploredTiles (int x, int y, int civilizationIndex, int range);
 
         int getTerritory(int Civ_index);
 
         void foundCity (int x, int y, int CivilizationIndex);
 
-        void promoteUnitsToAllowCoastalEmbarkment (int g);
+        void promoteUnitsToAllowCoastalEmbarkment (int civilizationIndex);
 
-        bool IsUnitIsOnAncientRuin (int unitIndex);
-
-        void giveCivilizationAncientRuinYield (int g);
+        void giveCivilizationAncientRuinYield (int civilizationIndex);
         /**
         *
         * RESEARCH FUNCTIONS
         *
         **/
 
-        bool isResearchComplete (int g);
+        bool isResearchComplete (int civilizationIndex);
 
         bool unitIsNotAlreadyUnlocked (int civilizationIndex, std::string unitName);
 
         void unlockUnitsFromResearchCompletion (Research research, int civilizationIndex);
 
-        void updateResearch (int g);
+        void updateResearch (int civilizationIndex);
 
-        void pickResearchForHumanPlayer (int g);
+        void pickResearchForHumanPlayer (int civilizationIndex);
 
-        bool civilizationHasTechnology (int g, std::string techName);
+        bool civilizationHasTechnology (int civilizationIndex, std::string techName);
 
         /**
         *
@@ -93,24 +91,24 @@ class Game
         bool isTileBorderingCivilizationTerritory (int x, int y, int civilizationIndex);
         bool canCityExpand (int cityIndex, int civilizationIndex);
         void expandCityTerritory (int cityIndex);
-        void UpdateCivilizationExploredTerritory (int g);
-        void DisplayCivilizationExplorationProgress (int g);
-        void DisplayCitiesStatusesOwnedByCivilization (int g);
-        void getPlayerChoiceAndReact (int g);
+        void UpdateCivilizationExploredTerritory (int civilizationIndex);
+        void DisplayCivilizationExplorationProgress (int civilizationIndex);
+        void DisplayCitiesStatusesOwnedByCivilization (int civilizationIndex);
+        void getPlayerChoiceAndReact (int civilizationIndex);
 
-        void showAvailableUnits (int g, bool forProduction, bool forBuying);
+        void showAvailableUnits (int civilizationIndex, bool forProduction, bool forBuying);
 
         void showAvailableBuildings (int cityIndex);
 
-        void buyUnits (int g);
+        void buyUnits (int civilizationIndex);
 
-        void produceUnits (int cityIndex, int g);
+        void produceUnits (int cityIndex, int civilizationIndex);
 
-        void produceBuilding (int cityIndex, int g);
+        void produceBuilding (int cityIndex, int civilizationIndex);
 
         void setupDiplomacy ();
 
-        void checkTileForResource (int g, int x, int y);
+        void checkTileForResource (int civilizationIndex, int x, int y);
 
         void setCityProduction (int cityIndex);
 
@@ -118,37 +116,37 @@ class Game
 
         void assignPopulationToTiles (int cityIndex, int focusCode);
 
-        void updateCityProductionModifier (int cityIndex, int g);
+        void updateCityProductionModifier (int cityIndex, int civilizationIndex);
 
-        void updateCityUnitProduction (int cityIndex, int g);
+        void updateCityUnitProduction (int cityIndex, int civilizationIndex);
 
-        void updateCityBuildingProduction (int cityIndex, int g);
+        void updateCityBuildingProduction (int cityIndex, int civilizationIndex);
 
         void requestAlliance (int civilizationIndex, int targetCivilizationIndex);
 
         void playerRequestAlliance (int civilizationIndex);
 
-        void updateEvents (int g);
+        void updateEvents (int civilizationIndex);
 
-        void updateCivilizationHappiness (int g);
+        void updateCivilizationHappiness (int civilizationIndex);
 
-        void updateResources (int g);
+        void updateResources (int civilizationIndex);
 
         void updateCities ();
 
-        void displayCivilizationResources (int g);
+        void displayCivilizationResources (int civilizationIndex);
 
-        int inputResourcesToTrade (int g, Trade &trade);
+        int inputResourcesToTrade (int civilizationIndex, Trade &trade);
 
-        bool resourceIsNotAlreadyBeingTraded (int g, int resourceIndex, std::vector<Resource> resources);
+        bool resourceIsNotAlreadyBeingTraded (int civilizationIndex, int resourceIndex, std::vector<Resource> resources);
 
-        void editTrade (int g, Trade &trade, int Choice);
+        void editTrade (int civilizationIndex, Trade &trade, int Choice);
 
-        void trade (int g);
+        void trade (int civilizationIndex);
 
-        void updateTrades (int g);
+        void updateTrades (int civilizationIndex);
 
-        void updateGoldPerTurn (int g);
+        void updateGoldPerTurn (int civilizationIndex);
 
         void displayUnitDetails (Unit unit);
 

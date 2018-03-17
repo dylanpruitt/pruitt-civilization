@@ -24,13 +24,13 @@ namespace AStar {
         bool isValid (int row, int column);
         bool isDestination (int row, int col, position dest);
 
-        int returnTerrainMovementCost (int grid[WORLDSIZE][WORLDSIZE*4], int row, int col);
+        int returnTerrainMovementCost (int civilizationIndexrid[WORLDSIZE][WORLDSIZE*4], int row, int col);
 
         double calculateHValue (int row, int col, position dest);
 
         void tracePath(cell cellDetails[WORLDSIZE][WORLDSIZE*4], position dest, Unit &Unit);
 
-        extern void aStarSearch (int grid[WORLDSIZE][WORLDSIZE*4], position src, position dest, Unit &Unit);
+        extern void aStarSearch (int civilizationIndexrid[WORLDSIZE][WORLDSIZE*4], position src, position dest, Unit &Unit);
 
 };
 

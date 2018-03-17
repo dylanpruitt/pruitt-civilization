@@ -27,9 +27,9 @@ namespace sharedMethods
 
         extern int getBuildingIndexByName (std::string name, GameVariables &gameVariables);
 
-        extern int getResearchIndexByName (int g, std::string techName, GameVariables &game_variables);
+        extern int getResearchIndexByName (int civilizationIndex, std::string techName, GameVariables &gameVariables);
 
-        extern bool CivilizationHasPrerequisiteTechs (int g, std::string techName, GameVariables &game_variables);
+        extern bool CivilizationHasPrerequisiteTechs (int civilizationIndex, std::string techName, GameVariables &gameVariables);
 
 };
 

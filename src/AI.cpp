@@ -22,15 +22,15 @@ enum directions : int {
     EAST = 4,
 };
 
-int AI::returnUnexploredTiles (int x, int y, int g, int range, GameVariables &game_variables) {
+int AI::returnUnexploredTiles (int x, int y, int civilizationIndex, int range, GameVariables &gameVariables) {
 
     int unexploredTiles = 0;
 
-    for (int i = 0; i < worldMap.worldSize; i++) {
+    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
 
-        for (int j = 0; j < worldMap.worldSize*4; j++) {
+        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
 
-            if (sharedMethods::getDistance(x,y,i,j) < range && game_variables.Civilizations[g].WorldExplorationMap[i][j] == 0) {
+            if (sharedMethods::getDistance(x,y,i,j) < range && gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[i][j] == 0) {
 
                 unexploredTiles++;
 
@@ -44,23 +44,23 @@ int AI::returnUnexploredTiles (int x, int y, int g, int range, GameVariables &ga
 
 }
 
-int AI::checkForUnexploredTerritory (int unitIndex, int g, GameVariables &game_variables) { /*flag (r: not obvious that int returns a direction*/
+int AI::checkForUnexploredTerritory (int unitIndex, int civilizationIndex, GameVariables &gameVariables) { /*flag (r: not obvious that int returns a direction*/
 
-    int searchStartX = game_variables.UnitsInGame[unitIndex].position.x;
-    int searchStartY = game_variables.UnitsInGame[unitIndex].position.y;
+    int searchStartX = gameVariables.UnitsInGame[unitIndex].position.x;
+    int searchStartY = gameVariables.UnitsInGame[unitIndex].position.y;
 
     int Direction = -1;
 
     int HighestNumberOfUnexploredTiles = 0;
 
-    if (searchStartX > 0 && (worldMap.featureMap[searchStartX-1][searchStartY] != worldMap.mapTiles::OCEAN
-    && ((worldMap.featureMap[searchStartX-1][searchStartY] != worldMap.mapTiles::COAST && game_variables.UnitsInGame[unitIndex].canCoastalEmbark == false)
-    || game_variables.UnitsInGame[unitIndex].canCoastalEmbark == true))
-    && sharedMethods::unitIsNotTrespassing(g, searchStartX-1, searchStartY, worldMap)) {
+    if (searchStartX > 0 && (gameVariables.worldMap.featureMap[searchStartX-1][searchStartY] != gameVariables.worldMap.mapTiles::OCEAN
+    && ((gameVariables.worldMap.featureMap[searchStartX-1][searchStartY] != gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)
+    || gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == true))
+    && sharedMethods::unitIsNotTrespassing(civilizationIndex, searchStartX-1, searchStartY, gameVariables.worldMap)) {
 
-        if (game_variables.Civilizations[g].WorldExplorationMap[searchStartX-1][searchStartY] == 0) {
+        if (gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[searchStartX-1][searchStartY] == 0) {
 
-            int ut = returnUnexploredTiles (searchStartX-1, searchStartY, g, 4, game_variables);
+            int ut = returnUnexploredTiles (searchStartX-1, searchStartY, civilizationIndex, 4, gameVariables);
 
             if (ut > HighestNumberOfUnexploredTiles) {
                 HighestNumberOfUnexploredTiles = ut;
@@ -71,15 +71,15 @@ int AI::checkForUnexploredTerritory (int unitIndex, int g, GameVariables &game_v
         }
     }
 
-    if (searchStartY > 0 && (worldMap.featureMap[searchStartX][searchStartY-1] != worldMap.mapTiles::OCEAN
-    && ((worldMap.featureMap[searchStartX][searchStartY-1] != worldMap.mapTiles::COAST
-    && game_variables.UnitsInGame[unitIndex].canCoastalEmbark == false)
-    || game_variables.UnitsInGame[unitIndex].canCoastalEmbark == true))
-    && sharedMethods::unitIsNotTrespassing(g, searchStartX, searchStartY-1, worldMap)) {
+    if (searchStartY > 0 && (gameVariables.worldMap.featureMap[searchStartX][searchStartY-1] != gameVariables.worldMap.mapTiles::OCEAN
+    && ((gameVariables.worldMap.featureMap[searchStartX][searchStartY-1] != gameVariables.worldMap.mapTiles::COAST
+    && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)
+    || gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == true))
+    && sharedMethods::unitIsNotTrespassing(civilizationIndex, searchStartX, searchStartY-1, gameVariables.worldMap)) {
 
-        if (game_variables.Civilizations[g].WorldExplorationMap[searchStartX][searchStartY-1] == 0) {
+        if (gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[searchStartX][searchStartY-1] == 0) {
 
-            int ut = returnUnexploredTiles (searchStartX, searchStartY-1, g, 4, game_variables);
+            int ut = returnUnexploredTiles (searchStartX, searchStartY-1, civilizationIndex, 4, gameVariables);
 
             if (ut > HighestNumberOfUnexploredTiles) {
                 HighestNumberOfUnexploredTiles = ut;
@@ -90,14 +90,14 @@ int AI::checkForUnexploredTerritory (int unitIndex, int g, GameVariables &game_v
         }
     }
 
-    if (searchStartX < worldMap.worldSize && (worldMap.featureMap[searchStartX+1][searchStartY] != worldMap.mapTiles::OCEAN
-    && ((worldMap.featureMap[searchStartX+1][searchStartY] != worldMap.mapTiles::COAST && game_variables.UnitsInGame[unitIndex].canCoastalEmbark == false)
-    || game_variables.UnitsInGame[unitIndex].canCoastalEmbark == true))
-    && sharedMethods::unitIsNotTrespassing(g, searchStartX+1, searchStartY, worldMap)) {
+    if (searchStartX < gameVariables.worldMap.worldSize && (gameVariables.worldMap.featureMap[searchStartX+1][searchStartY] != gameVariables.worldMap.mapTiles::OCEAN
+    && ((gameVariables.worldMap.featureMap[searchStartX+1][searchStartY] != gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)
+    || gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == true))
+    && sharedMethods::unitIsNotTrespassing(civilizationIndex, searchStartX+1, searchStartY, gameVariables.worldMap)) {
 
-        if (game_variables.Civilizations[g].WorldExplorationMap[searchStartX+1][searchStartY] == 0) {
+        if (gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[searchStartX+1][searchStartY] == 0) {
 
-            int ut = returnUnexploredTiles (searchStartX+1, searchStartY, g, 4, game_variables);
+            int ut = returnUnexploredTiles (searchStartX+1, searchStartY, civilizationIndex, 4, gameVariables);
 
             if (ut > HighestNumberOfUnexploredTiles) {
                 HighestNumberOfUnexploredTiles = ut;
@@ -108,14 +108,14 @@ int AI::checkForUnexploredTerritory (int unitIndex, int g, GameVariables &game_v
         }
     }
 
-    if (searchStartY < worldMap.worldSize*4 && (worldMap.featureMap[searchStartX][searchStartY+1] != worldMap.mapTiles::OCEAN
-    && ((worldMap.featureMap[searchStartX][searchStartY+1] != worldMap.mapTiles::COAST && game_variables.UnitsInGame[unitIndex].canCoastalEmbark == false)
-    || game_variables.UnitsInGame[unitIndex].canCoastalEmbark == true))
-    && sharedMethods::unitIsNotTrespassing(g, searchStartX, searchStartY+1, worldMap)) {
+    if (searchStartY < gameVariables.worldMap.worldSize*4 && (gameVariables.worldMap.featureMap[searchStartX][searchStartY+1] != gameVariables.worldMap.mapTiles::OCEAN
+    && ((gameVariables.worldMap.featureMap[searchStartX][searchStartY+1] != gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)
+    || gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == true))
+    && sharedMethods::unitIsNotTrespassing(civilizationIndex, searchStartX, searchStartY+1, gameVariables.worldMap)) {
 
-        if (game_variables.Civilizations[g].WorldExplorationMap[searchStartX][searchStartY+1] == 0) {
+        if (gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[searchStartX][searchStartY+1] == 0) {
 
-            int ut = returnUnexploredTiles (searchStartX, searchStartY+1, g, 4, game_variables);
+            int ut = returnUnexploredTiles (searchStartX, searchStartY+1, civilizationIndex, 4, gameVariables);
 
             if (ut > HighestNumberOfUnexploredTiles) {
                 HighestNumberOfUnexploredTiles = ut;
@@ -129,22 +129,22 @@ int AI::checkForUnexploredTerritory (int unitIndex, int g, GameVariables &game_v
     if (Direction == -1) {
         Direction = rand() % (directions::EAST - directions::NORTH) + directions::NORTH;
 
-        if (Direction == directions::NORTH && searchStartX > 0 && (worldMap.featureMap[searchStartX-1][searchStartY] == worldMap.mapTiles::OCEAN || ((worldMap.featureMap[searchStartX][searchStartY-1] == worldMap.mapTiles::COAST && game_variables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
+        if (Direction == directions::NORTH && searchStartX > 0 && (gameVariables.worldMap.featureMap[searchStartX-1][searchStartY] == gameVariables.worldMap.mapTiles::OCEAN || ((gameVariables.worldMap.featureMap[searchStartX][searchStartY-1] == gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
 
             Direction = -1;
         }
 
-        if (Direction == directions::WEST && searchStartY > 0 && (worldMap.featureMap[searchStartX-1][searchStartY-1] == worldMap.mapTiles::OCEAN || ((worldMap.featureMap[searchStartX][searchStartY-1] == worldMap.mapTiles::COAST && game_variables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
+        if (Direction == directions::WEST && searchStartY > 0 && (gameVariables.worldMap.featureMap[searchStartX-1][searchStartY-1] == gameVariables.worldMap.mapTiles::OCEAN || ((gameVariables.worldMap.featureMap[searchStartX][searchStartY-1] == gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
 
             Direction = -1;
         }
 
-        if (Direction == directions::SOUTH && searchStartX < worldMap.worldSize && (worldMap.featureMap[searchStartX+1][searchStartY] == worldMap.mapTiles::OCEAN || ((worldMap.featureMap[searchStartX+1][searchStartY] == worldMap.mapTiles::COAST && game_variables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
+        if (Direction == directions::SOUTH && searchStartX < gameVariables.worldMap.worldSize && (gameVariables.worldMap.featureMap[searchStartX+1][searchStartY] == gameVariables.worldMap.mapTiles::OCEAN || ((gameVariables.worldMap.featureMap[searchStartX+1][searchStartY] == gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
 
             Direction = -1;
         }
 
-        if (Direction == directions::EAST && searchStartY < worldMap.worldSize*4 && (worldMap.featureMap[searchStartX][searchStartY+1] == worldMap.mapTiles::OCEAN || ((worldMap.featureMap[searchStartX][searchStartY+1] == worldMap.mapTiles::COAST && game_variables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
+        if (Direction == directions::EAST && searchStartY < gameVariables.worldMap.worldSize*4 && (gameVariables.worldMap.featureMap[searchStartX][searchStartY+1] == gameVariables.worldMap.mapTiles::OCEAN || ((gameVariables.worldMap.featureMap[searchStartX][searchStartY+1] == gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
 
             Direction = -1;
         }
@@ -154,25 +154,25 @@ int AI::checkForUnexploredTerritory (int unitIndex, int g, GameVariables &game_v
     return Direction;
 }
 
-void AI::mapUnitPathToRuin (int civilizationIndex, GameVariables &game_variables, int unitIndex) {
+void AI::mapUnitPathToRuin (int civilizationIndex, GameVariables &gameVariables, int unitIndex) {
 
-    for (int i = 0; i < worldMap.worldSize; i++) {
+    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
 
-        for (int j = 0; j < worldMap.worldSize*4; j++) {
+        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
 
-            if (worldMap.featureMap[i][j] == worldMap.mapTiles::RUINS
-            && game_variables.Civilizations[civilizationIndex].WorldExplorationMap[i][j] == 1) {
+            if (gameVariables.worldMap.featureMap[i][j] == gameVariables.worldMap.mapTiles::RUINS
+            && gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[i][j] == 1) {
 
                 position RuinPosition = std::make_pair (i, j);
 
-                position Source = std::make_pair (game_variables.UnitsInGame[unitIndex].position.x,
-                game_variables.UnitsInGame[unitIndex].position.x);
+                position Source = std::make_pair (gameVariables.UnitsInGame[unitIndex].position.x,
+                gameVariables.UnitsInGame[unitIndex].position.x);
 
-                std::cout << game_variables.UnitsInGame[unitIndex].position.x << ", " << game_variables.UnitsInGame[unitIndex].position.y << " <-> " << i << ", " << j << std::endl;
+                std::cout << gameVariables.UnitsInGame[unitIndex].position.x << ", " << gameVariables.UnitsInGame[unitIndex].position.y << " <-> " << i << ", " << j << std::endl;
 
-                AStar::aStarSearch (worldMap.featureMap, Source, RuinPosition, game_variables.UnitsInGame[unitIndex]);
+                AStar::aStarSearch (gameVariables.worldMap.featureMap, Source, RuinPosition, gameVariables.UnitsInGame[unitIndex]);
 
-                game_variables.UnitsInGame[unitIndex].destinationHasBeenAssigned = true;
+                gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned = true;
 
                 std::cout << civilizationIndex << " < destination found" << std::endl;
 
@@ -186,67 +186,67 @@ void AI::mapUnitPathToRuin (int civilizationIndex, GameVariables &game_variables
 
 }
 
-void AI::moveUnit (int unitIndex, int g, GameVariables &game_variables) {
+void AI::moveUnit (int unitIndex, int civilizationIndex, GameVariables &gameVariables) {
 
     int directionToMoveIn = -1;
 
-    if (game_variables.UnitsInGame[unitIndex].destinationHasBeenAssigned == false) {
+    if (gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned == false) {
 
-        mapUnitPathToRuin (g, game_variables, unitIndex);
+        mapUnitPathToRuin (civilizationIndex, gameVariables, unitIndex);
 
     }
 
-    if (game_variables.UnitsInGame[unitIndex].moveDirectionQueue.size() == 0) {
+    if (gameVariables.UnitsInGame[unitIndex].moveDirectionQueue.size() == 0) {
 
-        game_variables.UnitsInGame[unitIndex].destinationHasBeenAssigned = false;
+        gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned = false;
 
-        directionToMoveIn = checkForUnexploredTerritory (unitIndex, g, game_variables);
+        directionToMoveIn = checkForUnexploredTerritory (unitIndex, civilizationIndex, gameVariables);
 
     } else {
 
-        directionToMoveIn = game_variables.UnitsInGame[unitIndex].moveDirectionQueue[0];
+        directionToMoveIn = gameVariables.UnitsInGame[unitIndex].moveDirectionQueue[0];
 
-        game_variables.UnitsInGame[unitIndex].moveDirectionQueue.erase (game_variables.UnitsInGame[unitIndex].moveDirectionQueue.begin());
+        gameVariables.UnitsInGame[unitIndex].moveDirectionQueue.erase (gameVariables.UnitsInGame[unitIndex].moveDirectionQueue.begin());
 
     }
 
     switch (directionToMoveIn) {
 
         case directions::NORTH:
-            sharedMethods::moveUnit (game_variables.UnitsInGame[unitIndex], game_variables.UnitsInGame[unitIndex].position.x-1, game_variables.UnitsInGame[unitIndex].position.y, game_variables.Civilizations[g], worldMap);
+            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x-1, gameVariables.UnitsInGame[unitIndex].position.y, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap);
         break;
         case directions::WEST:
-            sharedMethods::moveUnit (game_variables.UnitsInGame[unitIndex], game_variables.UnitsInGame[unitIndex].position.x, game_variables.UnitsInGame[unitIndex].position.y-1, game_variables.Civilizations[g], worldMap);
+            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x, gameVariables.UnitsInGame[unitIndex].position.y-1, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap);
         break;
         case directions::SOUTH:
-            sharedMethods::moveUnit (game_variables.UnitsInGame[unitIndex], game_variables.UnitsInGame[unitIndex].position.x+1, game_variables.UnitsInGame[unitIndex].position.y, game_variables.Civilizations[g], worldMap);
+            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x+1, gameVariables.UnitsInGame[unitIndex].position.y, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap);
         break;
         case directions::EAST:
-            sharedMethods::moveUnit (game_variables.UnitsInGame[unitIndex], game_variables.UnitsInGame[unitIndex].position.x, game_variables.UnitsInGame[unitIndex].position.y+1, game_variables.Civilizations[g], worldMap);
+            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x, gameVariables.UnitsInGame[unitIndex].position.y+1, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap);
         break;
         case -1:
-            game_variables.UnitsInGame[unitIndex].movementPoints = 0;
+            gameVariables.UnitsInGame[unitIndex].movementPoints = 0;
         break;
 
     }
 
-    if (sharedMethods::UnitisOnAnAncientRuin(game_variables.UnitsInGame[unitIndex], worldMap)) {
+    if (sharedMethods::UnitisOnAnAncientRuin(gameVariables.UnitsInGame[unitIndex], gameVariables.worldMap)) {
 
-        std::cout << game_variables.Civilizations[g].CivName << " Found a ruin!" << std::endl;
+        std::cout << gameVariables.Civilizations[civilizationIndex].CivName << " Found a ruin!" << std::endl;
 
     }
 
 }
 
-void AI::moveAllUnitsBelongingToCiv (int g, GameVariables &game_variables) {
+void AI::moveAllUnitsBelongingToCiv (int civilizationIndex, GameVariables &gameVariables) {
 
-    for (unsigned int i = 0; i < game_variables.UnitsInGame.size(); i++) {
+    for (unsigned int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
 
-        if (game_variables.UnitsInGame[i].parentCivilizationIndex == g) {
+        if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civilizationIndex) {
 
-            while (game_variables.UnitsInGame[i].movementPoints > 0) {
+            while (gameVariables.UnitsInGame[i].movementPoints > 0) {
 
-                moveUnit (i, g, game_variables);
+                moveUnit (i, civilizationIndex, gameVariables);
 
             }
 
@@ -256,24 +256,24 @@ void AI::moveAllUnitsBelongingToCiv (int g, GameVariables &game_variables) {
 
 }
 
-int AI::calculateResearchPriority (Research tech, int g, GameVariables &game_variables) {
+int AI::calculateResearchPriority (Research tech, int civilizationIndex, GameVariables &gameVariables) {
 
     int Potential = 0; const int OVERALL_SCALE = 8;
 
-    Potential += (tech.aiFocus_defense * game_variables.Civilizations[g].aiFocus_defense);
-    Potential += (tech.aiFocus_diplomatic * game_variables.Civilizations[g].aiFocus_diplomatic);
-    Potential += (tech.aiFocus_economic * game_variables.Civilizations[g].aiFocus_economic);
-    Potential += (tech.aiFocus_exploration * game_variables.Civilizations[g].aiFocus_exploration);
-    Potential += (tech.aiFocus_offense * game_variables.Civilizations[g].aiFocus_offense);
+    Potential += (tech.aiFocus_defense * gameVariables.Civilizations[civilizationIndex].aiFocus_defense);
+    Potential += (tech.aiFocus_diplomatic * gameVariables.Civilizations[civilizationIndex].aiFocus_diplomatic);
+    Potential += (tech.aiFocus_economic * gameVariables.Civilizations[civilizationIndex].aiFocus_economic);
+    Potential += (tech.aiFocus_exploration * gameVariables.Civilizations[civilizationIndex].aiFocus_exploration);
+    Potential += (tech.aiFocus_offense * gameVariables.Civilizations[civilizationIndex].aiFocus_offense);
     Potential += (tech.aiFocus_overall_importance * OVERALL_SCALE);
-    Potential += (tech.aiFocus_population * game_variables.Civilizations[g].aiFocus_population);
-    Potential += (tech.aiFocus_production * game_variables.Civilizations[g].aiFocus_production);
-    Potential += (tech.aiFocus_religion * game_variables.Civilizations[g].aiFocus_religion);
-    Potential += (tech.aiFocus_scientific * game_variables.Civilizations[g].aiFocus_scientific);
+    Potential += (tech.aiFocus_population * gameVariables.Civilizations[civilizationIndex].aiFocus_population);
+    Potential += (tech.aiFocus_production * gameVariables.Civilizations[civilizationIndex].aiFocus_production);
+    Potential += (tech.aiFocus_religion * gameVariables.Civilizations[civilizationIndex].aiFocus_religion);
+    Potential += (tech.aiFocus_scientific * gameVariables.Civilizations[civilizationIndex].aiFocus_scientific);
 
-    for (unsigned int i = 0; i < game_variables.Civilizations[g].learnedTechnologies.size(); i++) {
+    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].learnedTechnologies.size(); i++) {
 
-        if (game_variables.Civilizations[g].learnedTechnologies[i] == tech.researchName) {
+        if (gameVariables.Civilizations[civilizationIndex].learnedTechnologies[i] == tech.researchName) {
 
             return 0;
 
@@ -285,26 +285,28 @@ int AI::calculateResearchPriority (Research tech, int g, GameVariables &game_var
 
 }
 
-void AI::setTechToResearch (int g, int techIndex, GameVariables &game_variables) {
+void AI::setTechToResearch (int civilizationIndex, int techIndex, GameVariables &gameVariables) {
 
-    if (techIndex > -1 && techIndex < game_variables.Civilizations[g].technologiesToResearch.size()) {
+    if (techIndex > -1 && techIndex < gameVariables.Civilizations[civilizationIndex].technologiesToResearch.size()) {
 
-        game_variables.Civilizations[g].technologyBeingResearched = game_variables.Civilizations[g].technologiesToResearch[techIndex];
+        gameVariables.Civilizations[civilizationIndex].technologyBeingResearched = gameVariables.Civilizations[civilizationIndex].technologiesToResearch[techIndex];
 
-        std::cout << game_variables.Civilizations[g].CivName << " has begun researching " << game_variables.Civilizations[g].technologyBeingResearched.researchName << "!" << std::endl;
+        std::cout << gameVariables.Civilizations[civilizationIndex].CivName << " has begun researching " << gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.researchName << "!" << std::endl;
     }
 
 }
 
-void AI::setResearchPriority (int g, GameVariables &game_variables) {
+void AI::setResearchPriority (int civilizationIndex, GameVariables &gameVariables) {
 
     int HighestPriority = 0; int HighestPriorityIndex = -1;
 
-    for (int i = 0; i < game_variables.Civilizations[g].technologiesToResearch.size(); i++) {
+    for (int i = 0; i < gameVariables.Civilizations[civilizationIndex].technologiesToResearch.size(); i++) {
 
-        if (calculateResearchPriority(game_variables.Civilizations[g].technologiesToResearch[i], g, game_variables) > HighestPriority && sharedMethods::CivilizationHasPrerequisiteTechs(g, game_variables.Civilizations[g].technologiesToResearch[i].researchName, game_variables) == true) {
+        if (calculateResearchPriority(gameVariables.Civilizations[civilizationIndex].technologiesToResearch[i], civilizationIndex, gameVariables) > HighestPriority
+        && sharedMethods::CivilizationHasPrerequisiteTechs(civilizationIndex, gameVariables.Civilizations[civilizationIndex].technologiesToResearch[i].researchName,
+        gameVariables) == true) {
 
-            HighestPriority = calculateResearchPriority(game_variables.Civilizations[g].technologiesToResearch[i], g, game_variables);
+            HighestPriority = calculateResearchPriority(gameVariables.Civilizations[civilizationIndex].technologiesToResearch[i], civilizationIndex, gameVariables);
 
             HighestPriorityIndex = i;
 
@@ -312,77 +314,77 @@ void AI::setResearchPriority (int g, GameVariables &game_variables) {
 
     }
 
-    if (HighestPriorityIndex >= 0) { setTechToResearch (g, HighestPriorityIndex, game_variables); }
+    if (HighestPriorityIndex >= 0) { setTechToResearch (civilizationIndex, HighestPriorityIndex, gameVariables); }
 
 }
 
-int AI::returnUnitPotential (int g, Unit unit, GameVariables &game_variables) {
+int AI::returnUnitPotential (int civilizationIndex, Unit unit, GameVariables &gameVariables) {
 
     int potential = 0; const int OVERALL_SCALE = 6;
 
-    potential += (unit.aiFocus_defense * game_variables.Civilizations[g].aiFocus_defense);
-    potential += (unit.aiFocus_economic * game_variables.Civilizations[g].aiFocus_economic);
-    potential += (unit.aiFocus_exploration * game_variables.Civilizations[g].aiFocus_exploration);
-    potential += (unit.aiFocus_offense * game_variables.Civilizations[g].aiFocus_offense);
+    potential += (unit.aiFocus_defense * gameVariables.Civilizations[civilizationIndex].aiFocus_defense);
+    potential += (unit.aiFocus_economic * gameVariables.Civilizations[civilizationIndex].aiFocus_economic);
+    potential += (unit.aiFocus_exploration * gameVariables.Civilizations[civilizationIndex].aiFocus_exploration);
+    potential += (unit.aiFocus_offense * gameVariables.Civilizations[civilizationIndex].aiFocus_offense);
     potential += (unit.aiFocus_overall_importance * OVERALL_SCALE);
 
     return potential;
 
 }
 
-void AI::produceUnit (int g, int cityIndex, std::string unitName, GameVariables &game_variables) {
+void AI::produceUnit (int civilizationIndex, int cityIndex, std::string unitName, GameVariables &gameVariables) {
 
 
-    game_variables.Cities[cityIndex].isProducing = true;
-    game_variables.Cities[cityIndex].isProducingUnit = true;
-    game_variables.Cities[cityIndex].unitBeingProduced = game_variables.Units[sharedMethods::getUnitIndexByName(unitName, game_variables)];
+    gameVariables.Cities[cityIndex].isProducing = true;
+    gameVariables.Cities[cityIndex].isProducingUnit = true;
+    gameVariables.Cities[cityIndex].unitBeingProduced = gameVariables.Units[sharedMethods::getUnitIndexByName(unitName, gameVariables)];
 
-    std::cout << unitName << " is being produced by " << game_variables.Civilizations[g].CivName << "!" << std::endl;
+    std::cout << unitName << " is being produced by " << gameVariables.Civilizations[civilizationIndex].CivName << "!" << std::endl;
 
 }
 
-int AI::returnBuildingPotential (int g, Building building, GameVariables &game_variables) {
+int AI::returnBuildingPotential (int civilizationIndex, Building building, GameVariables &gameVariables) {
 
     int potential; const int OVERALL_SCALE = 8;
 
-    potential += (building.aiFocus_defense * game_variables.Civilizations[g].aiFocus_defense);
-    potential += (building.aiFocus_diplomatic * game_variables.Civilizations[g].aiFocus_diplomatic);
-    potential += (building.aiFocus_economic * game_variables.Civilizations[g].aiFocus_economic);
-    potential += (building.aiFocus_exploration * game_variables.Civilizations[g].aiFocus_exploration);
-    potential += (building.aiFocus_offense * game_variables.Civilizations[g].aiFocus_offense);
+    potential += (building.aiFocus_defense * gameVariables.Civilizations[civilizationIndex].aiFocus_defense);
+    potential += (building.aiFocus_diplomatic * gameVariables.Civilizations[civilizationIndex].aiFocus_diplomatic);
+    potential += (building.aiFocus_economic * gameVariables.Civilizations[civilizationIndex].aiFocus_economic);
+    potential += (building.aiFocus_exploration * gameVariables.Civilizations[civilizationIndex].aiFocus_exploration);
+    potential += (building.aiFocus_offense * gameVariables.Civilizations[civilizationIndex].aiFocus_offense);
     potential += (building.aiFocus_overall_importance * OVERALL_SCALE);
-    potential += (building.aiFocus_population * game_variables.Civilizations[g].aiFocus_population);
-    potential += (building.aiFocus_production * game_variables.Civilizations[g].aiFocus_production);
-    potential += (building.aiFocus_religion * game_variables.Civilizations[g].aiFocus_religion);
-    potential += (building.aiFocus_scientific * game_variables.Civilizations[g].aiFocus_scientific);
+    potential += (building.aiFocus_population * gameVariables.Civilizations[civilizationIndex].aiFocus_population);
+    potential += (building.aiFocus_production * gameVariables.Civilizations[civilizationIndex].aiFocus_production);
+    potential += (building.aiFocus_religion * gameVariables.Civilizations[civilizationIndex].aiFocus_religion);
+    potential += (building.aiFocus_scientific * gameVariables.Civilizations[civilizationIndex].aiFocus_scientific);
 
     return potential;
 
 }
 
-void AI::produceBuilding (int g, int cityIndex, std::string buildingName, GameVariables &game_variables) {
+void AI::produceBuilding (int civilizationIndex, int cityIndex, std::string buildingName, GameVariables &gameVariables) {
 
-    game_variables.Cities[cityIndex].isProducing = true;
-    game_variables.Cities[cityIndex].isProducingUnit = false;
-    game_variables.Cities[cityIndex].buildingBeingProduced = game_variables.Buildings[sharedMethods::getBuildingIndexByName(buildingName, game_variables)];
+    gameVariables.Cities[cityIndex].isProducing = true;
+    gameVariables.Cities[cityIndex].isProducingUnit = false;
+    gameVariables.Cities[cityIndex].buildingBeingProduced = gameVariables.Buildings[sharedMethods::getBuildingIndexByName(buildingName, gameVariables)];
 
-    std::cout << buildingName << " is being produced by " << game_variables.Civilizations[g].CivName << "!" << std::endl;
+    std::cout << buildingName << " is being produced by " << gameVariables.Civilizations[civilizationIndex].CivName << "!" << std::endl;
 
 }
 
-void AI::produce (int g, int cityIndex, GameVariables &game_variables) {
+void AI::produce (int civilizationIndex, int cityIndex, GameVariables &gameVariables) {
 
     int HighestUnitPotential = 0; std::string HighestPotentialUnitName = "";
 
-    for (unsigned int i = 0; i < game_variables.Civilizations[g].AvailableUnitsToCreate.size(); i++) {
+    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.size(); i++) {
 
-        Unit unit = game_variables.Units[sharedMethods::getUnitIndexByName(game_variables.Civilizations[g].AvailableUnitsToCreate[i], game_variables)];
+        Unit unit = gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i], gameVariables)];
 
-        int potential = returnUnitPotential (g, unit, game_variables);
+        int potential = returnUnitPotential (civilizationIndex, unit, gameVariables);
 
         if (potential > HighestUnitPotential) {
 
-            HighestPotentialUnitName = game_variables.Civilizations[g].AvailableUnitsToCreate[i];
+            HighestPotentialUnitName = gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i];
             HighestUnitPotential = potential;
 
         }
@@ -395,15 +397,15 @@ void AI::produce (int g, int cityIndex, GameVariables &game_variables) {
 
 
 
-    for (unsigned int i = 0; i < game_variables.Cities[cityIndex].AvailableBuildingsToCreate.size(); i++) {
+    for (unsigned int i = 0; i < gameVariables.Cities[cityIndex].AvailableBuildingsToCreate.size(); i++) {
 
-        Building building = game_variables.Buildings[sharedMethods::getBuildingIndexByName(game_variables.Cities[cityIndex].AvailableBuildingsToCreate[i], game_variables)];
+        Building building = gameVariables.Buildings[sharedMethods::getBuildingIndexByName(gameVariables.Cities[cityIndex].AvailableBuildingsToCreate[i], gameVariables)];
 
-        int potential = returnBuildingPotential (g, building, game_variables);
+        int potential = returnBuildingPotential (civilizationIndex, building, gameVariables);
 
         if (potential > HighestBuildingPotential) {
 
-            HighestPotentialBuildingName = game_variables.Cities[cityIndex].AvailableBuildingsToCreate[i];
+            HighestPotentialBuildingName = gameVariables.Cities[cityIndex].AvailableBuildingsToCreate[i];
             HighestBuildingPotential = potential;
 
         }
@@ -412,11 +414,11 @@ void AI::produce (int g, int cityIndex, GameVariables &game_variables) {
 
     if (HighestBuildingPotential >= HighestUnitPotential) {
 
-        produceBuilding (g, cityIndex, HighestPotentialBuildingName, game_variables);
+        produceBuilding (civilizationIndex, cityIndex, HighestPotentialBuildingName, gameVariables);
 
     } else {
 
-        produceUnit (g, cityIndex, HighestPotentialUnitName, game_variables);
+        produceUnit (civilizationIndex, cityIndex, HighestPotentialUnitName, gameVariables);
 
     }
 
@@ -454,9 +456,9 @@ int AI::returnTradeValue (Trade trade, GameVariables &gameVariables) {
 
 }
 
-bool AI::hasLowHappiness (int g, GameVariables &game_variables) {
+bool AI::hasLowHappiness (int civilizationIndex, GameVariables &gameVariables) {
 
-    if (game_variables.Civilizations[g].Happiness <= 70) {
+    if (gameVariables.Civilizations[civilizationIndex].Happiness <= 70) {
 
         return true;
 
@@ -466,19 +468,19 @@ bool AI::hasLowHappiness (int g, GameVariables &game_variables) {
 
 }
 
-void AI::tradingLogic (int g, GameVariables &game_variables, std::vector<Trade> &trades) {
+void AI::tradingLogic (int civilizationIndex, GameVariables &gameVariables, std::vector<Trade> &trades) {
 
-    if (hasLowHappiness(g, game_variables)) {
+    if (hasLowHappiness(civilizationIndex, gameVariables)) {
 
         int recipientIndex = -1;
 
-        for (unsigned int i = 0; i < game_variables.Civilizations.size(); i++) {
+        for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
 
-            if (game_variables.Civilizations[i].resources.size() > 0) {
+            if (gameVariables.Civilizations[i].resources.size() > 0) {
 
                 recipientIndex = i;
 
-                i = game_variables.Civilizations.size();
+                i = gameVariables.Civilizations.size();
 
             }
 
@@ -488,11 +490,11 @@ void AI::tradingLogic (int g, GameVariables &game_variables, std::vector<Trade> 
 
             Trade trade;
 
-            trade.recipientIndex = recipientIndex; trade.traderIndex = g;
+            trade.recipientIndex = recipientIndex; trade.traderIndex = civilizationIndex;
 
-            Resource resourceToTrade = game_variables.Civilizations[recipientIndex].resources[0];
+            Resource resourceToTrade = gameVariables.Civilizations[recipientIndex].resources[0];
 
-            trade.goldSumFromTrader = 35*(game_variables.Civilizations[g].ai_fairness/5);
+            trade.goldSumFromTrader = 35*(gameVariables.Civilizations[civilizationIndex].ai_fairness/5);
             trade.goldSumFromRecipient = 0;
             trade.resourcesFromRecipient.push_back(resourceToTrade);
 
@@ -504,21 +506,21 @@ void AI::tradingLogic (int g, GameVariables &game_variables, std::vector<Trade> 
 
 }
 
-void AI::think (int g, GameVariables &game_variables, std::vector<Trade> &trades) {
+void AI::think (int civilizationIndex, GameVariables &gameVariables, std::vector<Trade> &trades) {
 
-    if (game_variables.Civilizations[g].technologyBeingResearched.researchName == "") {
+    if (gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.researchName == "") {
 
-        setResearchPriority (g, game_variables);
+        setResearchPriority (civilizationIndex, gameVariables);
 
     }
 
-    tradingLogic (g, game_variables, trades);
+    tradingLogic (civilizationIndex, gameVariables, trades);
 
-    for (unsigned int a = 0; a < game_variables.Cities.size(); a++) {
+    for (unsigned int a = 0; a < gameVariables.Cities.size(); a++) {
 
-        if (game_variables.Cities[a].parentIndex == g && game_variables.Cities[a].isProducing == false) {
+        if (gameVariables.Cities[a].parentIndex == civilizationIndex && gameVariables.Cities[a].isProducing == false) {
 
-            produce (g, a, game_variables);
+            produce (civilizationIndex, a, gameVariables);
 
         }
 

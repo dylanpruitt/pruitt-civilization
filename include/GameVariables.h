@@ -4,6 +4,7 @@
 #include "Civilization.h"
 #include "City.h"
 #include "Unit.h"
+#include "WorldMap.h"
 
 class GameVariables
 {
@@ -20,6 +21,8 @@ class GameVariables
         std::vector<Unit> Units;
 
         std::vector<Building> Buildings;
+
+        WorldMap worldMap;
 
     protected:
     private:
