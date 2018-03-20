@@ -38,6 +38,7 @@ class Game
 
         void loadCivilizationsFromFile (std::string filename, std::vector<Civilization> &civs);
 
+        void saveGame (std::string filename);
         /**
         *
         * MAP FUNCTIONS
@@ -149,6 +150,10 @@ class Game
         void updateGoldPerTurn (int civilizationIndex);
 
         void displayUnitDetails (Unit unit);
+
+        int getTerrainCodeUnitIsOn (Unit &Unit);
+
+        void updateUnitTraining ();
 
 };
 

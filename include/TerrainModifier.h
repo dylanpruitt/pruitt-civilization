@@ -15,6 +15,8 @@ class TerrainModifier
         double attackModifier;
         double defenseModifier;
 
+        double experience = 0.00;
+
     protected:
     private:
 };

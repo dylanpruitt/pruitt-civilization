@@ -570,6 +570,103 @@ void Game::loadCivilizationsFromFile (std::string filename, std::vector<Civiliza
 
 }
 
+void Game::saveGame (std::string filename) {
+
+    std::string line;
+    ofstream file (filename);
+
+    if (file.is_open()) {
+
+        /// SAVE WORLD DATA
+
+        file << "mapdata" << "\n";
+
+        for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
+
+            for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
+
+                file << gameVariables.worldMap.featureMap[i][j] << "\n";
+
+                file << gameVariables.worldMap.WorldResourceMap[i][j].ResourceCode << "\n";
+
+                file << gameVariables.worldMap.WorldResourceMap[i][j].AmountOfResource << "\n";
+
+                file << gameVariables.worldMap.WorldTerritoryMap[i][j] << "\n";
+
+
+            }
+
+        }
+
+        file << "unit data" << "\n";
+
+        file << gameVariables.UnitsInGame.size() << "\n";
+
+        for (int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
+
+            file << " > unit #" << i << "\n";
+
+            file << gameVariables.UnitsInGame[i].parentCivilizationIndex << "\n";
+
+            file << gameVariables.UnitsInGame[i].name << "\n";
+
+            file << gameVariables.UnitsInGame[i].position.x << "\n";
+            file << gameVariables.UnitsInGame[i].position.y << "\n";
+
+            file << gameVariables.UnitsInGame[i].health << "\n";
+            file << gameVariables.UnitsInGame[i].maxHealth << "\n";
+            file << gameVariables.UnitsInGame[i].combat << "\n";
+
+            file << gameVariables.UnitsInGame[i].grasslandModifier.attackModifier << "\n";
+            file << gameVariables.UnitsInGame[i].grasslandModifier.defenseModifier << "\n";
+            file << gameVariables.UnitsInGame[i].grasslandModifier.experience << "\n";
+
+            file << gameVariables.UnitsInGame[i].mountainModifier.attackModifier << "\n";
+            file << gameVariables.UnitsInGame[i].mountainModifier.defenseModifier << "\n";
+            file << gameVariables.UnitsInGame[i].mountainModifier.experience << "\n";
+
+            file << gameVariables.UnitsInGame[i].forestModifier.attackModifier << "\n";
+            file << gameVariables.UnitsInGame[i].forestModifier.defenseModifier << "\n";
+            file << gameVariables.UnitsInGame[i].forestModifier.experience << "\n";
+
+            file << gameVariables.UnitsInGame[i].desertModifier.attackModifier << "\n";
+            file << gameVariables.UnitsInGame[i].desertModifier.defenseModifier << "\n";
+            file << gameVariables.UnitsInGame[i].desertModifier.experience << "\n";
+
+            file << gameVariables.UnitsInGame[i].snowModifier.attackModifier << "\n";
+            file << gameVariables.UnitsInGame[i].snowModifier.defenseModifier << "\n";
+            file << gameVariables.UnitsInGame[i].snowModifier.experience << "\n";
+
+            file << gameVariables.UnitsInGame[i].maxMovePoints << "\n";
+
+            file << gameVariables.UnitsInGame[i].destinationHasBeenAssigned << "\n";
+
+            file << gameVariables.UnitsInGame[i].isTraining << "\n";
+
+
+        }
+
+        file << "civ data" << "\n";
+
+        file << gameVariables.Civilizations.size() << "\n";
+
+        for (int i = 0; i < gameVariables.Civilizations.size(); i++) {
+
+            file << gameVariables.Civilizations[i].Gold << "\n";
+
+            file << gameVariables.Civilizations[i].ExpansionRate << "\n";
+
+            file << gameVariables.Civilizations[i].ScienceRate << "\n";
+
+            file << gameVariables.Civilizations[i].playedByHumans << "\n";
+
+        }
+
+        file.close();
+
+    }
+}
+
 bool Game::isResearchComplete (int civilizationIndex) {
 
     if (gameVariables.Civilizations[civilizationIndex].researchPoints >= gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.scienceCostToLearnResearch) {
@@ -1110,6 +1207,8 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
     if (Choice == ';') { renderer.spectate(turnNumber, gameVariables); }
 
+    if (Choice == 's') { saveGame ("save.save"); }
+
     if (Choice == 'u' || Choice == 'U') {
 
         int x = 0; int militarypower = 0; std::vector<int> unitIndices; /*flag (r:better var name*/
@@ -1166,6 +1265,18 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
             whichOne = sharedMethods::bindIntegerInputToRange(0, unitIndices.size()-1, 0);
 
             displayUnitDetails (gameVariables.UnitsInGame[unitIndices[whichOne]]);
+        }
+
+        if (Choice == 't' || Choice == 'T') {
+
+            std::cout << "\nTrain which unit? " << std::endl;
+
+            int whichOne;
+
+            whichOne = sharedMethods::bindIntegerInputToRange(0, unitIndices.size()-1, 0);
+
+            gameVariables.UnitsInGame[unitIndices[whichOne]].isTraining = true;
+
         }
 
         if (Choice == 'b' || Choice == 'B') {
@@ -1420,6 +1531,44 @@ void Game::updateCityBuildingProduction (int cityIndex, int civilizationIndex) {
         gameVariables.Cities[cityIndex].isProducingUnit = false;
 
         std::cout << gameVariables.Cities[cityIndex].cityName << " finished its production!" << std::endl;
+
+    }
+
+}
+
+int Game::getTerrainCodeUnitIsOn (Unit &Unit) {
+
+    return gameVariables.worldMap.featureMap[Unit.position.x][Unit.position.y];
+
+}
+
+void Game::updateUnitTraining () {
+
+    for (int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
+
+        if (gameVariables.UnitsInGame[i].isTraining) {
+
+            switch (getTerrainCodeUnitIsOn(gameVariables.UnitsInGame[i])) {
+
+                case 2: // grassland
+                    gameVariables.UnitsInGame[i].grasslandModifier.experience += 0.1;
+                break;
+                case 3: // mountain
+                    gameVariables.UnitsInGame[i].mountainModifier.experience += 0.1;
+                break;
+                case 4: // forest
+                    gameVariables.UnitsInGame[i].forestModifier.experience += 0.1;
+                break;
+                case 6: // snow
+                    gameVariables.UnitsInGame[i].snowModifier.experience += 0.1;
+                break;
+                case 7: // desert
+                    gameVariables.UnitsInGame[i].desertModifier.experience += 0.1;
+                break;
+
+            }
+
+        }
 
     }
 
@@ -2079,6 +2228,8 @@ void Game::loop () {
 
         renderer.worldMap = gameVariables.worldMap;
 
+        updateUnitTraining ();
+
         for (int civilizationIndex = 0; civilizationIndex < gameVariables.Civilizations.size(); civilizationIndex++) {
 
             loopVariable = true;
@@ -2124,7 +2275,13 @@ void Game::loop () {
         updateCities ();
 
         for (unsigned int a = 0; a < gameVariables.UnitsInGame.size(); a++) {
+
+            if (gameVariables.UnitsInGame[a].isTraining == false) {
+
             gameVariables.UnitsInGame[a].movementPoints = gameVariables.UnitsInGame[a].maxMovePoints;
+
+            }
+
         }
     }
 

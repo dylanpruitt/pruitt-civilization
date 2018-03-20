@@ -14,11 +14,7 @@ class Civilization
 
         std::string CivName; std::string LeaderTrait;
 
-        int tilesClaimedByExplorers = 0;
-
         int startingX; int startingY; int Gold = 500;
-
-        int turnsToExpand = 5;
 
         int Happiness = 75;
 

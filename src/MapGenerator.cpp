@@ -50,7 +50,7 @@ enum resources : int {
 
 };
 
-int islandMaxSize; double sizeScale = 0.78;
+int islandMaxSize; double sizeScale = 0.84;
 
 MapGenerator::MapGenerator()
 {
@@ -452,6 +452,10 @@ void MapGenerator::generateFeatures () {
                 worldmap.featureMap[i][j] = mapTiles::COAST;
             }
 
+            if (worldmap.featureMap[i][j] == mapTiles::DESERT && getDesertTiles(i,j) == 1) {
+                worldmap.featureMap[i][j] = mapTiles::GRASSLAND;
+            }
+
         }
     }
 
@@ -467,7 +471,7 @@ void MapGenerator::generateWorld_Continents (WorldMap &mapToGenerateFor) {
 
     setGenerationParametersByInput();
 
-    islandMaxSize*=6;
+    islandMaxSize*=8;
     ForestChanceOutOf100*=10;
     MountainBaseChanceOutOf100*=10;
     tinyIslandLimit*=8;
@@ -527,7 +531,7 @@ void MapGenerator::generateWorld_Continents (WorldMap &mapToGenerateFor) {
 
                 }
 
-            generateIsland((sizeScale+xvariance), (sizeScale+yvariance), x, y, islandMaxSize);  std::cout << xvariance << " " << yvariance << std::endl;
+            generateIsland((sizeScale+xvariance), (sizeScale+yvariance+0.02), x, y, islandMaxSize);  std::cout << xvariance << " " << yvariance << std::endl;
 
         }
 

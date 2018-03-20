@@ -56,6 +56,8 @@ class Unit
 
         bool destinationHasBeenAssigned = false;
 
+        bool isTraining = false;
+
     protected:
     private:
 };
