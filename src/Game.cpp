@@ -12,6 +12,7 @@
 #include "MapGenerator.h"
 #include "textRenderer.h"
 #include "sharedMethods.h"
+#include "GameUpdater.h"
 #include "AI.h"
 #include "Event.h"
 
@@ -30,7 +31,7 @@ Game::~Game()
 textRenderer renderer;
 AI ai;
 
-GameVariables gameVariables;
+GameVariables gameVariables; GameUpdater updater;
 
 std::vector<Civilization> civilizations; std::vector<Event> gameEvents; std::vector<Trade> trades;
 
@@ -247,6 +248,16 @@ void Game::setupWorld () {
 
     }
 
+    std::cout << "How many minor civilizations do you want? The maximum is 8." << std::endl;
+
+    AmountOfCivilizations = sharedMethods::bindIntegerInputToRange(0,8,2);
+
+    for (int i = 0; i < AmountOfCivilizations; i++) {
+
+        generateMinorCiv(i);
+
+    }
+
     setupDiplomacy();
 
     renderer.worldMap = gameVariables.worldMap;
@@ -295,7 +306,7 @@ void Game::foundCity (int x, int y, int CivilizationIndex) {
 
     gameVariables.Cities.push_back(city);
 
-    assignWorkByPopulation(gameVariables.Cities.size() - 1, false);
+    sharedMethods::assignWorkByPopulation(gameVariables.Cities.size() - 1, false, gameVariables);
 
 }
 
@@ -570,6 +581,64 @@ void Game::loadCivilizationsFromFile (std::string filename, std::vector<Civiliza
 
 }
 
+void Game::loadMinorCivilizationsFromFile (std::string filename, std::vector<Civilization> &civs) {
+
+    std::string line;
+    ifstream file (filename);
+
+    if (file.is_open())  {
+
+    int civsSize;
+    Civilization temp; temp.ExpansionRate = 0.8; temp.ScienceRate = 0.75;
+
+    file >> civsSize;
+
+    for (int i = 0; i < civsSize; i++) {
+
+           file >> temp.CivName;
+
+           int freeTechSize = 0;
+
+           file >> freeTechSize;
+
+           for (int j = 0; j < freeTechSize; j++) {
+
+                std::string tempString;
+                file >> tempString;
+
+                temp.learnedTechnologies.push_back(tempString);
+
+           }
+
+           file >> temp.aiFocus_defense;
+           file >> temp.aiFocus_diplomatic;
+           file >> temp.aiFocus_economic;
+           file >> temp.aiFocus_exploration;
+           file >> temp.aiFocus_offense;
+           file >> temp.aiFocus_population;
+           file >> temp.aiFocus_production;
+           file >> temp.aiFocus_religion;
+           file >> temp.aiFocus_scientific;
+           file >> temp.ai_fairness;
+
+            temp.cityNames.push_back(temp.CivName);
+
+            for (int j = 0; j < 3; j++) {
+
+                file >> temp.rgbValues[j];
+
+           }
+
+           civs.push_back(temp);
+
+    }
+
+    file.close();
+
+    } else cout << "Unable to open file";
+
+}
+
 void Game::saveGame (std::string filename) {
 
     std::string line;
@@ -672,22 +741,6 @@ bool Game::isResearchComplete (int civilizationIndex) {
     if (gameVariables.Civilizations[civilizationIndex].researchPoints >= gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.scienceCostToLearnResearch) {
 
         return true;
-
-    }
-
-    return false;
-
-}
-
-bool Game::civilizationHasTechnology (int civilizationIndex, std::string techName) {
-
-    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].learnedTechnologies.size(); i++) {
-
-        if (gameVariables.Civilizations[civilizationIndex].learnedTechnologies[i] == techName) {
-
-            return true;
-
-        }
 
     }
 
@@ -834,54 +887,6 @@ int Game::getCivilizationPopulation (int civilizationIndex) {
 
 }
 
-int Game::getTileFoodYield (int i, int j) {
-
-    switch (gameVariables.worldMap.featureMap[i][j]) {
-
-        case gameVariables.worldMap.mapTiles::OCEAN:
-            return 1;
-        break;
-
-        case gameVariables.worldMap.mapTiles::COAST:
-            return 1;
-        break;
-
-        case gameVariables.worldMap.mapTiles::GRASSLAND:
-            return 2;
-        break;
-
-        case gameVariables.worldMap.mapTiles::FOREST:
-            return 1;
-        break;
-
-        default:
-            return 0;
-        break;
-
-    }
-
-}
-
-int Game::getTileProductionYield (int i, int j) {
-
-    switch (gameVariables.worldMap.featureMap[i][j]) {
-
-        case gameVariables.worldMap.mapTiles::FOREST:
-            return 1;
-        break;
-
-        case gameVariables.worldMap.mapTiles::MOUNTAIN:
-            return 2;
-        break;
-
-        default:
-            return 0;
-        break;
-
-    }
-
-}
-
 void Game::generateCiv (int Civ) {
 
     std::vector<Civilization> civs;
@@ -961,6 +966,108 @@ void Game::generateCiv (int Civ) {
                 explorer.parentCivilizationIndex = gameVariables.Civilizations.size() - 1;
 
                 gameVariables.UnitsInGame.push_back(explorer);
+
+                Unit warrior = gameVariables.Units[sharedMethods::getUnitIndexByName("Warrior", gameVariables)];
+                warrior.position.setCoordinates(civ.startingX, civ.startingY);
+                warrior.parentCivilizationIndex = gameVariables.Civilizations.size() - 1;
+
+                gameVariables.UnitsInGame.push_back(warrior);
+
+
+        }
+
+    }
+
+    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
+
+        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
+
+            if (sharedMethods::getDistance(gameVariables.Civilizations[Civ].startingX, gameVariables.Civilizations[Civ].startingY, i, j) <= 3) {
+
+                gameVariables.Civilizations[Civ].WorldExplorationMap[i][j] = 1;
+
+            } else {
+
+                gameVariables.Civilizations[Civ].WorldExplorationMap[i][j] = 0;
+
+            }
+        }
+
+    }
+
+}
+
+void Game::generateMinorCiv (int Civ) {
+
+    std::vector<Civilization> civs;
+
+    loadMinorCivilizationsFromFile("minorCivilizations.sav",civs);
+
+     bool loopSpawn = true;
+
+     while (loopSpawn) {
+
+        Civilization civ;
+
+        int x = rand() % (gameVariables.worldMap.worldSize);
+        int y = rand() % (gameVariables.worldMap.worldSize*4);
+        int numberOfCivilizationsPositionIsFarAwayFrom = 0;
+
+        if (gameVariables.Civilizations.size() >= 1){
+
+            for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++){
+
+                if (sharedMethods::getDistance(x, y, gameVariables.Civilizations[i].startingX, gameVariables.Civilizations[i].startingY) > 3){
+                    numberOfCivilizationsPositionIsFarAwayFrom++;
+                }
+
+            }
+        }
+
+        if (gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::OCEAN && gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::COAST && returnLandTiles(x, y) > 2 && numberOfCivilizationsPositionIsFarAwayFrom == gameVariables.Civilizations.size()) {
+
+                loopSpawn = false;
+
+                std::cout << "Is Civilization #" << gameVariables.Civilizations.size() << " being played by a human? (Y/N)" << std::endl;
+
+                char Choice;
+
+                std::cin >> Choice;
+
+                if (Choice == 'y' || Choice == 'Y') {
+
+                    std::cout << "Pick a civilization to choose from." << std::endl;
+
+                    for (int i = 0; i < civs.size(); i++) {
+
+                        std::cout << "[" << i << "] " << civs[i].CivName << std::endl;
+
+                    }
+
+                    int choice = sharedMethods::bindIntegerInputToRange(0, civs.size()-1, 0);
+
+                    civ = civs[choice];
+
+                    civ.playedByHumans = true;
+
+                } else {
+
+                    int civIndex = rand() % civs.size();
+
+                    civ = civs[civIndex];
+
+                }
+
+                civ.AvailableUnitsToCreate.push_back("Warrior");
+                civ.AvailableUnitsToCreate.push_back("Explorer");
+
+                civ.startingX = x; civ.startingY = y; gameVariables.Civilizations.push_back(civ);
+
+                foundCity(x, y, gameVariables.Civilizations.size() - 1);
+
+                loadTechnologiesFromFile("techs.sav", gameVariables.Civilizations.size() - 1);
+
+                gameVariables.Civilizations[gameVariables.Civilizations.size() - 1].technologyBeingResearched.researchName = "";
 
                 Unit warrior = gameVariables.Units[sharedMethods::getUnitIndexByName("Warrior", gameVariables)];
                 warrior.position.setCoordinates(civ.startingX, civ.startingY);
@@ -1320,81 +1427,6 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
 }
 
-void Game::assignWorkByPopulation (int cityIndex, bool stopAfterNeededAmountIsCollected) {
-
-    int assignedCitizens = 0;
-
-    int highestFoodValueTiles[gameVariables.Cities[cityIndex].Population];
-
-    int tileArraySize = (sizeof(highestFoodValueTiles)/sizeof(*highestFoodValueTiles));
-
-    int bestFoodTileXPositions[gameVariables.Cities[cityIndex].Population];
-
-    int bestFoodTileYPositions[gameVariables.Cities[cityIndex].Population];
-
-    for (int a = 0; a < tileArraySize; a++) { highestFoodValueTiles[a] = 0; }
-
-    int FoodNeeded = (pow((gameVariables.Cities[cityIndex].Population - 1), 2) + 5);
-
-    gameVariables.Cities[cityIndex].FoodPerTurnFromTiles = 0;
-
-    gameVariables.Cities[cityIndex].ProductionFromTiles = 0;
-
-    for (int i = -4; i < 4; i++) {
-
-        if (i + gameVariables.Cities[cityIndex].position.x < 0) {
-
-            i++;
-
-        }
-
-        for (int j = -4; j < 4; j++) {
-
-            if (j + gameVariables.Cities[cityIndex].position.y < 0) {
-
-                j++;
-
-            }
-
-            if (i + gameVariables.Cities[cityIndex].position.x >= 0 && j + gameVariables.Cities[cityIndex].position.y >= 0) {
-
-                int yield = getTileFoodYield (i + gameVariables.Cities[cityIndex].position.x, j + gameVariables.Cities[cityIndex].position.y);
-
-                for (int k = 0; k < tileArraySize; k++) {
-
-                    if (yield > highestFoodValueTiles[k] && gameVariables.worldMap.WorldTerritoryMap[i + gameVariables.Cities[cityIndex].position.x][j + gameVariables.Cities[cityIndex].position.y] == gameVariables.Cities[cityIndex].parentIndex+1) {
-
-                        highestFoodValueTiles[k] = yield;
-                        bestFoodTileXPositions[k] = i + gameVariables.Cities[cityIndex].position.x;
-                        bestFoodTileYPositions[k] = j + gameVariables.Cities[cityIndex].position.y;
-                        gameVariables.Cities[cityIndex].FoodPerTurnFromTiles += yield;
-                        gameVariables.Cities[cityIndex].ProductionFromTiles += getTileProductionYield(i + gameVariables.Cities[cityIndex].position.x, j + gameVariables.Cities[cityIndex].position.y);
-                        assignedCitizens++;
-
-                        k = tileArraySize;
-
-                        int foodIncrease = ((gameVariables.Cities[cityIndex].FoodPerTurnFromCity + gameVariables.Cities[cityIndex].FoodPerTurnFromTiles) - (gameVariables.Cities[cityIndex].Population*2));
-
-                        if (foodIncrease > 0 && stopAfterNeededAmountIsCollected == true) {
-
-                            i = 4;
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-
-        }
-
-    }
-
-
-}
-
 void Game::produceUnits (int cityIndex, int civilizationIndex) {
 
     showAvailableUnits (civilizationIndex, true, false);
@@ -1444,98 +1476,6 @@ void Game::setCityProduction (int cityIndex) {
     }
 }
 
-void Game::updateCityProductionModifier (int cityIndex, int civilizationIndex) {
-
-    double tempModifier = 100;
-
-    if (gameVariables.Civilizations[civilizationIndex].Happiness >= 70) {
-
-        double happinessModifier = (gameVariables.Civilizations[civilizationIndex].Happiness-70);
-
-        tempModifier += happinessModifier;
-
-    } else if (gameVariables.Civilizations[civilizationIndex].Happiness <= 25) {
-
-        tempModifier -= 25;
-
-    }
-
-    if (civilizationHasTechnology(civilizationIndex, "Masonry")) {
-
-        tempModifier += 5;
-
-    }
-
-    gameVariables.Cities[cityIndex].ProductionModifier = (tempModifier/100);
-
-}
-
-void Game::updateCityUnitProduction (int cityIndex, int civilizationIndex) {
-
-    gameVariables.Cities[cityIndex].Production += (gameVariables.Cities[cityIndex].ProductionFromTiles + gameVariables.Cities[cityIndex].ProductionPerTurn)*gameVariables.Cities[cityIndex].ProductionModifier;
-
-    if (gameVariables.Cities[cityIndex].Production >= gameVariables.Cities[cityIndex].unitBeingProduced.productionCost && gameVariables.Cities[cityIndex].isProducing == true) {
-
-        gameVariables.Cities[cityIndex].unitBeingProduced.position.x = gameVariables.Cities[cityIndex].position.x;
-        gameVariables.Cities[cityIndex].unitBeingProduced.position.y = gameVariables.Cities[cityIndex].position.y;
-
-        gameVariables.Cities[cityIndex].unitBeingProduced.parentCivilizationIndex = civilizationIndex;
-
-        gameVariables.UnitsInGame.push_back(gameVariables.Cities[cityIndex].unitBeingProduced);
-
-        gameVariables.Cities[cityIndex].Production -= gameVariables.Cities[cityIndex].unitBeingProduced.productionCost;
-
-        gameVariables.Cities[cityIndex].isProducing = false;
-        gameVariables.Cities[cityIndex].isProducingUnit = false;
-
-        std::cout << gameVariables.Cities[cityIndex].cityName << " finished its production!" << std::endl;
-
-    }
-
-}
-
-void Game::updateCityBuildingProduction (int cityIndex, int civilizationIndex) {
-
-    gameVariables.Cities[cityIndex].Production += (gameVariables.Cities[cityIndex].ProductionFromTiles + gameVariables.Cities[cityIndex].ProductionPerTurn)*gameVariables.Cities[cityIndex].ProductionModifier;
-
-    if (gameVariables.Cities[cityIndex].Production >= gameVariables.Cities[cityIndex].buildingBeingProduced.ProductionCost && gameVariables.Cities[cityIndex].isProducing == true) {
-
-        gameVariables.Cities[cityIndex].FoodPerTurnFromCity += gameVariables.Cities[cityIndex].buildingBeingProduced.FoodYield;
-
-        gameVariables.Cities[cityIndex].ProductionPerTurn += gameVariables.Cities[cityIndex].buildingBeingProduced.ProductionYield;
-
-        gameVariables.Cities[cityIndex].GoldPerTurn += gameVariables.Cities[cityIndex].buildingBeingProduced.GoldYield;
-
-        gameVariables.Cities[cityIndex].buildings.push_back (gameVariables.Cities[cityIndex].buildingBeingProduced.name);
-
-        int indexToErase = -1;
-
-        for (int i = 0; i < gameVariables.Cities[cityIndex].AvailableBuildingsToCreate.size(); i++) {
-
-            if (gameVariables.Cities[cityIndex].AvailableBuildingsToCreate[i] == gameVariables.Cities[cityIndex].buildingBeingProduced.name) {
-
-                indexToErase = i;
-
-            }
-
-        }
-
-        if (indexToErase > -1 && indexToErase < gameVariables.Cities[cityIndex].AvailableBuildingsToCreate.size()) {
-
-            gameVariables.Cities[cityIndex].AvailableBuildingsToCreate.erase (gameVariables.Cities[cityIndex].AvailableBuildingsToCreate.begin() + indexToErase);
-
-        }
-        gameVariables.Cities[cityIndex].Production -= gameVariables.Cities[cityIndex].buildingBeingProduced.ProductionCost;
-
-        gameVariables.Cities[cityIndex].isProducing = false;
-        gameVariables.Cities[cityIndex].isProducingUnit = false;
-
-        std::cout << gameVariables.Cities[cityIndex].cityName << " finished its production!" << std::endl;
-
-    }
-
-}
-
 int Game::getTerrainCodeUnitIsOn (Unit &Unit) {
 
     return gameVariables.worldMap.featureMap[Unit.position.x][Unit.position.y];
@@ -1571,83 +1511,6 @@ void Game::updateUnitTraining () {
         }
 
     }
-
-}
-
-bool Game::isTileBorderingCivilizationTerritory (int x, int y, int civilizationIndex) {
-
-    for (int i = -1; i < 2; i++) {
-
-        for (int j = -1; j < 2; j++) {
-
-            if (x+i >= 0 && x+i <= gameVariables.worldMap.worldSize && y+j >= 0 && y+j <= gameVariables.worldMap.worldSize*4) {
-
-                if (gameVariables.worldMap.WorldTerritoryMap[i+x][j+y] == civilizationIndex+1 && sharedMethods::getDistance (x+i, y+j, x, y) <= 1) {
-
-                    return true;
-
-                }
-
-            }
-
-        }
-
-    }
-
-    return false;
-
-}
-
-bool Game::canCityExpand (int cityIndex, int civilizationIndex) {
-
-    for (int i = (-1*cityExpansionLimit); i < cityExpansionLimit+1; i++) {
-
-        for (int j = (-1*cityExpansionLimit); j < cityExpansionLimit+1; j++) {
-
-            if (gameVariables.worldMap.WorldTerritoryMap[gameVariables.Cities[cityIndex].position.x + i][gameVariables.Cities[cityIndex].position.y + j] == 0
-            && isTileBorderingCivilizationTerritory(gameVariables.Cities[cityIndex].position.x+i,
-            gameVariables.Cities[cityIndex].position.y+j,
-            civilizationIndex)) {
-
-                return true;
-
-            }
-
-        }
-
-    }
-    std::cout << "false";
-    return false;
-
-}
-
-void Game::expandCityTerritory (int cityIndex) {
-
-    if (canCityExpand(cityIndex, gameVariables.Cities[cityIndex].parentIndex)) {
-
-        bool tileFound = false;
-
-        while (!tileFound) {
-
-            int i = rand() % (cityExpansionLimit * 2) - cityExpansionLimit;
-            int j = rand() % (cityExpansionLimit * 2) - cityExpansionLimit;
-
-            if (gameVariables.worldMap.WorldTerritoryMap[gameVariables.Cities[cityIndex].position.x + i][gameVariables.Cities[cityIndex].position.y + j] == 0
-                && isTileBorderingCivilizationTerritory(gameVariables.Cities[cityIndex].position.x+i,
-                gameVariables.Cities[cityIndex].position.y+j,
-                gameVariables.Cities[cityIndex].parentIndex)) {
-
-                gameVariables.worldMap.WorldTerritoryMap[gameVariables.Cities[cityIndex].position.x + i][gameVariables.Cities[cityIndex].position.y + j] = gameVariables.Cities[cityIndex].parentIndex + 1;
-
-                tileFound = true;
-
-            }
-
-        }
-
-    }
-
-    gameVariables.Cities[cityIndex].turnsToExpand = 5;
 
 }
 
@@ -1729,68 +1592,6 @@ void Game::updateCivilizationHappiness (int civilizationIndex) {
     }
 
     gameVariables.Civilizations[civilizationIndex].Happiness = baseHappiness;
-
-}
-
-void Game::updateResources (int civilizationIndex) {
-
-    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
-
-        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
-
-            if (gameVariables.worldMap.WorldResourceMap[i][j].ResourceCode != 0 && gameVariables.worldMap.WorldTerritoryMap[i][j] == civilizationIndex+1) {
-
-                gameVariables.Civilizations[civilizationIndex].resources.push_back(gameVariables.worldMap.WorldResourceMap[i][j]);
-
-            }
-
-        }
-
-    }
-
-}
-
-void Game::updateCities () {
-
-    for (int w = 0; w < gameVariables.Cities.size(); w++) {
-
-        gameVariables.Cities[w].FoodSurplus += ((gameVariables.Cities[w].FoodPerTurnFromCity + gameVariables.Cities[w].FoodPerTurnFromTiles) - (gameVariables.Cities[w].Population*2));
-
-        gameVariables.Cities[w].turnsToExpand -= gameVariables.Civilizations[gameVariables.Cities[w].parentIndex].ExpansionRate;
-
-        if (gameVariables.Cities[w].turnsToExpand <= 0) {
-
-            expandCityTerritory(w);
-
-        }
-
-        if (gameVariables.Cities[w].FoodSurplus >= (pow((gameVariables.Cities[w].Population - 1), 2) + 5)) {
-            gameVariables.Cities[w].FoodSurplus -= pow((gameVariables.Cities[w].Population - 1), 2) + 5;
-            gameVariables.Cities[w].Population++;
-            gameVariables.Civilizations[gameVariables.Cities[w].parentIndex].Happiness -= 2;
-            assignWorkByPopulation(w, false);
-
-        }
-
-        if (gameVariables.Cities[w].FoodSurplus < 0) {
-            gameVariables.Cities[w].Population--;
-            assignWorkByPopulation(w, false);
-
-        }
-
-        updateCityProductionModifier (w, gameVariables.Cities[w].parentIndex);
-
-        if (gameVariables.Cities[w].isProducingUnit == true) {
-
-            updateCityUnitProduction (w, gameVariables.Cities[w].parentIndex);
-
-        } else {
-
-            updateCityBuildingProduction (w, gameVariables.Cities[w].parentIndex);
-
-        }
-
-    }
 
 }
 
@@ -2220,7 +2021,7 @@ void Game::loop () {
 
     for (int civilizationIndex = 0; civilizationIndex < gameVariables.Civilizations.size(); civilizationIndex++) {
 
-        updateResources (civilizationIndex);
+        updater.updateResources (civilizationIndex, gameVariables);
 
     }
 
@@ -2236,7 +2037,7 @@ void Game::loop () {
 
             updateEvents (civilizationIndex);
 
-            updateResources (civilizationIndex);
+            updater.updateResources (civilizationIndex, gameVariables);
 
             updateCivilizationHappiness (civilizationIndex);
 
@@ -2272,7 +2073,7 @@ void Game::loop () {
 
         turnNumber++;
 
-        updateCities ();
+        updater.updateCities (gameVariables);
 
         for (unsigned int a = 0; a < gameVariables.UnitsInGame.size(); a++) {
 

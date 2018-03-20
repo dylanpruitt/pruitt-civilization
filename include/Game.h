@@ -21,6 +21,8 @@ class Game
 
         void generateCiv(int Civ);
 
+        void generateMinorCiv (int Civ);
+
         void setupWorld();
 
         void loop();
@@ -37,6 +39,8 @@ class Game
         void loadBuildingsFromFile (std::string filename);
 
         void loadCivilizationsFromFile (std::string filename, std::vector<Civilization> &civs);
+
+        void loadMinorCivilizationsFromFile (std::string filename, std::vector<Civilization> &civs);
 
         void saveGame (std::string filename);
         /**
@@ -81,8 +85,6 @@ class Game
 
         void pickResearchForHumanPlayer (int civilizationIndex);
 
-        bool civilizationHasTechnology (int civilizationIndex, std::string techName);
-
         /**
         *
         * CORE GAME FUNCTIONS
@@ -113,16 +115,6 @@ class Game
 
         void setCityProduction (int cityIndex);
 
-        void assignWorkByPopulation (int cityIndex, bool stopAfterNeededAmountIsCollected);
-
-        void assignPopulationToTiles (int cityIndex, int focusCode);
-
-        void updateCityProductionModifier (int cityIndex, int civilizationIndex);
-
-        void updateCityUnitProduction (int cityIndex, int civilizationIndex);
-
-        void updateCityBuildingProduction (int cityIndex, int civilizationIndex);
-
         void requestAlliance (int civilizationIndex, int targetCivilizationIndex);
 
         void playerRequestAlliance (int civilizationIndex);
@@ -130,10 +122,6 @@ class Game
         void updateEvents (int civilizationIndex);
 
         void updateCivilizationHappiness (int civilizationIndex);
-
-        void updateResources (int civilizationIndex);
-
-        void updateCities ();
 
         void displayCivilizationResources (int civilizationIndex);
 

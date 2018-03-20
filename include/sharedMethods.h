@@ -31,6 +31,15 @@ namespace sharedMethods
 
         extern bool CivilizationHasPrerequisiteTechs (int civilizationIndex, std::string techName, GameVariables &gameVariables);
 
+        extern void assignWorkByPopulation (int cityIndex, bool stopAfterNeededAmountIsCollected, GameVariables &gameVariables);
+
+        extern bool civilizationHasTechnology (int civilizationIndex, std::string techName, GameVariables &gameVariables);
+
+        extern bool isTileBorderingCivilizationTerritory (int x, int y, int civilizationIndex, GameVariables gameVariables);
+
+        extern int getTileProductionYield (int i, int j, GameVariables &gameVariables);
+
+        extern int getTileFoodYield (int i, int j, GameVariables &gameVariables);
 };
 
 #endif // SHAREDMETHODS_H

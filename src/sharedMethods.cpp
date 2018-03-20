@@ -209,4 +209,169 @@ bool CivilizationHasPrerequisiteTechs (int civilizationIndex, std::string techNa
 
 }
 
+bool civilizationHasTechnology (int civilizationIndex, std::string techName, GameVariables &gameVariables) {
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].learnedTechnologies.size(); i++) {
+
+        if (gameVariables.Civilizations[civilizationIndex].learnedTechnologies[i] == techName) {
+
+            return true;
+
+        }
+
+    }
+
+    return false;
+
+}
+
+bool isTileBorderingCivilizationTerritory (int x, int y, int civilizationIndex, GameVariables gameVariables) {
+
+    for (int i = -1; i < 2; i++) {
+
+        for (int j = -1; j < 2; j++) {
+
+            if (x+i >= 0 && x+i <= gameVariables.worldMap.worldSize && y+j >= 0 && y+j <= gameVariables.worldMap.worldSize*4) {
+
+                if (gameVariables.worldMap.WorldTerritoryMap[i+x][j+y] == civilizationIndex+1 && sharedMethods::getDistance (x+i, y+j, x, y) <= 1) {
+
+                    return true;
+
+                }
+
+            }
+
+        }
+
+    }
+
+    return false;
+
+}
+
+int getTileFoodYield (int i, int j, GameVariables &gameVariables) {
+
+    switch (gameVariables.worldMap.featureMap[i][j]) {
+
+        case gameVariables.worldMap.mapTiles::OCEAN:
+            return 1;
+        break;
+
+        case gameVariables.worldMap.mapTiles::COAST:
+            return 1;
+        break;
+
+        case gameVariables.worldMap.mapTiles::GRASSLAND:
+            return 2;
+        break;
+
+        case gameVariables.worldMap.mapTiles::FOREST:
+            return 1;
+        break;
+
+        default:
+            return 0;
+        break;
+
+    }
+
+}
+
+int getTileProductionYield (int i, int j, GameVariables &gameVariables) {
+
+    switch (gameVariables.worldMap.featureMap[i][j]) {
+
+        case gameVariables.worldMap.mapTiles::FOREST:
+            return 1;
+        break;
+
+        case gameVariables.worldMap.mapTiles::MOUNTAIN:
+            return 2;
+        break;
+
+        default:
+            return 0;
+        break;
+
+    }
+
+}
+
+
+void assignWorkByPopulation (int cityIndex, bool stopAfterNeededAmountIsCollected, GameVariables &gameVariables) {
+
+    int assignedCitizens = 0;
+
+    int highestFoodValueTiles[gameVariables.Cities[cityIndex].Population];
+
+    int tileArraySize = (sizeof(highestFoodValueTiles)/sizeof(*highestFoodValueTiles));
+
+    int bestFoodTileXPositions[gameVariables.Cities[cityIndex].Population];
+
+    int bestFoodTileYPositions[gameVariables.Cities[cityIndex].Population];
+
+    for (int a = 0; a < tileArraySize; a++) { highestFoodValueTiles[a] = 0; }
+
+    int FoodNeeded = (pow((gameVariables.Cities[cityIndex].Population - 1), 2) + 5);
+
+    gameVariables.Cities[cityIndex].FoodPerTurnFromTiles = 0;
+
+    gameVariables.Cities[cityIndex].ProductionFromTiles = 0;
+
+    for (int i = -4; i < 4; i++) {
+
+        if (i + gameVariables.Cities[cityIndex].position.x < 0) {
+
+            i++;
+
+        }
+
+        for (int j = -4; j < 4; j++) {
+
+            if (j + gameVariables.Cities[cityIndex].position.y < 0) {
+
+                j++;
+
+            }
+
+            if (i + gameVariables.Cities[cityIndex].position.x >= 0 && j + gameVariables.Cities[cityIndex].position.y >= 0) {
+
+                int yield = getTileFoodYield (i + gameVariables.Cities[cityIndex].position.x, j + gameVariables.Cities[cityIndex].position.y, gameVariables);
+
+                for (int k = 0; k < tileArraySize; k++) {
+
+                    if (yield > highestFoodValueTiles[k] && gameVariables.worldMap.WorldTerritoryMap[i + gameVariables.Cities[cityIndex].position.x][j + gameVariables.Cities[cityIndex].position.y] == gameVariables.Cities[cityIndex].parentIndex+1) {
+
+                        highestFoodValueTiles[k] = yield;
+                        bestFoodTileXPositions[k] = i + gameVariables.Cities[cityIndex].position.x;
+                        bestFoodTileYPositions[k] = j + gameVariables.Cities[cityIndex].position.y;
+                        gameVariables.Cities[cityIndex].FoodPerTurnFromTiles += yield;
+                        gameVariables.Cities[cityIndex].ProductionFromTiles += getTileProductionYield(i + gameVariables.Cities[cityIndex].position.x, j + gameVariables.Cities[cityIndex].position.y, gameVariables);
+                        assignedCitizens++;
+
+                        k = tileArraySize;
+
+                        int foodIncrease = ((gameVariables.Cities[cityIndex].FoodPerTurnFromCity + gameVariables.Cities[cityIndex].FoodPerTurnFromTiles) - (gameVariables.Cities[cityIndex].Population*2));
+
+                        if (foodIncrease > 0 && stopAfterNeededAmountIsCollected == true) {
+
+                            i = 4;
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+        }
+
+    }
+
+
+}
+
+
 }
