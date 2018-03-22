@@ -950,6 +950,7 @@ void Game::generateCiv (int Civ) {
 
                 civ.AvailableUnitsToCreate.push_back("Warrior");
                 civ.AvailableUnitsToCreate.push_back("Explorer");
+                civ.AvailableUnitsToCreate.push_back("Settler");
 
                 civ.startingX = x; civ.startingY = y; gameVariables.Civilizations.push_back(civ);
 
@@ -966,6 +967,12 @@ void Game::generateCiv (int Civ) {
                 explorer.parentCivilizationIndex = gameVariables.Civilizations.size() - 1;
 
                 gameVariables.UnitsInGame.push_back(explorer);
+
+                Unit settler = gameVariables.Units[sharedMethods::getUnitIndexByName("Settler", gameVariables)];
+                settler.position.setCoordinates(civ.startingX, civ.startingY);
+                settler.parentCivilizationIndex = gameVariables.Civilizations.size() - 1;
+
+                gameVariables.UnitsInGame.push_back(settler);
 
                 Unit warrior = gameVariables.Units[sharedMethods::getUnitIndexByName("Warrior", gameVariables)];
                 warrior.position.setCoordinates(civ.startingX, civ.startingY);
@@ -1060,6 +1067,7 @@ void Game::generateMinorCiv (int Civ) {
 
                 civ.AvailableUnitsToCreate.push_back("Warrior");
                 civ.AvailableUnitsToCreate.push_back("Explorer");
+                civ.AvailableUnitsToCreate.push_back("Settler");
 
                 civ.startingX = x; civ.startingY = y; gameVariables.Civilizations.push_back(civ);
 
@@ -1186,7 +1194,7 @@ void Game::DisplayCitiesStatusesOwnedByCivilization (int civilizationIndex) {
 
             }
 
-            std::cout << "  - The city is currently producing " << productionString << ".";
+            std::cout << "  - The city is currently producing " << productionString << "." << std::endl;
             x++; int y = i; cityIndices.push_back(y);
 
         }
@@ -1261,11 +1269,13 @@ void Game::buyUnits (int civilizationIndex) {
 
         unit.position.x = gameVariables.Civilizations[civilizationIndex].startingX;
         unit.position.y = gameVariables.Civilizations[civilizationIndex].startingY;
-        unit.parentCivilizationIndex = gameVariables.Civilizations.size() - 1;
+        unit.parentCivilizationIndex = civilizationIndex;
 
         gameVariables.UnitsInGame.push_back(unit);
 
         std::cout << "Bought a(n) " << unit.name << "!" << std::endl;
+
+        gameVariables.Civilizations[civilizationIndex].Gold -= gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[choice], gameVariables)].goldCost;
 
     } else {
 
@@ -1326,8 +1336,8 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
             if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civilizationIndex) {
 
-                std::cout << x << ": " << gameVariables.UnitsInGame[i].name << " - " << gameVariables.UnitsInGame[i].position.x << ", " << gameVariables.UnitsInGame[i].position.y << " | MOVEMENT LEFT : " << gameVariables.UnitsInGame[i].movementPoints << std::endl;
-
+                std::cout << x << ": " << gameVariables.UnitsInGame[i].name << " - " << gameVariables.UnitsInGame[i].position.x << ", "
+                << gameVariables.UnitsInGame[i].position.y << " | MOVEMENT LEFT : " << gameVariables.UnitsInGame[i].movementPoints << std::endl;
                 x++; int y = i; unitIndices.push_back(y);
 
                 militarypower += (gameVariables.UnitsInGame[i].combat * gameVariables.UnitsInGame[i].combat);
@@ -1391,6 +1401,24 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
             buyUnits (civilizationIndex);
         }
 
+        if (Choice == 's' || Choice == 'S') {
+
+            std::cout << "\nUse which unit's special ability? " << std::endl;
+
+            int whichOne;
+
+            whichOne = sharedMethods::bindIntegerInputToRange(0, unitIndices.size()-1, 0);
+
+            if (gameVariables.UnitsInGame[unitIndices[whichOne]].name == "Settler") {
+
+                foundCity (gameVariables.UnitsInGame[unitIndices[whichOne]].position.x,
+                    gameVariables.UnitsInGame[unitIndices[whichOne]].position.y, civilizationIndex);
+
+                gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndices[whichOne]);
+
+            }
+
+        }
     }
 
     if (Choice == 'w') {
@@ -2079,7 +2107,11 @@ void Game::loop () {
 
             if (gameVariables.UnitsInGame[a].isTraining == false) {
 
-            gameVariables.UnitsInGame[a].movementPoints = gameVariables.UnitsInGame[a].maxMovePoints;
+                gameVariables.UnitsInGame[a].movementPoints = gameVariables.UnitsInGame[a].maxMovePoints;
+
+            } else {
+
+                gameVariables.UnitsInGame[a].movementPoints = 0;
 
             }
 

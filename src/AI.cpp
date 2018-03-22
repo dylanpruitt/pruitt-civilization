@@ -232,7 +232,7 @@ void AI::moveUnit (int unitIndex, int civilizationIndex, GameVariables &gameVari
 
     if (sharedMethods::UnitisOnAnAncientRuin(gameVariables.UnitsInGame[unitIndex], gameVariables.worldMap)) {
 
-        std::cout << gameVariables.Civilizations[civilizationIndex].CivName << " Found a ruin!" << std::endl;
+        std::cout << gameVariables.Civilizations[civilizationIndex].CivName << " found a ruin!" << std::endl;
 
     }
 

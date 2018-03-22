@@ -104,9 +104,9 @@ void getAncientRuinBenefits (Unit &unit, Civilization &civ, WorldMap worldMap) {
 
         civ.researchPoints = civ.technologyBeingResearched.scienceCostToLearnResearch;
 
-    }
+        worldMap.featureMap[unit.position.x][unit.position.y] = worldMap.mapTiles::GRASSLAND;
 
-    worldMap.featureMap[unit.position.x][unit.position.y] = worldMap.mapTiles::GRASSLAND;
+    }
 
 }
 
@@ -119,7 +119,9 @@ void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civiliz
     && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::OCEAN
     && unitIsNotTrespassing(unit.parentCivilizationIndex, xPositionToMoveTo, yPositionToMoveTo, worldMap)) {
 
-        if (worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == worldMap.mapTiles::MOUNTAIN || worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == worldMap.mapTiles::FOREST) {
+        if (worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == worldMap.mapTiles::MOUNTAIN
+            || worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == worldMap.mapTiles::FOREST) {
+
             isFlatTerrain = false;
         }
 

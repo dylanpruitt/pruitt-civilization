@@ -14,7 +14,7 @@ class Civilization
 
         std::string CivName; std::string LeaderTrait;
 
-        int startingX; int startingY; int Gold = 500;
+        int startingX; int startingY; int Gold = 125;
 
         int Happiness = 75;
 
