@@ -166,7 +166,7 @@ void AI::mapUnitPathToRuin (int civilizationIndex, GameVariables &gameVariables,
                 position RuinPosition = std::make_pair (i, j);
 
                 position Source = std::make_pair (gameVariables.UnitsInGame[unitIndex].position.x,
-                gameVariables.UnitsInGame[unitIndex].position.x);
+                gameVariables.UnitsInGame[unitIndex].position.y);
 
                 std::cout << gameVariables.UnitsInGame[unitIndex].position.x << ", " << gameVariables.UnitsInGame[unitIndex].position.y << " <-> " << i << ", " << j << std::endl;
 
@@ -525,5 +525,76 @@ void AI::think (int civilizationIndex, GameVariables &gameVariables) {
         }
 
     }
+
+}
+
+void AI::searchMapForSettlementLocation (int civilizationIndex, int unitIndex, GameVariables &gameVariables) {
+
+    int highestSearchValue = 0;
+
+    int bestFindXPosition, bestFindYPosition;
+
+    for (unsigned int i = 0; i < gameVariables.worldMap.worldSize; i++) {
+
+        for (unsigned int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
+
+            int searchValue = calculateTileSettlementValue (i, j, gameVariables);
+
+            if (searchValue > highestSearchValue && gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[i][j] == 1) {
+
+                highestSearchValue = searchValue; std::cout << highestSearchValue << " !";
+
+                bestFindXPosition = i;
+                bestFindYPosition = j;
+
+            }
+
+        }
+
+    }
+
+    mapPathToCity (bestFindXPosition, bestFindYPosition, gameVariables, unitIndex);
+
+}
+
+int AI::calculateTileSettlementValue (int x, int y, GameVariables &gameVariables) {
+
+    int tileValue = 0;
+
+    for (int i = -1; i < 2; i++) {
+
+        for (int j = -1; j < 2; j++) {
+
+            if (x+i >= 0 && y+j >= 0 && x+i <= gameVariables.worldMap.worldSize && y+j <= gameVariables.worldMap.worldSize*4) {
+
+                if (gameVariables.worldMap.WorldResourceMap[x+i][y+j].ResourceCode != 0) {
+
+                    tileValue += 15;
+
+                }
+
+            }
+
+        }
+
+    }
+
+    return tileValue;
+
+}
+
+void AI::mapPathToCity (int x, int y, GameVariables &gameVariables, int unitIndex) {
+
+    position destination = std::make_pair (x, y);
+
+    position Source = std::make_pair (gameVariables.UnitsInGame[unitIndex].position.x,
+
+    gameVariables.UnitsInGame[unitIndex].position.y);
+
+    AStar::aStarSearch (gameVariables.worldMap.featureMap, Source, destination, gameVariables.UnitsInGame[unitIndex]);
+
+    gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned = true;
+
+    return;
 
 }

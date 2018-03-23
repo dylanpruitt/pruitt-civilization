@@ -7,26 +7,20 @@
 #include "Trade.h"
 #include "AI.h"
 
-class GameUpdater
+namespace GameUpdater
 {
-    public:
-        GameUpdater();
-        virtual ~GameUpdater();
 
-        void updateResources (int civilizationIndex, GameVariables &gameVariables);
+        extern void updateResources (int civilizationIndex, GameVariables &gameVariables);
 
-        void updateCities (GameVariables &gameVariables);
+        extern void updateCities (GameVariables &gameVariables);
 
-        void updateForCivilization (int civilizationIndex, GameVariables &gameVariables, AI ai);
+        extern void updateForCivilization (int civilizationIndex, GameVariables &gameVariables, AI ai);
 
-        void UpdateCivilizationExploredTerritory (int civilizationIndex, GameVariables &gameVariables);
+        extern void UpdateCivilizationExploredTerritory (int civilizationIndex, GameVariables &gameVariables);
 
-        void UpdateAllUnitsMovement (GameVariables &gameVariables);
+        extern void UpdateAllUnitsMovement (GameVariables &gameVariables);
 
-        void updateResearch (int civilizationIndex, GameVariables &gameVariables);
-
-    protected:
-    private:
+        extern void updateResearch (int civilizationIndex, GameVariables &gameVariables);
 
         bool canCityExpand (int cityIndex, int civilizationIndex, GameVariables &gameVariables);
 

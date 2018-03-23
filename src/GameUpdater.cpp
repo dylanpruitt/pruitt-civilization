@@ -4,17 +4,9 @@
 #include <math.h>
 #include <iostream>
 
-GameUpdater::GameUpdater()
-{
-    //ctor
-}
+namespace GameUpdater {
 
-GameUpdater::~GameUpdater()
-{
-    //dtor
-}
-
-void GameUpdater::updateForCivilization (int civilizationIndex, GameVariables &gameVariables, AI ai) {
+void updateForCivilization (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
     updateEvents (civilizationIndex, gameVariables);
     updateResources (civilizationIndex, gameVariables);
@@ -24,7 +16,7 @@ void GameUpdater::updateForCivilization (int civilizationIndex, GameVariables &g
 
 }
 
-void GameUpdater::updateResources (int civilizationIndex, GameVariables &gameVariables) {
+void updateResources (int civilizationIndex, GameVariables &gameVariables) {
 
     for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
 
@@ -42,7 +34,7 @@ void GameUpdater::updateResources (int civilizationIndex, GameVariables &gameVar
 
 }
 
-void GameUpdater::updateCities (GameVariables &gameVariables) {
+void updateCities (GameVariables &gameVariables) {
 
     for (int w = 0; w < gameVariables.Cities.size(); w++) {
 
@@ -86,7 +78,7 @@ void GameUpdater::updateCities (GameVariables &gameVariables) {
 
 }
 
-bool GameUpdater::canCityExpand (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
+bool canCityExpand (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
 
 
     for (int i = -3; i < 4; i++) {
@@ -110,7 +102,7 @@ bool GameUpdater::canCityExpand (int cityIndex, int civilizationIndex, GameVaria
 
 }
 
-void GameUpdater::expandCityTerritory (int cityIndex, GameVariables &gameVariables) {
+void expandCityTerritory (int cityIndex, GameVariables &gameVariables) {
 
     if (canCityExpand(cityIndex, gameVariables.Cities[cityIndex].parentIndex, gameVariables)) {
 
@@ -140,7 +132,7 @@ void GameUpdater::expandCityTerritory (int cityIndex, GameVariables &gameVariabl
 
 }
 
-void GameUpdater::updateCityProductionModifier (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
+void updateCityProductionModifier (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
 
     double tempModifier = 100;
 
@@ -166,7 +158,7 @@ void GameUpdater::updateCityProductionModifier (int cityIndex, int civilizationI
 
 }
 
-void GameUpdater::updateCityUnitProduction (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
+void updateCityUnitProduction (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
 
     gameVariables.Cities[cityIndex].Production += (gameVariables.Cities[cityIndex].ProductionFromTiles + gameVariables.Cities[cityIndex].ProductionPerTurn)*gameVariables.Cities[cityIndex].ProductionModifier;
 
@@ -190,7 +182,7 @@ void GameUpdater::updateCityUnitProduction (int cityIndex, int civilizationIndex
 
 }
 
-void GameUpdater::updateCityBuildingProduction (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
+void updateCityBuildingProduction (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
 
     gameVariables.Cities[cityIndex].Production += (gameVariables.Cities[cityIndex].ProductionFromTiles + gameVariables.Cities[cityIndex].ProductionPerTurn)*gameVariables.Cities[cityIndex].ProductionModifier;
 
@@ -232,7 +224,7 @@ void GameUpdater::updateCityBuildingProduction (int cityIndex, int civilizationI
 
 }
 
-void GameUpdater::updateGoldPerTurn (int civilizationIndex, GameVariables &gameVariables) {
+void updateGoldPerTurn (int civilizationIndex, GameVariables &gameVariables) {
 
     int gpt = 0;
 
@@ -251,7 +243,7 @@ void GameUpdater::updateGoldPerTurn (int civilizationIndex, GameVariables &gameV
 
 }
 
-void GameUpdater::updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
+void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
     const std::string resourceNames[25] = {"None","Horses","Iron","Rubber","Copper","Pearls","Crab","Whales","Salt","Spices","Stone","Marble","Cocoa","Sheep","Cattle","Diamonds","Nutmeg","Ginger","Silk","Dyes","Citrus","Ivory","Furs","Silver","Gold"};
 
@@ -429,7 +421,7 @@ void GameUpdater::updateTrades (int civilizationIndex, GameVariables &gameVariab
 }
 
 
-void GameUpdater::updateCivilizationHappiness (int civilizationIndex, GameVariables &gameVariables) {
+void updateCivilizationHappiness (int civilizationIndex, GameVariables &gameVariables) {
 
     int baseHappiness = 75;
 
@@ -453,7 +445,7 @@ void GameUpdater::updateCivilizationHappiness (int civilizationIndex, GameVariab
 
 }
 
-void GameUpdater::updateEvents (int civilizationIndex, GameVariables &gameVariables) {
+void updateEvents (int civilizationIndex, GameVariables &gameVariables) {
 
     for (unsigned int e = 0; e < gameVariables.gameEvents.size(); e++) {
 
@@ -469,7 +461,7 @@ void GameUpdater::updateEvents (int civilizationIndex, GameVariables &gameVariab
 
 }
 
-void GameUpdater::UpdateCivilizationExploredTerritory (int civilizationIndex, GameVariables &gameVariables) {
+void UpdateCivilizationExploredTerritory (int civilizationIndex, GameVariables &gameVariables) {
 
     for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
 
@@ -494,7 +486,7 @@ void GameUpdater::UpdateCivilizationExploredTerritory (int civilizationIndex, Ga
     }
 }
 
-void GameUpdater::UpdateAllUnitsMovement (GameVariables &gameVariables) {
+void UpdateAllUnitsMovement (GameVariables &gameVariables) {
 
 
         for (unsigned int a = 0; a < gameVariables.UnitsInGame.size(); a++) {
@@ -513,7 +505,7 @@ void GameUpdater::UpdateAllUnitsMovement (GameVariables &gameVariables) {
 
 }
 
-bool GameUpdater::unitIsNotAlreadyUnlocked (int civilizationIndex, std::string unitName, GameVariables &gameVariables) {
+bool unitIsNotAlreadyUnlocked (int civilizationIndex, std::string unitName, GameVariables &gameVariables) {
 
     for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.size(); i++) {
 
@@ -529,7 +521,7 @@ bool GameUpdater::unitIsNotAlreadyUnlocked (int civilizationIndex, std::string u
 
 }
 
-void GameUpdater::unlockUnitsFromResearchCompletion (Research research, int civilizationIndex, GameVariables &gameVariables) {
+void unlockUnitsFromResearchCompletion (Research research, int civilizationIndex, GameVariables &gameVariables) {
 
     for (unsigned int i = 0; i < research.unlockableUnits.size(); i++) {
 
@@ -543,7 +535,7 @@ void GameUpdater::unlockUnitsFromResearchCompletion (Research research, int civi
 
 }
 
-void GameUpdater::promoteUnitsToAllowCoastalEmbarkment (int civilizationIndex, GameVariables &gameVariables) {
+void promoteUnitsToAllowCoastalEmbarkment (int civilizationIndex, GameVariables &gameVariables) {
 
     for (unsigned int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
 
@@ -558,7 +550,7 @@ void GameUpdater::promoteUnitsToAllowCoastalEmbarkment (int civilizationIndex, G
 }
 
 
-void GameUpdater::updateResearch (int civilizationIndex, GameVariables &gameVariables) {
+void updateResearch (int civilizationIndex, GameVariables &gameVariables) {
 
     if (sharedMethods::isResearchComplete(civilizationIndex, gameVariables)) {
 
@@ -586,5 +578,7 @@ void GameUpdater::updateResearch (int civilizationIndex, GameVariables &gameVari
 
 
     }
+
+}
 
 }

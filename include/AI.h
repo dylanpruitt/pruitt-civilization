@@ -47,6 +47,12 @@ class AI
 
         void tradingLogic (int civilizationIndex, GameVariables &gameVariables);
 
+        void searchMapForSettlementLocation (int civilizationIndex, int unitIndex, GameVariables &gameVariables);
+
+        int calculateTileSettlementValue (int x, int y, GameVariables &gameVariables);
+
+        void mapPathToCity (int x, int y, GameVariables &gameVariables, int unitIndex);
+
 };
 
 #endif // AI_H

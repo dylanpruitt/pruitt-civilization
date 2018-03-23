@@ -5,6 +5,7 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+#include <sstream>
 
 #include "Unit.h"
 #include "Trade.h"
@@ -31,7 +32,7 @@ Game::~Game()
 textRenderer renderer;
 AI ai;
 
-GameVariables gameVariables; GameUpdater updater;
+GameVariables gameVariables;
 
 const std::string resourceNames[25] = {"None","Horses","Iron","Rubber","Copper","Pearls","Crab","Whales","Salt","Spices","Stone","Marble","Cocoa","Sheep","Cattle","Diamonds","Nutmeg","Ginger","Silk","Dyes","Citrus","Ivory","Furs","Silver","Gold"};
 
@@ -1167,6 +1168,30 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
     if (Choice == 's') { saveGame ("save.save"); }
 
+    if (Choice == 'g') {
+
+        renderer.DisplayUnitGroupings (civilizationIndex, gameVariables);
+
+        std::cin >> Choice;
+
+        if (Choice == 'c') {
+
+            std::cout << "Create new unit grouping\nEnter a name for the group: ";
+
+            std::string name;
+
+            std::cin.ignore();
+            std::getline(std::cin, name);
+
+            int rgbArray[3] = {128,128,128};
+
+            gameVariables.Civilizations[civilizationIndex].addNewGrouping (name, rgbArray);
+
+
+        }
+
+    }
+
     if (Choice == 'u' || Choice == 'U') {
 
         int x = 0; int militarypower = 0; std::vector<int> unitIndices; /*flag (r:better var name*/
@@ -1190,6 +1215,24 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
         std::cout << "Your Civilization's Military Power: " << militarypower << std::endl;
 
         std::cin >> Choice;
+
+        if (Choice == 'a' && gameVariables.Civilizations[civilizationIndex].unitGroups.size() >= 1) {
+
+            std::cout << "Add what unit?" << std::endl;
+
+            int whichOne;
+
+            whichOne = sharedMethods::bindIntegerInputToRange(0, unitIndices.size()-1, 0);
+
+            gameVariables.UnitsInGame[unitIndices[whichOne]].parentGroupingIndex = 0;
+
+            std::cout << "Add to which grouping?" << std::endl;
+
+            whichOne = sharedMethods::bindIntegerInputToRange(0, gameVariables.Civilizations[civilizationIndex].unitGroups.size()-1, 0);
+
+            gameVariables.Civilizations[civilizationIndex].unitGroups[0].memberUnitIndices.push_back(unitIndices[whichOne]);
+
+        }
 
         if (Choice == 'm' || Choice == 'M') {
 
@@ -1656,7 +1699,7 @@ void Game::loop () {
 
     for (int civilizationIndex = 0; civilizationIndex < gameVariables.Civilizations.size(); civilizationIndex++) {
 
-        updater.updateResources (civilizationIndex, gameVariables);
+        GameUpdater::updateResources (civilizationIndex, gameVariables);
 
     }
 
@@ -1668,7 +1711,7 @@ void Game::loop () {
 
             loopVariable = true;
 
-            updater.updateForCivilization (civilizationIndex, gameVariables, ai);
+            GameUpdater::updateForCivilization (civilizationIndex, gameVariables, ai);
 
             gameVariables.Civilizations[civilizationIndex].Gold += gameVariables.Civilizations[civilizationIndex].GoldPerTurn;
 
@@ -1677,7 +1720,7 @@ void Game::loop () {
                 while (loopVariable == true) {
                     renderer.render(civilizationIndex, turnNumber, gameVariables);
 
-                    updater.UpdateCivilizationExploredTerritory(civilizationIndex, gameVariables);
+                    GameUpdater::UpdateCivilizationExploredTerritory(civilizationIndex, gameVariables);
 
                     getPlayerChoiceAndReact(civilizationIndex);
 
@@ -1692,15 +1735,15 @@ void Game::loop () {
 
             gameVariables.Civilizations[civilizationIndex].researchPoints += (Game::getCivilizationPopulation(civilizationIndex) * gameVariables.Civilizations[civilizationIndex].ScienceRate);
 
-            updater.updateResearch (civilizationIndex, gameVariables);
+            GameUpdater::updateResearch (civilizationIndex, gameVariables);
 
         }
 
         turnNumber++;
 
-        updater.updateCities (gameVariables);
+        GameUpdater::updateCities (gameVariables);
 
-        updater.UpdateAllUnitsMovement (gameVariables);
+        GameUpdater::UpdateAllUnitsMovement (gameVariables);
     }
 
 }

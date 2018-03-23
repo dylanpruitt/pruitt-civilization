@@ -13,6 +13,7 @@ class textRenderer
 
         void spectate (int turnNumber, GameVariables &gameVariables);
 
+        void DisplayUnitGroupings (int civilizationIndex, GameVariables &gameVariables);
 
     protected:
     private:

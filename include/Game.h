@@ -44,11 +44,6 @@ class Game
 
         void saveGame (std::string filename);
 
-        /**
-        *
-        * MAP FUNCTIONS
-        *
-        **/
         bool isLandTile(int x, int y);
 
         int returnLandTiles(int x, int y);
@@ -68,12 +63,6 @@ class Game
         void giveCivilizationAncientRuinYield (int civilizationIndex);
 
         void pickResearchForHumanPlayer (int civilizationIndex);
-
-        /**
-        *
-        * CORE GAME FUNCTIONS
-        *
-        **/
 
         int returnNumberOfTilesExploredByCivilization (int civilizationIndex);
 

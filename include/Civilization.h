@@ -5,6 +5,7 @@
 
 #include "Research.h"
 #include "Resource.h"
+#include "UnitGrouping.h"
 
 struct Civilization
 {
@@ -58,6 +59,23 @@ struct Civilization
 
         std::vector<std::string> cityNames;
 
+        std::vector<UnitGrouping> unitGroups;
+
+        void addNewGrouping (std::string name, int rgb[3]) {
+
+            UnitGrouping newGroup;
+
+            newGroup.name = name;
+
+            for (int i = 0; i < 3; i++) {
+
+                newGroup.rgbValue[i] = rgb[i];
+
+            }
+
+            unitGroups.push_back (newGroup);
+
+        }
 
     protected:
     private:

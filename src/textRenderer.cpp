@@ -290,3 +290,28 @@ void textRenderer::spectate (int turnNumber, GameVariables &gameVariables) {
 
 }
 
+void textRenderer::DisplayUnitGroupings (int civilizationIndex, GameVariables &gameVariables) {
+
+    std::cout << "UNIT GROUPS" << std::endl;
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].unitGroups.size(); i++) {
+
+        std::stringstream rgbTextValue;
+
+        rgbTextValue << "\033[48;2;" << gameVariables.Civilizations[civilizationIndex].unitGroups[i].rgbValue[0]
+            << ";" << gameVariables.Civilizations[civilizationIndex].unitGroups[i].rgbValue[1]
+            << ";" << gameVariables.Civilizations[civilizationIndex].unitGroups[i].rgbValue[2] << "m";
+
+        std::cout << rgbTextValue.str() << " \033[0m " << gameVariables.Civilizations[civilizationIndex].unitGroups[i].name << " - "
+            << gameVariables.Civilizations[civilizationIndex].unitGroups[i].memberUnitIndices.size() << std::endl;
+
+        for (unsigned int j = 0; j < gameVariables.Civilizations[civilizationIndex].unitGroups[i].memberUnitIndices.size(); j++) {
+
+            int unitIndex = gameVariables.Civilizations[civilizationIndex].unitGroups[i].memberUnitIndices[j];
+            std::cout << " - #" << j+1 << ": " << gameVariables.UnitsInGame[unitIndex].name << std::endl;
+
+        }
+
+    }
+
+}

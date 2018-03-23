@@ -17,7 +17,7 @@ class Unit
 
         Position position;
 
-        int parentCivilizationIndex = 0;
+        int parentCivilizationIndex = 0, parentGroupingIndex = -1;
 
         int health = 10; int maxHealth = 10;
 
@@ -60,6 +60,7 @@ class Unit
 
     protected:
     private:
+
 };
 
 #endif // UNIT_H
