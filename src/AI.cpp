@@ -468,7 +468,7 @@ bool AI::hasLowHappiness (int civilizationIndex, GameVariables &gameVariables) {
 
 }
 
-void AI::tradingLogic (int civilizationIndex, GameVariables &gameVariables, std::vector<Trade> &trades) {
+void AI::tradingLogic (int civilizationIndex, GameVariables &gameVariables) {
 
     if (hasLowHappiness(civilizationIndex, gameVariables)) {
 
@@ -498,7 +498,7 @@ void AI::tradingLogic (int civilizationIndex, GameVariables &gameVariables, std:
             trade.goldSumFromRecipient = 0;
             trade.resourcesFromRecipient.push_back(resourceToTrade);
 
-            trades.push_back(trade);
+            gameVariables.trades.push_back(trade);
 
         }
 
@@ -506,7 +506,7 @@ void AI::tradingLogic (int civilizationIndex, GameVariables &gameVariables, std:
 
 }
 
-void AI::think (int civilizationIndex, GameVariables &gameVariables, std::vector<Trade> &trades) {
+void AI::think (int civilizationIndex, GameVariables &gameVariables) {
 
     if (gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.researchName == "") {
 
@@ -514,7 +514,7 @@ void AI::think (int civilizationIndex, GameVariables &gameVariables, std::vector
 
     }
 
-    tradingLogic (civilizationIndex, gameVariables, trades);
+    tradingLogic (civilizationIndex, gameVariables);
 
     for (unsigned int a = 0; a < gameVariables.Cities.size(); a++) {
 

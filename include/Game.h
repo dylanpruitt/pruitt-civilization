@@ -43,6 +43,7 @@ class Game
         void loadMinorCivilizationsFromFile (std::string filename, std::vector<Civilization> &civs);
 
         void saveGame (std::string filename);
+
         /**
         *
         * MAP FUNCTIONS
@@ -62,26 +63,9 @@ class Game
 
         int returnUnexploredTiles (int x, int y, int civilizationIndex, int range);
 
-        int getTerritory(int Civ_index);
-
         void foundCity (int x, int y, int CivilizationIndex);
 
-        void promoteUnitsToAllowCoastalEmbarkment (int civilizationIndex);
-
         void giveCivilizationAncientRuinYield (int civilizationIndex);
-        /**
-        *
-        * RESEARCH FUNCTIONS
-        *
-        **/
-
-        bool isResearchComplete (int civilizationIndex);
-
-        bool unitIsNotAlreadyUnlocked (int civilizationIndex, std::string unitName);
-
-        void unlockUnitsFromResearchCompletion (Research research, int civilizationIndex);
-
-        void updateResearch (int civilizationIndex);
 
         void pickResearchForHumanPlayer (int civilizationIndex);
 
@@ -91,10 +75,11 @@ class Game
         *
         **/
 
+        int returnNumberOfTilesExploredByCivilization (int civilizationIndex);
+
         bool isTileBorderingCivilizationTerritory (int x, int y, int civilizationIndex);
         bool canCityExpand (int cityIndex, int civilizationIndex);
         void expandCityTerritory (int cityIndex);
-        void UpdateCivilizationExploredTerritory (int civilizationIndex);
         void DisplayCivilizationExplorationProgress (int civilizationIndex);
         void DisplayCitiesStatusesOwnedByCivilization (int civilizationIndex);
         void getPlayerChoiceAndReact (int civilizationIndex);
@@ -119,10 +104,6 @@ class Game
 
         void playerRequestAlliance (int civilizationIndex);
 
-        void updateEvents (int civilizationIndex);
-
-        void updateCivilizationHappiness (int civilizationIndex);
-
         void displayCivilizationResources (int civilizationIndex);
 
         int inputResourcesToTrade (int civilizationIndex, Trade &trade);
@@ -132,10 +113,6 @@ class Game
         void editTrade (int civilizationIndex, Trade &trade, int Choice);
 
         void trade (int civilizationIndex);
-
-        void updateTrades (int civilizationIndex);
-
-        void updateGoldPerTurn (int civilizationIndex);
 
         void displayUnitDetails (Unit unit);
 

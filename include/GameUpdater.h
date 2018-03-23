@@ -1,6 +1,11 @@
 #ifndef GAMEUPDATER_H
 #define GAMEUPDATER_H
+#include <vector>
+
 #include "GameVariables.h"
+#include "Event.h"
+#include "Trade.h"
+#include "AI.h"
 
 class GameUpdater
 {
@@ -12,6 +17,17 @@ class GameUpdater
 
         void updateCities (GameVariables &gameVariables);
 
+        void updateForCivilization (int civilizationIndex, GameVariables &gameVariables, AI ai);
+
+        void UpdateCivilizationExploredTerritory (int civilizationIndex, GameVariables &gameVariables);
+
+        void UpdateAllUnitsMovement (GameVariables &gameVariables);
+
+        void updateResearch (int civilizationIndex, GameVariables &gameVariables);
+
+    protected:
+    private:
+
         bool canCityExpand (int cityIndex, int civilizationIndex, GameVariables &gameVariables);
 
         void expandCityTerritory (int cityIndex, GameVariables &gameVariables);
@@ -21,8 +37,20 @@ class GameUpdater
         void updateCityUnitProduction (int cityIndex, int civilizationIndex, GameVariables &gameVariables);
 
         void updateCityProductionModifier (int cityIndex, int civilizationIndex, GameVariables &gameVariables);
-    protected:
-    private:
+
+        void updateGoldPerTurn (int civilizationIndex, GameVariables &gameVariables);
+
+        void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai);
+
+        void updateCivilizationHappiness (int civilizationIndex, GameVariables &gameVariables);
+
+        void updateEvents (int civilizationIndex, GameVariables &gameVariables);
+
+        bool unitIsNotAlreadyUnlocked (int civilizationIndex, std::string unitName, GameVariables &gameVariables);
+
+        void unlockUnitsFromResearchCompletion (Research research, int civilizationIndex, GameVariables &gameVariables);
+
+        void promoteUnitsToAllowCoastalEmbarkment (int civilizationIndex, GameVariables &gameVariables);
 };
 
 #endif // GAMEUPDATER_H

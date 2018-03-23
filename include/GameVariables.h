@@ -1,16 +1,14 @@
 #ifndef GAMEVARIABLES_H
 #define GAMEVARIABLES_H
 #include <vector>
-#include "Civilization.h"
 #include "City.h"
 #include "Unit.h"
 #include "WorldMap.h"
+#include "Event.h"
+#include "Trade.h"
 
-class GameVariables
+struct GameVariables
 {
-    public:
-        GameVariables();
-        virtual ~GameVariables();
 
         std::vector<Civilization> Civilizations;
 
@@ -22,10 +20,12 @@ class GameVariables
 
         std::vector<Building> Buildings;
 
+        std::vector<Event> gameEvents;
+
+        std::vector<Trade> trades;
+
         WorldMap worldMap;
 
-    protected:
-    private:
 };
 
 #endif // GAMEVARIABLES_H

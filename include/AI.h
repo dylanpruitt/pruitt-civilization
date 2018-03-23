@@ -11,7 +11,7 @@ class AI
         AI();
         virtual ~AI();
 
-        void think (int civilizationIndex, GameVariables &gameVariables, std::vector<Trade> &trades);
+        void think (int civilizationIndex, GameVariables &gameVariables);
         void moveAllUnitsBelongingToCiv (int civilizationIndex, GameVariables &gameVariables);
 
         int returnTradeValue (Trade trade, GameVariables &gameVariables);
@@ -45,7 +45,7 @@ class AI
 
         bool hasLowHappiness (int civilizationIndex, GameVariables &gameVariables);
 
-        void tradingLogic (int civilizationIndex, GameVariables &gameVariables, std::vector<Trade> &trades);
+        void tradingLogic (int civilizationIndex, GameVariables &gameVariables);
 
 };
 

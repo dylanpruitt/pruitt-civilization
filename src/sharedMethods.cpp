@@ -49,6 +49,21 @@ int getDistance(int x, int y, int x2, int y2) {
 
 }
 
+bool isResearchComplete (int civilizationIndex, GameVariables &gameVariables) {
+
+    if (gameVariables.Civilizations[civilizationIndex].researchPoints >=
+        gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.scienceCostToLearnResearch) {
+
+        return true;
+
+    } else {
+
+        return false;
+
+    }
+
+}
+
 int getUnitIndexByName (std::string name, GameVariables &gameVariables) {
 
     for (unsigned int i = 0; i < gameVariables.Units.size(); i++) {
@@ -313,8 +328,6 @@ void assignWorkByPopulation (int cityIndex, bool stopAfterNeededAmountIsCollecte
     int bestFoodTileYPositions[gameVariables.Cities[cityIndex].Population];
 
     for (int a = 0; a < tileArraySize; a++) { highestFoodValueTiles[a] = 0; }
-
-    int FoodNeeded = (pow((gameVariables.Cities[cityIndex].Population - 1), 2) + 5);
 
     gameVariables.Cities[cityIndex].FoodPerTurnFromTiles = 0;
 

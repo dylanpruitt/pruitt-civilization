@@ -6,13 +6,13 @@
 #include "Research.h"
 #include "Resource.h"
 
-class Civilization
+struct Civilization
 {
     public:
         Civilization() {}
         virtual ~Civilization() {}
 
-        std::string CivName; std::string LeaderTrait;
+        std::string CivName;
 
         int startingX; int startingY; int Gold = 125;
 

@@ -24,6 +24,8 @@ bool textRenderer::isUnitAtPosition (int x, int y, GameVariables &gameVariables)
 
     }
 
+    return false;
+
 }
 
 bool textRenderer::isCityAtPosition (int x, int y, GameVariables &gameVariables) {
@@ -50,11 +52,7 @@ int textRenderer::returnCivMilitaryPower (int civ_index, GameVariables &gameVari
 
         if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civ_index) {
 
-            if (gameVariables.Civilizations[civ_index].LeaderTrait != "Brave") {
                 militarypower += (gameVariables.UnitsInGame[i].combat * gameVariables.UnitsInGame[i].combat);
-            } else {
-                militarypower += ((gameVariables.UnitsInGame[i].combat*1.15) * (gameVariables.UnitsInGame[i].combat*1.15));
-            }
 
         }
 
@@ -67,11 +65,11 @@ int textRenderer::returnCivMilitaryPower (int civ_index, GameVariables &gameVari
 
 std::string textRenderer::colorTextByTerritory (int i, int j, GameVariables &gameVariables) {
 
-    if (worldMap.WorldTerritoryMap[i][j] > 0) {
+    if (gameVariables.worldMap.WorldTerritoryMap[i][j] > 0) {
 
-        int r = gameVariables.Civilizations[worldMap.WorldTerritoryMap[i][j]-1].rgbValues[0];
-        int g = gameVariables.Civilizations[worldMap.WorldTerritoryMap[i][j]-1].rgbValues[1];
-        int b = gameVariables.Civilizations[worldMap.WorldTerritoryMap[i][j]-1].rgbValues[2];
+        int r = gameVariables.Civilizations[gameVariables.worldMap.WorldTerritoryMap[i][j]-1].rgbValues[0];
+        int g = gameVariables.Civilizations[gameVariables.worldMap.WorldTerritoryMap[i][j]-1].rgbValues[1];
+        int b = gameVariables.Civilizations[gameVariables.worldMap.WorldTerritoryMap[i][j]-1].rgbValues[2];
 
         std::stringstream rgbTextValue;
 
@@ -94,36 +92,36 @@ std::string textRenderer::colorTextByCity (int i, int j, GameVariables &gameVari
     }
 }
 
-std::string textRenderer::renderTextBasedOnWorldFeature (int i, int j) {
+std::string textRenderer::renderTextBasedOnWorldFeature (int i, int j, GameVariables &gameVariables) {
 
     std::string colorCode = "";
 
-    if (worldMap.WorldResourceMap[i][j].ResourceCode != worldMap.resources::NONE) {
+    if (gameVariables.worldMap.WorldResourceMap[i][j].ResourceCode != gameVariables.worldMap.resources::NONE) {
         colorCode = "\e[33m";
     }
 
-    if (worldMap.featureMap[i][j] == worldMap.mapTiles::GRASSLAND){
+    if (gameVariables.worldMap.featureMap[i][j] == gameVariables.worldMap.mapTiles::GRASSLAND){
         return colorCode + "#\e[0m";
     }
-    if (worldMap.featureMap[i][j] == worldMap.mapTiles::COAST){
+    if (gameVariables.worldMap.featureMap[i][j] == gameVariables.worldMap.mapTiles::COAST){
         return colorCode + "-\e[0m";
     }
-    if (worldMap.featureMap[i][j] == worldMap.mapTiles::MOUNTAIN){
+    if (gameVariables.worldMap.featureMap[i][j] == gameVariables.worldMap.mapTiles::MOUNTAIN){
         return colorCode + "^\e[0m";
     }
-    if (worldMap.featureMap[i][j] == worldMap.mapTiles::FOREST){
+    if (gameVariables.worldMap.featureMap[i][j] == gameVariables.worldMap.mapTiles::FOREST){
         return colorCode + "*\e[0m";
     }
-    if (worldMap.featureMap[i][j] == worldMap.mapTiles::OCEAN) {
+    if (gameVariables.worldMap.featureMap[i][j] == gameVariables.worldMap.mapTiles::OCEAN) {
         return colorCode + " \e[0m";
     }
-    if (worldMap.featureMap[i][j] == worldMap.mapTiles::RUINS) {
+    if (gameVariables.worldMap.featureMap[i][j] == gameVariables.worldMap.mapTiles::RUINS) {
         return colorCode + "!\e[0m";
     }
-    if (worldMap.featureMap[i][j] == worldMap.mapTiles::DESERT) {
+    if (gameVariables.worldMap.featureMap[i][j] == gameVariables.worldMap.mapTiles::DESERT) {
         return colorCode + ".\e[0m";
     }
-    if (worldMap.featureMap[i][j] == worldMap.mapTiles::SNOW) {
+    if (gameVariables.worldMap.featureMap[i][j] == gameVariables.worldMap.mapTiles::SNOW) {
         return colorCode + "s\e[0m";
     }
     return "";
@@ -139,7 +137,7 @@ void textRenderer::DisplayTextBasedOnEntitiesAtPosition (int i, int j, int curre
 
     if (gameVariables.Civilizations[currentCivilizationIndex].WorldExplorationMap[i][j] == 1 && isUnitAtPosition(i, j, gameVariables) == false && isCityAtPosition(i, j,gameVariables) == false) {
 
-        std::cout << colorTextByTerritory(i,j,gameVariables) << colorTextByCity(i,j, gameVariables) << renderTextBasedOnWorldFeature(i,j); /*flag (r:should it just cout in the function?*/
+        std::cout << colorTextByTerritory(i,j,gameVariables) << colorTextByCity(i,j, gameVariables) << renderTextBasedOnWorldFeature(i,j,gameVariables);
 
 
     } else if (gameVariables.Civilizations[currentCivilizationIndex].WorldExplorationMap[i][j] == 0) {
@@ -199,9 +197,9 @@ void textRenderer::renderStatusTextRightOfWorldMap (int i, int currentCivilizati
 
 void textRenderer::render (int currentCivilizationIndex, int turnNumber, GameVariables &gameVariables) {
 
-    for (int i = 0; i < worldMap.worldSize; i++){
+    for (int i = 0; i < gameVariables.worldMap.worldSize; i++){
 
-        for (int j = 0; j < worldMap.worldSize*4; j++){
+        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++){
 
             DisplayTextBasedOnEntitiesAtPosition (i, j, currentCivilizationIndex, gameVariables);
 
@@ -227,11 +225,11 @@ void textRenderer::spectate (int turnNumber, GameVariables &gameVariables) {
 
         } else {
 
-            for (int i = 0; i < worldMap.worldSize; i++){
-            for (int j = 0; j < worldMap.worldSize*4; j++){
+            for (int i = 0; i < gameVariables.worldMap.worldSize; i++){
+            for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++){
             if (isUnitAtPosition(i,j, gameVariables) == false && isCityAtPosition(i, j, gameVariables) == false) {
 
-                std::cout << colorTextByTerritory(i,j,gameVariables) << colorTextByCity(i,j,gameVariables) << renderTextBasedOnWorldFeature(i,j); /*flag (r:should it just cout in the function?*/
+                std::cout << colorTextByTerritory(i,j,gameVariables) << colorTextByCity(i,j,gameVariables) << renderTextBasedOnWorldFeature(i,j,gameVariables);
 
             } else if (isUnitAtPosition(i,j,gameVariables)){
 

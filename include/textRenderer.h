@@ -1,7 +1,6 @@
 #ifndef TEXTRENDERER_H
 #define TEXTRENDERER_H
 
-#include "WorldMap.h"
 #include "GameVariables.h"
 
 class textRenderer
@@ -9,9 +8,6 @@ class textRenderer
     public:
         textRenderer();
         virtual ~textRenderer();
-
-
-        WorldMap worldMap;
 
         void render(int currentCivilizationIndex, int turnNumber, GameVariables &gameVariables);
 
@@ -31,7 +27,7 @@ class textRenderer
         std::string colorTextByTerritory(int i, int j, GameVariables &gameVariables);
         std::string colorTextByCity (int i, int j, GameVariables &gameVariables);
 
-        std::string renderTextBasedOnWorldFeature (int i, int j);
+        std::string renderTextBasedOnWorldFeature (int i, int j, GameVariables &gameVariables);
         void DisplayTextBasedOnEntitiesAtPosition (int i, int j, int currentCivilizationIndex, GameVariables &gameVariables);
 
         void renderStatusTextRightOfWorldMap (int i, int currentCivilizationIndex, int turnNumber, GameVariables &gameVariables);

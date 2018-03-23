@@ -1,6 +1,6 @@
 #ifndef EVENT_H
 #define EVENT_H
-#include "GameVariables.h"
+#include "Civilization.h"
 
 #include <string>
 
@@ -24,16 +24,16 @@ class Event
 
         int initializerCivilization; /// Index of civ that triggers the event (ex. alliance)
 
-        void listen (int civilizationIndex, GameVariables &gameVariables);
+        void listen (int civilizationIndex, std::vector<Civilization> &Civilizations);
 
     protected:
     private:
 
-        void trigger (GameVariables &gameVariables);
+        void trigger (std::vector<Civilization> &Civilizations);
 
-        void trigger_ai (GameVariables &gameVariables);
+        void trigger_ai (std::vector<Civilization> &Civilizations);
 
-        void responseLogic (int Choice, GameVariables &gameVariables);
+        void responseLogic (int Choice, std::vector<Civilization> &Civilizations);
 };
 
 #endif // EVENT_H
