@@ -58,8 +58,6 @@ class Game
 
         int returnUnexploredTiles (int x, int y, int civilizationIndex, int range);
 
-        void foundCity (int x, int y, int CivilizationIndex);
-
         void giveCivilizationAncientRuinYield (int civilizationIndex);
 
         void pickResearchForHumanPlayer (int civilizationIndex);

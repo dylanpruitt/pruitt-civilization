@@ -218,9 +218,9 @@ void Game::setupWorld () {
 
     }
 
-    std::cout << "How many Civilizations do you want? The maximum is 16." << std::endl;
+    std::cout << "How many Civilizations do you want? The maximum is 10." << std::endl;
 
-    AmountOfCivilizations = sharedMethods::bindIntegerInputToRange(2,16,4);
+    AmountOfCivilizations = sharedMethods::bindIntegerInputToRange(2,10,4);
 
     for (int i = 0; i < AmountOfCivilizations; i++) {
 
@@ -254,37 +254,6 @@ void Game::setupDiplomacy () {
         }
 
     }
-
-}
-
-void Game::foundCity (int x, int y, int CivilizationIndex) {
-
-    City city;
-
-    city.position.x = x;
-    city.position.y = y;
-
-    int cityNameIndex = rand() % gameVariables.Civilizations[CivilizationIndex].cityNames.size();
-
-    city.cityName = gameVariables.Civilizations[CivilizationIndex].cityNames[cityNameIndex];
-
-    city.AvailableBuildingsToCreate.push_back("Granary");
-    city.AvailableBuildingsToCreate.push_back("Library");
-    city.AvailableBuildingsToCreate.push_back("Market");
-
-    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
-        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
-            if (sharedMethods::getDistance(i,j,x,y) <= 1) {
-                gameVariables.worldMap.WorldTerritoryMap[i][j] = CivilizationIndex+1;
-            }
-        }
-    }
-
-    city.parentIndex = CivilizationIndex;
-
-    gameVariables.Cities.push_back(city);
-
-    sharedMethods::assignWorkByPopulation(gameVariables.Cities.size() - 1, false, gameVariables);
 
 }
 
@@ -809,7 +778,7 @@ void Game::generateCiv (int Civ) {
 
                 civ.startingX = x; civ.startingY = y; gameVariables.Civilizations.push_back(civ);
 
-                foundCity(x, y, gameVariables.Civilizations.size() - 1);
+                sharedMethods::foundCity(x, y, gameVariables.Civilizations.size() - 1, gameVariables);
 
                 loadTechnologiesFromFile("techs.sav", gameVariables.Civilizations.size() - 1);
 
@@ -926,7 +895,7 @@ void Game::generateMinorCiv (int Civ) {
 
                 civ.startingX = x; civ.startingY = y; gameVariables.Civilizations.push_back(civ);
 
-                foundCity(x, y, gameVariables.Civilizations.size() - 1);
+                sharedMethods::foundCity(x, y, gameVariables.Civilizations.size() - 1, gameVariables);
 
                 loadTechnologiesFromFile("techs.sav", gameVariables.Civilizations.size() - 1);
 
@@ -1183,7 +1152,7 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
             std::cin.ignore();
             std::getline(std::cin, name);
 
-            int rgbArray[3] = {128,128,128};
+            int rgbArray[3] = {rand() % 254 + 1,rand() % 254 + 1,rand() % 254 + 1};
 
             gameVariables.Civilizations[civilizationIndex].addNewGrouping (name, rgbArray);
 
@@ -1228,9 +1197,9 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
             std::cout << "Add to which grouping?" << std::endl;
 
-            whichOne = sharedMethods::bindIntegerInputToRange(0, gameVariables.Civilizations[civilizationIndex].unitGroups.size()-1, 0);
+            int grouping = sharedMethods::bindIntegerInputToRange(0, gameVariables.Civilizations[civilizationIndex].unitGroups.size()-1, 0);
 
-            gameVariables.Civilizations[civilizationIndex].unitGroups[0].memberUnitIndices.push_back(unitIndices[whichOne]);
+            gameVariables.Civilizations[civilizationIndex].unitGroups[grouping].memberUnitIndices.push_back(unitIndices[whichOne]);
 
         }
 
@@ -1295,8 +1264,9 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
             if (gameVariables.UnitsInGame[unitIndices[whichOne]].name == "Settler") {
 
-                foundCity (gameVariables.UnitsInGame[unitIndices[whichOne]].position.x,
-                    gameVariables.UnitsInGame[unitIndices[whichOne]].position.y, civilizationIndex);
+                sharedMethods::foundCity (gameVariables.UnitsInGame[unitIndices[whichOne]].position.x,
+                    gameVariables.UnitsInGame[unitIndices[whichOne]].position.y, civilizationIndex,
+                    gameVariables);
 
                 gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndices[whichOne]);
 

@@ -42,6 +42,8 @@ namespace sharedMethods
         extern int getTileFoodYield (int i, int j, GameVariables &gameVariables);
 
         extern bool isResearchComplete (int civilizationIndex, GameVariables &gameVariables);
+
+        extern void foundCity (int x, int y, int civilizationIndex, GameVariables &gameVariables);
 };
 
 #endif // SHAREDMETHODS_H

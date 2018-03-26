@@ -314,6 +314,36 @@ int getTileProductionYield (int i, int j, GameVariables &gameVariables) {
 
 }
 
+void foundCity (int x, int y, int civilizationIndex, GameVariables &gameVariables) {
+
+    City city;
+
+    city.position.x = x;
+    city.position.y = y;
+
+    int cityNameIndex = rand() % gameVariables.Civilizations[civilizationIndex].cityNames.size();
+
+    city.cityName = gameVariables.Civilizations[civilizationIndex].cityNames[cityNameIndex];
+
+    city.AvailableBuildingsToCreate.push_back("Granary");
+    city.AvailableBuildingsToCreate.push_back("Library");
+    city.AvailableBuildingsToCreate.push_back("Market");
+
+    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
+        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
+            if (getDistance(i,j,x,y) <= 1) {
+                gameVariables.worldMap.WorldTerritoryMap[i][j] = civilizationIndex+1;
+            }
+        }
+    }
+
+    city.parentIndex = civilizationIndex;
+
+    gameVariables.Cities.push_back(city);
+
+    assignWorkByPopulation(gameVariables.Cities.size() - 1, false, gameVariables);
+
+}
 
 void assignWorkByPopulation (int cityIndex, bool stopAfterNeededAmountIsCollected, GameVariables &gameVariables) {
 

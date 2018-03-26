@@ -51,7 +51,21 @@ class AI
 
         int calculateTileSettlementValue (int x, int y, GameVariables &gameVariables);
 
+        bool positionIsNotTooCloseToExistingCities (int x, int y, GameVariables &gameVariables);
+
         void mapPathToCity (int x, int y, GameVariables &gameVariables, int unitIndex);
+
+        void groupUnits (int civilizationIndex, GameVariables &gameVariables);
+
+        void assignUnitToGroup (int civilizationIndex, int unitIndex, std::string groupName, GameVariables &gameVariables);
+
+        bool unitIsNotAssignedToGroup (int unitIndex, GameVariables &gameVariables);
+
+        bool groupDoesNotExist (int civilizationIndex, std::string groupName, GameVariables &gameVariables);
+
+        int returnGroupIndexFromName (int civilizationIndex, std::string groupName, GameVariables &gameVariables);
+
+        std::string returnGroupNameFromIndex (int civilizationIndex, int groupIndex, GameVariables &gameVariables);
 
 };
 

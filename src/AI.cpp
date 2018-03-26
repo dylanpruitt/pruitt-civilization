@@ -168,13 +168,9 @@ void AI::mapUnitPathToRuin (int civilizationIndex, GameVariables &gameVariables,
                 position Source = std::make_pair (gameVariables.UnitsInGame[unitIndex].position.x,
                 gameVariables.UnitsInGame[unitIndex].position.y);
 
-                std::cout << gameVariables.UnitsInGame[unitIndex].position.x << ", " << gameVariables.UnitsInGame[unitIndex].position.y << " <-> " << i << ", " << j << std::endl;
-
                 AStar::aStarSearch (gameVariables.worldMap.featureMap, Source, RuinPosition, gameVariables.UnitsInGame[unitIndex]);
 
                 gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned = true;
-
-                std::cout << civilizationIndex << " < destination found" << std::endl;
 
                 return;
 
@@ -188,19 +184,33 @@ void AI::mapUnitPathToRuin (int civilizationIndex, GameVariables &gameVariables,
 
 void AI::moveUnit (int unitIndex, int civilizationIndex, GameVariables &gameVariables) {
 
-    int directionToMoveIn = -1;
-
     if (gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned == false) {
 
-        mapUnitPathToRuin (civilizationIndex, gameVariables, unitIndex);
+        if (returnGroupNameFromIndex(civilizationIndex, gameVariables.UnitsInGame[unitIndex].parentGroupingIndex, gameVariables) == "special") {
+
+            searchMapForSettlementLocation (civilizationIndex, unitIndex, gameVariables);
+
+        } else if (returnGroupNameFromIndex(civilizationIndex, gameVariables.UnitsInGame[unitIndex].parentGroupingIndex, gameVariables) == "exploration") {
+
+            mapUnitPathToRuin (civilizationIndex, gameVariables, unitIndex);
+
+        }
 
     }
 
+    int directionToMoveIn = -1;
+
     if (gameVariables.UnitsInGame[unitIndex].moveDirectionQueue.size() == 0) {
 
-        gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned = false;
+        if (gameVariables.UnitsInGame[unitIndex].name == "Settler" && gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned == true) {
 
-        directionToMoveIn = checkForUnexploredTerritory (unitIndex, civilizationIndex, gameVariables);
+            sharedMethods::foundCity (gameVariables.UnitsInGame[unitIndex].position.x,
+                gameVariables.UnitsInGame[unitIndex].position.y, civilizationIndex,
+                gameVariables);
+
+            gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
+
+        }
 
     } else {
 
@@ -508,6 +518,8 @@ void AI::tradingLogic (int civilizationIndex, GameVariables &gameVariables) {
 
 void AI::think (int civilizationIndex, GameVariables &gameVariables) {
 
+    groupUnits (civilizationIndex, gameVariables);
+
     if (gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.researchName == "") {
 
         setResearchPriority (civilizationIndex, gameVariables);
@@ -530,9 +542,9 @@ void AI::think (int civilizationIndex, GameVariables &gameVariables) {
 
 void AI::searchMapForSettlementLocation (int civilizationIndex, int unitIndex, GameVariables &gameVariables) {
 
-    int highestSearchValue = 0;
+    int highestSearchValue = -1;
 
-    int bestFindXPosition, bestFindYPosition;
+    int bestFindXPosition = -1, bestFindYPosition = -1;
 
     for (unsigned int i = 0; i < gameVariables.worldMap.worldSize; i++) {
 
@@ -542,7 +554,7 @@ void AI::searchMapForSettlementLocation (int civilizationIndex, int unitIndex, G
 
             if (searchValue > highestSearchValue && gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[i][j] == 1) {
 
-                highestSearchValue = searchValue; std::cout << highestSearchValue << " !";
+                highestSearchValue = searchValue;
 
                 bestFindXPosition = i;
                 bestFindYPosition = j;
@@ -553,7 +565,13 @@ void AI::searchMapForSettlementLocation (int civilizationIndex, int unitIndex, G
 
     }
 
-    mapPathToCity (bestFindXPosition, bestFindYPosition, gameVariables, unitIndex);
+    int NO_BEST_FIND = -1;
+
+    if (bestFindXPosition != NO_BEST_FIND && bestFindYPosition != NO_BEST_FIND) {
+
+        mapPathToCity (bestFindXPosition, bestFindYPosition, gameVariables, unitIndex);
+
+    }
 
 }
 
@@ -573,6 +591,18 @@ int AI::calculateTileSettlementValue (int x, int y, GameVariables &gameVariables
 
                 }
 
+                if (gameVariables.worldMap.featureMap[x+i][y+j] == gameVariables.worldMap.MOUNTAIN) {
+
+                    tileValue += 5;
+
+                }
+
+                if (positionIsNotTooCloseToExistingCities (x+i, y+j, gameVariables) == false) {
+
+                    tileValue = -1;
+
+                }
+
             }
 
         }
@@ -580,6 +610,36 @@ int AI::calculateTileSettlementValue (int x, int y, GameVariables &gameVariables
     }
 
     return tileValue;
+
+}
+
+bool AI::positionIsNotTooCloseToExistingCities (int x, int y, GameVariables &gameVariables) {
+
+    int distanceFromPositionToClosestCity = 10000;
+
+    for (unsigned int i = 0; i < gameVariables.Cities.size(); i++) {
+
+        int tempDistance = sharedMethods::getDistance (x, y, gameVariables.Cities[i].position.x, gameVariables.Cities[i].position.y);
+
+        if (tempDistance < distanceFromPositionToClosestCity) {
+
+            distanceFromPositionToClosestCity = tempDistance;
+
+        }
+
+    }
+
+    int CITY_DISTANCE_MINIMUM = 4;
+
+    if (distanceFromPositionToClosestCity < CITY_DISTANCE_MINIMUM) {
+
+        return false;
+
+    } else {
+
+        return true;
+
+    }
 
 }
 
@@ -598,3 +658,109 @@ void AI::mapPathToCity (int x, int y, GameVariables &gameVariables, int unitInde
     return;
 
 }
+
+void AI::groupUnits (int civilizationIndex, GameVariables &gameVariables) {
+
+    for (unsigned int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
+
+        if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civilizationIndex) {
+
+            if (gameVariables.UnitsInGame[i].name == "Settler") { assignUnitToGroup (civilizationIndex, i, "special", gameVariables); }
+
+            if (gameVariables.UnitsInGame[i].name == "Explorer") { assignUnitToGroup (civilizationIndex, i, "exploration", gameVariables); }
+
+            if (gameVariables.UnitsInGame[i].aiFocus_offense > gameVariables.UnitsInGame[i].aiFocus_defense) {
+
+                assignUnitToGroup (civilizationIndex, i, "offense", gameVariables);
+
+            } else {
+
+                assignUnitToGroup (civilizationIndex, i, "defense", gameVariables);
+
+            }
+
+        }
+
+    }
+
+}
+
+void AI::assignUnitToGroup (int civilizationIndex, int unitIndex, std::string groupName, GameVariables &gameVariables) {
+
+    if (unitIsNotAssignedToGroup (unitIndex, gameVariables)) {
+
+        if (groupDoesNotExist (civilizationIndex, groupName, gameVariables)) {
+
+            int rgb[3] = {128, 128, 128};
+
+            gameVariables.Civilizations[civilizationIndex].addNewGrouping (groupName, rgb);
+
+        } else {
+
+            gameVariables.Civilizations[civilizationIndex].unitGroups[returnGroupIndexFromName(civilizationIndex, groupName, gameVariables)].memberUnitIndices.push_back (unitIndex);
+
+        }
+
+        gameVariables.UnitsInGame[unitIndex].parentGroupingIndex = returnGroupIndexFromName (civilizationIndex, groupName, gameVariables);
+
+    }
+
+}
+
+bool AI::unitIsNotAssignedToGroup (int unitIndex, GameVariables &gameVariables) {
+
+    const int NOT_ASSIGNED_TO_GROUP = -1;
+    if (gameVariables.UnitsInGame[unitIndex].parentGroupingIndex != NOT_ASSIGNED_TO_GROUP) {
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+bool AI::groupDoesNotExist (int civilizationIndex, std::string groupName, GameVariables &gameVariables) {
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].unitGroups.size(); i++) {
+
+        if (gameVariables.Civilizations[civilizationIndex].unitGroups[i].name == groupName) {
+
+            return false;
+        }
+
+    }
+
+    return true;
+
+}
+
+int AI::returnGroupIndexFromName (int civilizationIndex, std::string groupName, GameVariables &gameVariables) {
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].unitGroups.size(); i++) {
+
+        if (gameVariables.Civilizations[civilizationIndex].unitGroups[i].name == groupName) {
+
+            return i;
+        }
+
+    }
+
+    return -1; /// Can't find the group
+
+}
+
+std::string AI::returnGroupNameFromIndex (int civilizationIndex, int groupIndex, GameVariables &gameVariables) {
+
+    if (groupIndex != -1 && groupIndex < gameVariables.Civilizations[civilizationIndex].unitGroups.size()) {
+
+        return gameVariables.Civilizations[civilizationIndex].unitGroups[groupIndex].name;
+
+    } else {
+
+        return "no_group";
+
+    }
+
+}
+
