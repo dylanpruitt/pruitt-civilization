@@ -26,15 +26,38 @@ bool isDestination(int row, int col, position dest)
         return (false);
 }
 
-int returnTerrainMovementCost (int grid[WORLDSIZE][WORLDSIZE*4], int row, int col) {
+int returnTerrainMovementCost (int grid[WORLDSIZE][WORLDSIZE*4], int row, int col, Unit &unit) {
 
-    int featureType = grid[row][col];
+    int featureType = grid[row][col]; int CANTMOVEONTILECOST = 100000;
 
     switch (featureType) {
 
-        case 0:
-            return 1000000000; //// A cheap and quick fix for pathfinding testing. Units should avoid the ocean.
-        break;
+        case 0: {
+
+            if (unit.canCrossOceans) {
+
+                return 1;
+
+            } else {
+
+                return CANTMOVEONTILECOST;
+
+            }
+        } break;
+
+        case 1: {
+
+            if (unit.canCoastalEmbark) {
+
+                return 1;
+
+            } else {
+
+                return CANTMOVEONTILECOST;
+
+            }
+
+        } break;
 
         case 2:
             return 2;
@@ -172,7 +195,7 @@ void aStarSearch(int grid[WORLDSIZE][WORLDSIZE*4], position src, position dest, 
 
             else if (closedList[i-1][j] == false)
             {
-                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i-1, j);
+                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i-1, j, unit);
                 hNew = calculateHValue (i-1, j, dest);
                 fNew = gNew + hNew;
 
@@ -207,7 +230,7 @@ void aStarSearch(int grid[WORLDSIZE][WORLDSIZE*4], position src, position dest, 
 
             else if (closedList[i+1][j] == false)
             {
-                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i+1, j);
+                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i+1, j, unit);
                 hNew = calculateHValue(i+1, j, dest);
                 fNew = gNew + hNew;
 
@@ -241,7 +264,7 @@ void aStarSearch(int grid[WORLDSIZE][WORLDSIZE*4], position src, position dest, 
 
             else if (closedList[i][j+1] == false)
             {
-                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i, j+1);
+                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i, j+1, unit);
                 hNew = calculateHValue (i, j+1, dest);
                 fNew = gNew + hNew;
 
@@ -277,7 +300,7 @@ void aStarSearch(int grid[WORLDSIZE][WORLDSIZE*4], position src, position dest, 
 
             else if (closedList[i][j-1] == false)
             {
-                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i, j-1);
+                gNew = cellDetails[i][j].g + returnTerrainMovementCost (grid, i, j-1, unit);
                 hNew = calculateHValue(i, j-1, dest);
                 fNew = gNew + hNew;
 

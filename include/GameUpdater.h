@@ -44,7 +44,7 @@ namespace GameUpdater
 
         void unlockUnitsFromResearchCompletion (Research research, int civilizationIndex, GameVariables &gameVariables);
 
-        void promoteUnitsToAllowCoastalEmbarkment (int civilizationIndex, GameVariables &gameVariables);
+        void promoteUnitsFromResearchCompletion (Research research, int civilizationIndex, GameVariables &gameVariables);
 };
 
 #endif // GAMEUPDATER_H

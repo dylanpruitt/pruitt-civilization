@@ -24,7 +24,7 @@ namespace AStar {
         bool isValid (int row, int column);
         bool isDestination (int row, int col, position dest);
 
-        int returnTerrainMovementCost (int civilizationIndexrid[WORLDSIZE][WORLDSIZE*4], int row, int col);
+        int returnTerrainMovementCost (int civilizationIndexrid[WORLDSIZE][WORLDSIZE*4], int row, int col, Unit &Unit);
 
         double calculateHValue (int row, int col, position dest);
 

@@ -129,9 +129,9 @@ void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civiliz
 
     bool isFlatTerrain = true;
 
-    if (((unit.canCoastalEmbark == false
-    && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::COAST) || unit.canCoastalEmbark)
-    && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::OCEAN
+    if
+    (((unit.canCoastalEmbark == false && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::COAST) || unit.canCoastalEmbark)
+    && ((unit.canCrossOceans == false && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::OCEAN) || unit.canCrossOceans)
     && unitIsNotTrespassing(unit.parentCivilizationIndex, xPositionToMoveTo, yPositionToMoveTo, worldMap)) {
 
         if (worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == worldMap.mapTiles::MOUNTAIN

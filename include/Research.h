@@ -47,6 +47,8 @@ class Research
 
         }
 
+        std::string unlockablePromotion = "none";
+
     protected:
     private:
 };

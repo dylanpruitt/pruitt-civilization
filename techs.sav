@@ -1,4 +1,4 @@
-11
+13
 Farming
 16
 0
@@ -13,6 +13,7 @@ Farming
 0
 8
 0
+none
 Mining
 16
 0
@@ -27,6 +28,7 @@ Mining
 0
 6
 0
+none
 Animal_Husbandry
 16
 0
@@ -41,6 +43,7 @@ Animal_Husbandry
 0
 4
 0
+none
 Embarking
 16
 0
@@ -55,6 +58,7 @@ Embarking
 0
 6
 0
+coastal_embark
 Calendar
 16
 0
@@ -69,6 +73,7 @@ Calendar
 4
 6
 0
+none
 Polytheism
 16
 0
@@ -83,6 +88,7 @@ Polytheism
 9
 4
 0
+none
 Pottery
 16
 0
@@ -97,6 +103,7 @@ Pottery
 0
 3
 0
+none
 Sailing
 60
 1
@@ -112,6 +119,7 @@ Embarking
 0
 5
 0
+none
 Archery
 60
 1
@@ -128,6 +136,7 @@ Farming
 6
 1
 Archer
+none
 Horseback_Riding
 60
 1
@@ -144,6 +153,7 @@ Animal_Husbandry
 4
 1
 Horseman
+none
 Masonry
 60
 1
@@ -159,3 +169,36 @@ Mining
 0
 4
 0
+none
+Compass
+180
+1
+Sailing
+3
+3
+5
+0
+0
+3
+4
+7
+0
+4
+0
+none
+Astronomy
+640
+1
+Compass
+6
+6
+6
+0
+0
+5
+5
+9
+0
+6
+0
+ocean_embark

@@ -45,6 +45,8 @@ class Unit
 
         bool canCoastalEmbark = false;
 
+        bool canCrossOceans = false;
+
         int aiFocus_offense = 0;
         int aiFocus_defense = 0;
         int aiFocus_economic = 0;

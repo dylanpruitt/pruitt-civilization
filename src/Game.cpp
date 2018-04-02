@@ -306,6 +306,8 @@ void Game::loadTechnologiesFromFile (std::string filename, int civilizationIndex
 
            }
 
+           file >> temp.unlockablePromotion;
+
            gameVariables.Civilizations[civilizationIndex].technologiesToResearch.push_back(temp);
 
     }

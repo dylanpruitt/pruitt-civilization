@@ -535,13 +535,33 @@ void unlockUnitsFromResearchCompletion (Research research, int civilizationIndex
 
 }
 
-void promoteUnitsToAllowCoastalEmbarkment (int civilizationIndex, GameVariables &gameVariables) {
+void promoteUnitsFromResearchCompletion (Research research, int civilizationIndex, GameVariables &gameVariables) {
 
-    for (unsigned int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
+    if (research.unlockablePromotion != "none") {
 
-        if (civilizationIndex == gameVariables.UnitsInGame[i].parentCivilizationIndex) {
+        if (research.unlockablePromotion == "coastal_embark") {
 
-            gameVariables.UnitsInGame[i].canCoastalEmbark = true;
+            for (unsigned int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
+
+                if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civilizationIndex) {
+
+                    gameVariables.UnitsInGame[i].canCoastalEmbark = true;
+
+                }
+
+            }
+
+        } else if (research.unlockablePromotion == "ocean_embark") {
+
+            for (unsigned int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
+
+                if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civilizationIndex) {
+
+                    gameVariables.UnitsInGame[i].canCrossOceans = true;
+
+                }
+
+            }
 
         }
 
@@ -560,13 +580,9 @@ void updateResearch (int civilizationIndex, GameVariables &gameVariables) {
 
         unlockUnitsFromResearchCompletion (gameVariables.Civilizations[civilizationIndex].technologyBeingResearched, civilizationIndex, gameVariables);
 
+        promoteUnitsFromResearchCompletion (gameVariables.Civilizations[civilizationIndex].technologyBeingResearched, civilizationIndex, gameVariables);
+
         std::cout << gameVariables.Civilizations[civilizationIndex].CivName << " finished researching " << gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.researchName << "!" << std::endl;
-
-        if (gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.researchName == "Embarking") {
-
-            promoteUnitsToAllowCoastalEmbarkment (civilizationIndex, gameVariables);
-
-        }
 
         if (sharedMethods::getResearchIndexByName(civilizationIndex, gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.researchName, gameVariables) > -1) {
 
