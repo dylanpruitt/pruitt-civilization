@@ -163,16 +163,7 @@ void AI::mapUnitPathToRuin (int civilizationIndex, GameVariables &gameVariables,
             if (gameVariables.worldMap.featureMap[i][j] == gameVariables.worldMap.mapTiles::RUINS
             && gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[i][j] == 1) {
 
-                position RuinPosition = std::make_pair (i, j);
-
-                position Source = std::make_pair (gameVariables.UnitsInGame[unitIndex].position.x,
-                gameVariables.UnitsInGame[unitIndex].position.y);
-
-                AStar::aStarSearch (gameVariables.worldMap.featureMap, Source, RuinPosition, gameVariables.UnitsInGame[unitIndex]);
-
-                gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned = true;
-
-                return;
+                mapUnitPath (i, j, gameVariables, unitIndex);
 
             }
 
@@ -645,6 +636,12 @@ bool AI::positionIsNotTooCloseToExistingCities (int x, int y, GameVariables &gam
 
 void AI::mapPathToCity (int x, int y, GameVariables &gameVariables, int unitIndex) {
 
+    mapUnitPath (x, y, gameVariables, unitIndex);
+
+}
+
+void AI::mapUnitPath (int x, int y, GameVariables &gameVariables, int unitIndex) {
+
     position destination = std::make_pair (x, y);
 
     position Source = std::make_pair (gameVariables.UnitsInGame[unitIndex].position.x,
@@ -656,6 +653,7 @@ void AI::mapPathToCity (int x, int y, GameVariables &gameVariables, int unitInde
     gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned = true;
 
     return;
+
 
 }
 

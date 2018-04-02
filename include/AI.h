@@ -55,6 +55,8 @@ class AI
 
         void mapPathToCity (int x, int y, GameVariables &gameVariables, int unitIndex);
 
+        void mapUnitPath (int x, int y, GameVariables &gameVariables, int unitIndex);
+
         void groupUnits (int civilizationIndex, GameVariables &gameVariables);
 
         void assignUnitToGroup (int civilizationIndex, int unitIndex, std::string groupName, GameVariables &gameVariables);
