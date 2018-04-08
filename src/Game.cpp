@@ -560,7 +560,11 @@ void Game::saveGame (std::string filename) {
 
         /// SAVE WORLD DATA
 
-        file << "mapdata" << "\n";
+        file << "turn number" << "\n";
+
+        file << turnNumber << "\n";
+
+        file << "map data" << "\n";
 
         for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
 
@@ -589,6 +593,8 @@ void Game::saveGame (std::string filename) {
 
             file << gameVariables.UnitsInGame[i].parentCivilizationIndex << "\n";
 
+            file << gameVariables.UnitsInGame[i].parentGroupingIndex << "\n";
+
             file << gameVariables.UnitsInGame[i].name << "\n";
 
             file << gameVariables.UnitsInGame[i].position.x << "\n";
@@ -597,6 +603,14 @@ void Game::saveGame (std::string filename) {
             file << gameVariables.UnitsInGame[i].health << "\n";
             file << gameVariables.UnitsInGame[i].maxHealth << "\n";
             file << gameVariables.UnitsInGame[i].combat << "\n";
+
+            file << gameVariables.UnitsInGame[i].isRanged << "\n";
+
+            if (gameVariables.UnitsInGame[i].isRanged) {
+
+                file << gameVariables.UnitsInGame[i].rangedCombat << "\n";
+
+            }
 
             file << gameVariables.UnitsInGame[i].grasslandModifier.attackModifier << "\n";
             file << gameVariables.UnitsInGame[i].grasslandModifier.defenseModifier << "\n";
@@ -618,11 +632,23 @@ void Game::saveGame (std::string filename) {
             file << gameVariables.UnitsInGame[i].snowModifier.defenseModifier << "\n";
             file << gameVariables.UnitsInGame[i].snowModifier.experience << "\n";
 
+            file << gameVariables.UnitsInGame[i].movementPoints << "\n";
             file << gameVariables.UnitsInGame[i].maxMovePoints << "\n";
 
             file << gameVariables.UnitsInGame[i].destinationHasBeenAssigned << "\n";
 
+            file << gameVariables.UnitsInGame[i].moveDirectionQueue.size() << "\n";
+
+            for (unsigned int j = 0; j < gameVariables.UnitsInGame[j].moveDirectionQueue.size(); j++) {
+
+                file << gameVariables.UnitsInGame[i].moveDirectionQueue[j] << "\n";
+
+            }
+
             file << gameVariables.UnitsInGame[i].isTraining << "\n";
+
+            file << gameVariables.UnitsInGame[i].canCoastalEmbark << "\n";
+            file << gameVariables.UnitsInGame[i].canCrossOceans << "\n";
 
 
         }
@@ -633,13 +659,217 @@ void Game::saveGame (std::string filename) {
 
         for (int i = 0; i < gameVariables.Civilizations.size(); i++) {
 
-            file << gameVariables.Civilizations[i].Gold << "\n";
+            Civilization temp_civ = gameVariables.Civilizations[i];
 
-            file << gameVariables.Civilizations[i].ExpansionRate << "\n";
+            file << temp_civ.Gold << "\n";
 
-            file << gameVariables.Civilizations[i].ScienceRate << "\n";
+            file << temp_civ.GoldPerTurn << "\n";
 
-            file << gameVariables.Civilizations[i].playedByHumans << "\n";
+            file << temp_civ.Happiness << "\n";
+
+            file << temp_civ.ExpansionRate << "\n";
+
+            file << temp_civ.ScienceRate << "\n";
+
+            file << temp_civ.playedByHumans << "\n";
+
+            if (!temp_civ.playedByHumans) {
+
+                file << temp_civ.aiFocus_offense << "\n";
+
+                file << temp_civ.aiFocus_defense << "\n";
+
+                file << temp_civ.aiFocus_economic << "\n";
+
+                file << temp_civ.aiFocus_population << "\n";
+
+                file << temp_civ.aiFocus_production << "\n";
+
+                file << temp_civ.aiFocus_diplomatic << "\n";
+
+                file << temp_civ.aiFocus_scientific << "\n";
+
+                file << temp_civ.aiFocus_exploration << "\n";
+
+                file << temp_civ.aiFocus_religion << "\n";
+
+                file << temp_civ.ai_fairness << "\n";
+
+            }
+
+            for (int j = 0; j < 3; j++) {
+
+                file << temp_civ.rgbValues[j] << "\n";
+
+            }
+
+            file << temp_civ.relationsWithOtherCivilizations.size() << "\n";
+
+            for (unsigned int j = 0; j < temp_civ.relationsWithOtherCivilizations.size(); j++) {
+
+                file << temp_civ.relationsWithOtherCivilizations[j] << "\n";
+
+            }
+
+            for (unsigned int j = 0; j < gameVariables.worldMap.worldSize; j++) {
+
+                for (unsigned int k = 0; k < gameVariables.worldMap.worldSize*4; k++) {
+
+                    file << temp_civ.WorldExplorationMap[j][k] << "\n";
+
+                }
+
+            }
+
+            file << temp_civ.researchPoints << "\n";
+
+            file << temp_civ.learnedTechnologies.size() << "\n";
+
+            for (unsigned int j = 0; j < temp_civ.learnedTechnologies.size(); j++) {
+
+                file << temp_civ.learnedTechnologies[j] << "\n";
+
+            }
+
+            file << temp_civ.technologiesToResearch.size() << "\n";
+
+            for (unsigned int j = 0; j < temp_civ.technologiesToResearch.size(); j++) {
+
+                file << temp_civ.technologiesToResearch[j].researchName << "\n";
+
+                file << temp_civ.technologiesToResearch[j].aiFocus_offense << "\n";
+
+                file << temp_civ.technologiesToResearch[j].aiFocus_defense << "\n";
+
+                file << temp_civ.technologiesToResearch[j].aiFocus_economic << "\n";
+
+                file << temp_civ.technologiesToResearch[j].aiFocus_population << "\n";
+
+                file << temp_civ.technologiesToResearch[j].aiFocus_production << "\n";
+
+                file << temp_civ.technologiesToResearch[j].aiFocus_diplomatic << "\n";
+
+                file << temp_civ.technologiesToResearch[j].aiFocus_scientific << "\n";
+
+                file << temp_civ.technologiesToResearch[j].aiFocus_exploration << "\n";
+
+                file << temp_civ.technologiesToResearch[j].aiFocus_religion << "\n";
+
+                file << temp_civ.technologiesToResearch[j].scienceCostToLearnResearch << "\n";
+
+                file << temp_civ.technologiesToResearch[j].prerequisiteTechnologiesRequired.size();
+
+                for (unsigned int k = 0; k < temp_civ.technologiesToResearch[j].prerequisiteTechnologiesRequired.size(); k++) {
+
+                    file << temp_civ.technologiesToResearch[j].prerequisiteTechnologiesRequired[k] << "\n";
+
+                }
+
+            }
+
+            file << temp_civ.resources.size() << "\n";
+
+            for (unsigned int j = 0; j < temp_civ.resources.size(); j++) {
+
+                file << temp_civ.resources[j].AmountOfResource << "\n";
+                file << temp_civ.resources[j].ResourceCode << "\n";
+
+            }
+
+            file << temp_civ.AvailableUnitsToCreate.size() << "\n";
+
+            for (unsigned int j = 0; j < temp_civ.AvailableUnitsToCreate.size(); j++) {
+
+                file << temp_civ.AvailableUnitsToCreate[j] << "\n";
+
+            }
+
+            file << temp_civ.cityNames.size() << "\n";
+
+            for (unsigned int j = 0; j < temp_civ.cityNames.size(); j++) {
+
+                file << temp_civ.cityNames[j] << "\n";
+
+            }
+
+            file << "unit groupings\n";
+
+            file << temp_civ.unitGroups.size() << "\n";
+
+            for (unsigned int j = 0; j < temp_civ.unitGroups.size(); j++) {
+
+                for (int k = 0; k < 3; k++) {
+
+                    file << temp_civ.unitGroups[j].rgbValue[k] << "\n";
+
+                }
+
+                file << temp_civ.unitGroups[j].name << "\n";
+
+                file << temp_civ.unitGroups[j].memberUnitIndices.size() << "\n";
+
+                for (unsigned int k = 0; k < temp_civ.unitGroups[j].memberUnitIndices.size(); k++) {
+
+                    file << temp_civ.unitGroups[j].memberUnitIndices[k] << "\n";
+
+                }
+
+            }
+
+        }
+
+
+        file << "city data \n";
+
+        file << gameVariables.Cities.size() << "\n";
+
+        for (unsigned int i = 0; i < gameVariables.Cities.size(); i++) {
+
+            file << gameVariables.Cities[i].cityName << "\n";
+
+            file << gameVariables.Cities[i].isCapital << "\n";
+
+            file << gameVariables.Cities[i].parentIndex << "\n";
+
+            file << gameVariables.Cities[i].Health << "\n";
+
+            file << gameVariables.Cities[i].turnsToExpand << "\n";
+
+            file << gameVariables.Cities[i].position.x << "\n";
+            file << gameVariables.Cities[i].position.y << "\n";
+
+            file << gameVariables.Cities[i].Population << "\n";
+
+            file << gameVariables.Cities[i].Production << "\n";
+            file << gameVariables.Cities[i].ProductionPerTurn << "\n";
+            file << gameVariables.Cities[i].ProductionFromTiles << "\n";
+            file << gameVariables.Cities[i].ProductionModifier << "\n";
+
+            file << gameVariables.Cities[i].isProducing << "\n";
+            file << gameVariables.Cities[i].isProducingUnit << "\n";
+
+            file << gameVariables.Cities[i].FoodSurplus << "\n";
+            file << gameVariables.Cities[i].FoodPerTurnFromTiles << "\n";
+            file << gameVariables.Cities[i].FoodPerTurnFromCity << "\n";
+
+            file << gameVariables.Cities[i].GoldPerTurn << "\n";
+            file << gameVariables.Cities[i].GoldPerTurnFromCity << "\n";
+
+            file << gameVariables.Cities[i].buildings.size() << "\n";
+
+            for (unsigned int j = 0; j < gameVariables.Cities[i].buildings.size(); j++) {
+
+                file << gameVariables.Cities[i].buildings[j] << "\n";
+
+            }
+
+            file << gameVariables.Cities[i].AvailableBuildingsToCreate.size() << "\n";
+
+            for (unsigned int j = 0; j < gameVariables.Cities[i].AvailableBuildingsToCreate.size(); j++) {
+
+                file << gameVariables.Cities[i].AvailableBuildingsToCreate[j] << "\n";
+
+            }
 
         }
 
@@ -1690,9 +1920,10 @@ void Game::loop () {
             if (gameVariables.Civilizations[civilizationIndex].playedByHumans) {
 
                 while (loopVariable == true) {
-                    renderer.render(civilizationIndex, turnNumber, gameVariables);
 
                     GameUpdater::UpdateCivilizationExploredTerritory(civilizationIndex, gameVariables);
+
+                    renderer.render(civilizationIndex, turnNumber, gameVariables);
 
                     getPlayerChoiceAndReact(civilizationIndex);
 
