@@ -44,6 +44,54 @@ int AI::returnUnexploredTiles (int x, int y, int civilizationIndex, int range, G
 
 }
 
+bool AI::positionIsOnMap (int x, int y, GameVariables &gameVariables) {
+
+    if (x > 0 && y > 0 && x < gameVariables.worldMap.worldSize && y < gameVariables.worldMap.worldSize*4) {
+
+        return true;
+
+    } else {
+
+        return false;
+
+    }
+
+}
+
+bool AI::unitCanMoveOnTerrain (int x, int y, int unitIndex, GameVariables &gameVariables) {
+
+    if (((gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::OCEAN
+            && gameVariables.UnitsInGame[unitIndex].domain.canCrossOceans == false)
+        || gameVariables.UnitsInGame[unitIndex].domain.canCrossOceans)
+
+        && ((gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::COAST
+            && gameVariables.UnitsInGame[unitIndex].domain.canCoastalEmbark == false)
+        || gameVariables.UnitsInGame[unitIndex].domain.canCoastalEmbark)) {
+
+        return true;
+
+    } else {
+
+        return false;
+
+    }
+
+}
+
+bool AI::unitCanMoveToTile (int x, int y, int unitIndex, int civilizationIndex, GameVariables &gameVariables) {
+
+    if (positionIsOnMap (x, y, gameVariables) && unitCanMoveOnTerrain (x, y, unitIndex, gameVariables)
+    && sharedMethods::unitIsNotTrespassing(civilizationIndex, x, y, gameVariables.worldMap)) {
+
+        return true;
+
+    } else {
+
+        return false;
+
+    }
+}
+
 int AI::checkForUnexploredTerritory (int unitIndex, int civilizationIndex, GameVariables &gameVariables) { /*flag (r: not obvious that int returns a direction*/
 
     int searchStartX = gameVariables.UnitsInGame[unitIndex].position.x;
@@ -53,10 +101,7 @@ int AI::checkForUnexploredTerritory (int unitIndex, int civilizationIndex, GameV
 
     int HighestNumberOfUnexploredTiles = 0;
 
-    if (searchStartX > 0 && (gameVariables.worldMap.featureMap[searchStartX-1][searchStartY] != gameVariables.worldMap.mapTiles::OCEAN
-    && ((gameVariables.worldMap.featureMap[searchStartX-1][searchStartY] != gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)
-    || gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == true))
-    && sharedMethods::unitIsNotTrespassing(civilizationIndex, searchStartX-1, searchStartY, gameVariables.worldMap)) {
+    if (unitCanMoveToTile (searchStartX-1, searchStartY, unitIndex, civilizationIndex, gameVariables)) {
 
         if (gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[searchStartX-1][searchStartY] == 0) {
 
@@ -71,11 +116,7 @@ int AI::checkForUnexploredTerritory (int unitIndex, int civilizationIndex, GameV
         }
     }
 
-    if (searchStartY > 0 && (gameVariables.worldMap.featureMap[searchStartX][searchStartY-1] != gameVariables.worldMap.mapTiles::OCEAN
-    && ((gameVariables.worldMap.featureMap[searchStartX][searchStartY-1] != gameVariables.worldMap.mapTiles::COAST
-    && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)
-    || gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == true))
-    && sharedMethods::unitIsNotTrespassing(civilizationIndex, searchStartX, searchStartY-1, gameVariables.worldMap)) {
+    if (unitCanMoveToTile (searchStartX, searchStartY-1, unitIndex, civilizationIndex, gameVariables)) {
 
         if (gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[searchStartX][searchStartY-1] == 0) {
 
@@ -90,10 +131,7 @@ int AI::checkForUnexploredTerritory (int unitIndex, int civilizationIndex, GameV
         }
     }
 
-    if (searchStartX < gameVariables.worldMap.worldSize && (gameVariables.worldMap.featureMap[searchStartX+1][searchStartY] != gameVariables.worldMap.mapTiles::OCEAN
-    && ((gameVariables.worldMap.featureMap[searchStartX+1][searchStartY] != gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)
-    || gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == true))
-    && sharedMethods::unitIsNotTrespassing(civilizationIndex, searchStartX+1, searchStartY, gameVariables.worldMap)) {
+    if (unitCanMoveToTile (searchStartX+1, searchStartY, unitIndex, civilizationIndex, gameVariables)) {
 
         if (gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[searchStartX+1][searchStartY] == 0) {
 
@@ -108,10 +146,7 @@ int AI::checkForUnexploredTerritory (int unitIndex, int civilizationIndex, GameV
         }
     }
 
-    if (searchStartY < gameVariables.worldMap.worldSize*4 && (gameVariables.worldMap.featureMap[searchStartX][searchStartY+1] != gameVariables.worldMap.mapTiles::OCEAN
-    && ((gameVariables.worldMap.featureMap[searchStartX][searchStartY+1] != gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)
-    || gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == true))
-    && sharedMethods::unitIsNotTrespassing(civilizationIndex, searchStartX, searchStartY+1, gameVariables.worldMap)) {
+    if (unitCanMoveToTile (searchStartX, searchStartY-1, unitIndex, civilizationIndex, gameVariables)) {
 
         if (gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[searchStartX][searchStartY+1] == 0) {
 
@@ -129,23 +164,19 @@ int AI::checkForUnexploredTerritory (int unitIndex, int civilizationIndex, GameV
     if (Direction == -1) {
         Direction = rand() % (directions::EAST - directions::NORTH) + directions::NORTH;
 
-        if (Direction == directions::NORTH && searchStartX > 0 && (gameVariables.worldMap.featureMap[searchStartX-1][searchStartY] == gameVariables.worldMap.mapTiles::OCEAN || ((gameVariables.worldMap.featureMap[searchStartX][searchStartY-1] == gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
-
+        if (Direction == directions::NORTH && !(unitCanMoveToTile (searchStartX-1, searchStartY, unitIndex, civilizationIndex, gameVariables))) {
             Direction = -1;
         }
 
-        if (Direction == directions::WEST && searchStartY > 0 && (gameVariables.worldMap.featureMap[searchStartX-1][searchStartY-1] == gameVariables.worldMap.mapTiles::OCEAN || ((gameVariables.worldMap.featureMap[searchStartX][searchStartY-1] == gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
-
+        if (Direction == directions::WEST && !(unitCanMoveToTile (searchStartX, searchStartY-1, unitIndex, civilizationIndex, gameVariables))) {
             Direction = -1;
         }
 
-        if (Direction == directions::SOUTH && searchStartX < gameVariables.worldMap.worldSize && (gameVariables.worldMap.featureMap[searchStartX+1][searchStartY] == gameVariables.worldMap.mapTiles::OCEAN || ((gameVariables.worldMap.featureMap[searchStartX+1][searchStartY] == gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
-
+        if (Direction == directions::SOUTH && !(unitCanMoveToTile (searchStartX+1, searchStartY, unitIndex, civilizationIndex, gameVariables))) {
             Direction = -1;
         }
 
-        if (Direction == directions::EAST && searchStartY < gameVariables.worldMap.worldSize*4 && (gameVariables.worldMap.featureMap[searchStartX][searchStartY+1] == gameVariables.worldMap.mapTiles::OCEAN || ((gameVariables.worldMap.featureMap[searchStartX][searchStartY+1] == gameVariables.worldMap.mapTiles::COAST && gameVariables.UnitsInGame[unitIndex].canCoastalEmbark == false)))) {
-
+        if (Direction == directions::EAST &&  !(unitCanMoveToTile (searchStartX, searchStartY+1, unitIndex, civilizationIndex, gameVariables))) {
             Direction = -1;
         }
 

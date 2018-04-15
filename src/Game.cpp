@@ -355,18 +355,30 @@ void Game::loadUnitsFromFile (std::string filename) {
 
            }
 
-           file >> line; /// just used to skip over lines, need to fix
+           file >> line;
 
-           file >> temp.grasslandModifier.attackModifier;
-           file >> temp.grasslandModifier.defenseModifier;
-           file >> temp.forestModifier.attackModifier;
-           file >> temp.forestModifier.defenseModifier;
-           file >> temp.mountainModifier.attackModifier;
-           file >> temp.mountainModifier.defenseModifier;
-           file >> temp.snowModifier.attackModifier;
-           file >> temp.snowModifier.defenseModifier;
-           file >> temp.desertModifier.attackModifier;
-           file >> temp.desertModifier.defenseModifier;
+           file >> temp.domain.name;
+           file >> temp.domain.canCoastalEmbark;
+           file >> temp.domain.canCrossOceans;
+           file >> temp.domain.canMoveOnLandTiles;
+
+           if (temp.domain.name == "Land") {
+
+               file >> line; /// just used to skip over lines, need to fix
+
+               file >> temp.grasslandModifier.attackModifier;
+               file >> temp.grasslandModifier.defenseModifier;
+               file >> temp.forestModifier.attackModifier;
+               file >> temp.forestModifier.defenseModifier;
+               file >> temp.mountainModifier.attackModifier;
+               file >> temp.mountainModifier.defenseModifier;
+               file >> temp.snowModifier.attackModifier;
+               file >> temp.snowModifier.defenseModifier;
+               file >> temp.desertModifier.attackModifier;
+               file >> temp.desertModifier.defenseModifier;
+
+           }
+
 
            gameVariables.Units.push_back(temp);
 
@@ -647,8 +659,10 @@ void Game::saveGame (std::string filename) {
 
             file << gameVariables.UnitsInGame[i].isTraining << "\n";
 
-            file << gameVariables.UnitsInGame[i].canCoastalEmbark << "\n";
-            file << gameVariables.UnitsInGame[i].canCrossOceans << "\n";
+            file << gameVariables.UnitsInGame[i].domain.name << "\n";
+
+            file << gameVariables.UnitsInGame[i].domain.canCoastalEmbark << "\n";
+            file << gameVariables.UnitsInGame[i].domain.canCrossOceans << "\n";
 
 
         }
@@ -1588,6 +1602,8 @@ void Game::setCityProduction (int cityIndex) {
         produceBuilding (cityIndex, gameVariables.Cities[cityIndex].parentIndex);
 
     }
+
+    gameVariables.Cities[cityIndex].Production = 0;
 }
 
 int Game::getTerrainCodeUnitIsOn (Unit &Unit) {

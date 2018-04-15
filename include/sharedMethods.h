@@ -25,6 +25,10 @@ namespace sharedMethods
 
         void getAncientRuinBenefits (Unit &unit, Civilization &civ, WorldMap worldMap);
 
+        Position returnValidPositionForUnitDeployment (Unit &unit, int cityIndex, int civilizationIndex, GameVariables &gameVariables);
+
+        extern void deployUnit (Unit &unit, int cityIndex, int civilzationIndex, GameVariables &gameVariables);
+
         extern int getBuildingIndexByName (std::string name, GameVariables &gameVariables);
 
         extern int getResearchIndexByName (int civilizationIndex, std::string techName, GameVariables &gameVariables);

@@ -76,7 +76,7 @@ int getUnitIndexByName (std::string name, GameVariables &gameVariables) {
 
     }
 
-    std::cout << "Couldn't find unit!";
+    std::cout << "Couldn't find unit " << name << "!";
 
     return 0;
 
@@ -130,8 +130,8 @@ void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civiliz
     bool isFlatTerrain = true;
 
     if
-    (((unit.canCoastalEmbark == false && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::COAST) || unit.canCoastalEmbark)
-    && ((unit.canCrossOceans == false && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::OCEAN) || unit.canCrossOceans)
+    (((unit.domain.canCoastalEmbark == false && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::COAST) || unit.domain.canCoastalEmbark)
+    && ((unit.domain.canCrossOceans == false && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::OCEAN) || unit.domain.canCrossOceans)
     && unitIsNotTrespassing(unit.parentCivilizationIndex, xPositionToMoveTo, yPositionToMoveTo, worldMap)) {
 
         if (worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == worldMap.mapTiles::MOUNTAIN
@@ -156,6 +156,55 @@ void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civiliz
             }
 
         }
+    }
+
+}
+
+Position returnValidPositionForUnitDeployment (Unit &unit, int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
+
+    Position cityPosition = gameVariables.Cities[cityIndex].position, temp;
+
+    for (int i = -1; i < 2; i++) {
+
+        for (int j = -1; j < 2; j++) {
+
+            if (gameVariables.worldMap.featureMap[cityPosition.x + i][cityPosition.y + j] == gameVariables.worldMap.mapTiles::COAST
+                && unit.domain.name != "Land") {
+
+                temp.setCoordinates (cityPosition.x + i, cityPosition.y + j); return temp;
+
+            } else if (gameVariables.worldMap.featureMap[cityPosition.x + i][cityPosition.y + j] != gameVariables.worldMap.mapTiles::COAST
+                && unit.domain.name == "Land") {
+
+                temp.setCoordinates (cityPosition.x + i, cityPosition.y + j); return temp;
+
+            }
+
+        }
+
+    }
+
+    temp.setCoordinates (-1, -1); return temp;
+
+
+}
+
+void deployUnit (Unit &unit, int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
+
+    Position temp_position = returnValidPositionForUnitDeployment (unit, cityIndex, civilizationIndex, gameVariables);
+
+    if (temp_position.x != -1 && temp_position.y != -1) {
+
+        unit.position.setCoordinates (temp_position.x, temp_position.y);
+
+        unit.parentCivilizationIndex = civilizationIndex;
+
+        gameVariables.UnitsInGame.push_back (unit);
+
+    } else {
+
+        std::cout << "[!] No valid tile to deploy unit " << unit.name << "! (@ deployUnit)" << std::endl;
+
     }
 
 }

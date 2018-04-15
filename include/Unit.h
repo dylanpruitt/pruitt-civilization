@@ -2,6 +2,7 @@
 #define UNIT_H
 
 #include "Civilization.h"
+#include "Domain.h"
 #include "Position.h"
 #include "TerrainModifier.h"
 
@@ -43,9 +44,7 @@ class Unit
 
         int rangedCombat = 0;
 
-        bool canCoastalEmbark = false;
-
-        bool canCrossOceans = false;
+        Domain domain;
 
         int aiFocus_offense = 0;
         int aiFocus_defense = 0;

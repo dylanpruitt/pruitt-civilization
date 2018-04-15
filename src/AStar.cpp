@@ -34,7 +34,7 @@ int returnTerrainMovementCost (int grid[WORLDSIZE][WORLDSIZE*4], int row, int co
 
         case 0: {
 
-            if (unit.canCrossOceans) {
+            if (unit.domain.canCrossOceans) {
 
                 return 1;
 
@@ -47,7 +47,7 @@ int returnTerrainMovementCost (int grid[WORLDSIZE][WORLDSIZE*4], int row, int co
 
         case 1: {
 
-            if (unit.canCoastalEmbark) {
+            if (unit.domain.canCoastalEmbark) {
 
                 return 1;
 

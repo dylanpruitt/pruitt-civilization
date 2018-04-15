@@ -19,6 +19,12 @@ class AI
     protected:
     private:
 
+        bool positionIsOnMap (int x, int y, GameVariables &gameVariables);
+
+        bool unitCanMoveOnTerrain (int x, int y, int unitIndex, GameVariables &gameVariables);
+
+        bool unitCanMoveToTile (int x, int y, int unitIndex, int civilizationIndex, GameVariables &gameVariables);
+
         void mapUnitPathToRuin (int civilizationIndex, GameVariables &gameVariables, int unitIndex);
 
         int returnUnexploredTiles (int x, int y, int civilizationIndex, int range, GameVariables &gameVariables);

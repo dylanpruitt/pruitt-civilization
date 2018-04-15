@@ -10,8 +10,6 @@
 struct Civilization
 {
     public:
-        Civilization() {}
-        virtual ~Civilization() {}
 
         std::string CivName;
 
@@ -77,8 +75,6 @@ struct Civilization
 
         }
 
-    protected:
-    private:
 };
 
 #endif // CIVILIZATION_H

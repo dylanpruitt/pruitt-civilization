@@ -162,14 +162,10 @@ void updateCityUnitProduction (int cityIndex, int civilizationIndex, GameVariabl
 
     gameVariables.Cities[cityIndex].Production += (gameVariables.Cities[cityIndex].ProductionFromTiles + gameVariables.Cities[cityIndex].ProductionPerTurn)*gameVariables.Cities[cityIndex].ProductionModifier;
 
-    if (gameVariables.Cities[cityIndex].Production >= gameVariables.Cities[cityIndex].unitBeingProduced.productionCost && gameVariables.Cities[cityIndex].isProducing == true) {
+    if (gameVariables.Cities[cityIndex].Production >= gameVariables.Cities[cityIndex].unitBeingProduced.productionCost
+    && gameVariables.Cities[cityIndex].isProducing == true) {
 
-        gameVariables.Cities[cityIndex].unitBeingProduced.position.x = gameVariables.Cities[cityIndex].position.x;
-        gameVariables.Cities[cityIndex].unitBeingProduced.position.y = gameVariables.Cities[cityIndex].position.y;
-
-        gameVariables.Cities[cityIndex].unitBeingProduced.parentCivilizationIndex = civilizationIndex;
-
-        gameVariables.UnitsInGame.push_back(gameVariables.Cities[cityIndex].unitBeingProduced);
+        sharedMethods::deployUnit (gameVariables.Cities[cityIndex].unitBeingProduced, cityIndex, civilizationIndex, gameVariables);
 
         gameVariables.Cities[cityIndex].Production -= gameVariables.Cities[cityIndex].unitBeingProduced.productionCost;
 
@@ -545,7 +541,7 @@ void promoteUnitsFromResearchCompletion (Research research, int civilizationInde
 
                 if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civilizationIndex) {
 
-                    gameVariables.UnitsInGame[i].canCoastalEmbark = true;
+                    gameVariables.UnitsInGame[i].domain.canCoastalEmbark = true;
 
                 }
 
@@ -557,7 +553,7 @@ void promoteUnitsFromResearchCompletion (Research research, int civilizationInde
 
                 if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civilizationIndex) {
 
-                    gameVariables.UnitsInGame[i].canCrossOceans = true;
+                    gameVariables.UnitsInGame[i].domain.canCrossOceans = true;
 
                 }
 
