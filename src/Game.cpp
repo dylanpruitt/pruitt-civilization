@@ -421,7 +421,7 @@ void Game::loadBuildingsFromFile (std::string filename) {
            file >> temp.aiFocus_religion;
            file >> temp.aiFocus_scientific;
            file >> temp.GoldCost;
-           file >> temp.ProductionCost;
+           file >> temp.productionCost;
 
            gameVariables.Buildings.push_back(temp);
 
@@ -1249,7 +1249,22 @@ void Game::DisplayCitiesStatusesOwnedByCivilization (int civilizationIndex) {
 
             }
 
-            std::cout << "  - The city is currently producing " << productionString << "." << std::endl;
+            std::cout << "  - The city is currently producing " << productionString;
+
+            if (productionString == "nothing") {
+
+                std::cout << "." << std::endl;
+
+            } else if (gameVariables.Cities[i].isProducingUnit == false) {
+
+                std::cout << " (" << gameVariables.Cities[i].Production << " / " << gameVariables.Cities[i].buildingBeingProduced.productionCost << ")" << std::endl;
+
+            } else {
+
+                std::cout << " (" << gameVariables.Cities[i].Production << " / " << gameVariables.Cities[i].unitBeingProduced.productionCost << ")" << std::endl;
+
+            }
+
             cityIndex++; int y = i; cityIndices.push_back(y);
 
         }
@@ -1271,18 +1286,48 @@ void Game::DisplayCitiesStatusesOwnedByCivilization (int civilizationIndex) {
         setCityProduction (cityIndices[choice]);
 
     }
+
+    if (choice == 'b' || choice == 'B') {
+
+        std::cout << "What city do you want to buy units in?" << std::endl;
+
+        int choice = 0;
+
+        choice = sharedMethods::bindIntegerInputToRange (0, cityIndices.size()-1, 0);
+
+        buyUnits (civilizationIndex, cityIndices[choice]);
+
+    }
 }
 
-void Game::showAvailableUnits (int civilizationIndex, bool forProduction = false, bool forBuying = true) {
+void Game::showAvailableUnits (int civilizationIndex, int cityIndex, bool forProduction = false, bool forBuying = true) {
+
+    std::vector<int> availableUnitIndices;
+
+
+    for (int i = 0; i < gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.size(); i++) {
+
+        if (gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i], gameVariables)].domain.name != "Land"
+         && returnLandTiles (gameVariables.Cities[cityIndex].position.x, gameVariables.Cities[cityIndex].position.y) >= 8) {
+
+            /// naval unit's can't be produced on land!
+
+        } else {
+
+            availableUnitIndices.push_back (i);
+
+        }
+
+    }
 
     std::cout << "UNITS AVAILABLE" << std::endl;
 
     if (forProduction == true) {
 
-        for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.size(); i++) {
+        for (unsigned int i = 0; i < availableUnitIndices.size(); i++) {
 
-            std::cout << "[" << i << "] : " << gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i] << " | "
-            << gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i], gameVariables)].productionCost << std::endl;
+            std::cout << "[" << i << "] : " << gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[availableUnitIndices[i]] << " | "
+            << gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[availableUnitIndices[i]], gameVariables)].productionCost << std::endl;
 
         }
 
@@ -1290,10 +1335,10 @@ void Game::showAvailableUnits (int civilizationIndex, bool forProduction = false
 
     if (forBuying == true) {
 
-        for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.size(); i++) {
+        for (unsigned int i = 0; i < availableUnitIndices.size(); i++) {
 
-            std::cout << "[" << i << "] : " << gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i] << " | $"
-            << gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i], gameVariables)].goldCost << std::endl;
+            std::cout << "[" << i << "] : " << gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[availableUnitIndices[i]] << " | $"
+            << gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[availableUnitIndices[i]], gameVariables)].goldCost << std::endl;
 
         }
 
@@ -1307,32 +1352,48 @@ void Game::showAvailableBuildings (int cityIndex) {
 
     for (unsigned int i = 0; i < gameVariables.Cities[cityIndex].AvailableBuildingsToCreate.size(); i++) {
 
-        std::cout << "[" << i << "] : " << gameVariables.Cities[cityIndex].AvailableBuildingsToCreate[i] << " | " << gameVariables.Buildings[sharedMethods::getBuildingIndexByName(gameVariables.Cities[cityIndex].AvailableBuildingsToCreate[i], gameVariables)].ProductionCost << std::endl;
+        std::cout << "[" << i << "] : " << gameVariables.Cities[cityIndex].AvailableBuildingsToCreate[i] << " | " << gameVariables.Buildings[sharedMethods::getBuildingIndexByName(gameVariables.Cities[cityIndex].AvailableBuildingsToCreate[i], gameVariables)].productionCost << std::endl;
 
     }
 
 }
 
-void Game::buyUnits (int civilizationIndex) {
+void Game::buyUnits (int civilizationIndex, int cityIndex) {
 
+    std::vector<int> availableUnitIndices;
 
-    showAvailableUnits (civilizationIndex);
+    showAvailableUnits (civilizationIndex, cityIndex);
 
-    int choice = sharedMethods::bindIntegerInputToRange(0, gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.size()-1, 0);
+    for (int i = 0; i < gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.size(); i++) {
 
-    if (gameVariables.Civilizations[civilizationIndex].Gold >= gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[choice], gameVariables)].goldCost) {
+        if (gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i], gameVariables)].domain.name != "Land"
+         && returnLandTiles (gameVariables.Cities[cityIndex].position.x, gameVariables.Cities[cityIndex].position.y) >= 8) {
 
-        Unit unit = gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[choice], gameVariables)];
+            /// naval unit's can't be produced on land!
 
-        unit.position.x = gameVariables.Civilizations[civilizationIndex].startingX;
-        unit.position.y = gameVariables.Civilizations[civilizationIndex].startingY;
+        } else {
+
+            availableUnitIndices.push_back (i);
+
+        }
+
+    }
+
+    int choice = sharedMethods::bindIntegerInputToRange(0, availableUnitIndices.size()-1, 0);
+
+    if (gameVariables.Civilizations[civilizationIndex].Gold >= gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[availableUnitIndices[choice]], gameVariables)].goldCost) {
+
+        Unit unit = gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[availableUnitIndices[choice]], gameVariables)];
+
+        unit.position.x = gameVariables.Cities[cityIndex].position.x;
+        unit.position.y = gameVariables.Cities[cityIndex].position.y;
         unit.parentCivilizationIndex = civilizationIndex;
 
         gameVariables.UnitsInGame.push_back(unit);
 
         std::cout << "Bought a(n) " << unit.name << "!" << std::endl;
 
-        gameVariables.Civilizations[civilizationIndex].Gold -= gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[choice], gameVariables)].goldCost;
+        gameVariables.Civilizations[civilizationIndex].Gold -= gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[availableUnitIndices[choice]], gameVariables)].goldCost;
 
     } else {
 
@@ -1409,7 +1470,7 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
     if (Choice == 'u' || Choice == 'U') {
 
-        int x = 0; int militarypower = 0; std::vector<int> unitIndices; /*flag (r:better var name*/
+        int x = 0; int militarypower = 0; std::vector<int> unitIndices;
 
         std::cout << "UNITS" << std::endl;
 
@@ -1495,11 +1556,6 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
         }
 
-        if (Choice == 'b' || Choice == 'B') {
-
-            buyUnits (civilizationIndex);
-        }
-
         if (Choice == 's' || Choice == 'S') {
 
             std::cout << "\nUse which unit's special ability? " << std::endl;
@@ -1557,11 +1613,30 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
 void Game::produceUnits (int cityIndex, int civilizationIndex) {
 
-    showAvailableUnits (civilizationIndex, true, false);
+    showAvailableUnits (civilizationIndex, cityIndex, true, false);
 
-    int choice = sharedMethods::bindIntegerInputToRange(0, gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.size()-1, 0);
+    std::vector<int> availableUnitIndices;
 
-    Unit unit = gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[choice], gameVariables)];
+    showAvailableUnits (civilizationIndex, cityIndex);
+
+    for (int i = 0; i < gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.size(); i++) {
+
+        if (gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i], gameVariables)].domain.name != "Land"
+         && returnLandTiles (gameVariables.Cities[cityIndex].position.x, gameVariables.Cities[cityIndex].position.y) >= 8) {
+
+            /// naval unit's can't be produced on land!
+
+        } else {
+
+            availableUnitIndices.push_back (i);
+
+        }
+
+    }
+
+    int choice = sharedMethods::bindIntegerInputToRange(0, availableUnitIndices.size()-1, 0);
+
+    Unit unit = gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[availableUnitIndices[choice]], gameVariables)];
 
     gameVariables.Cities[cityIndex].unitBeingProduced = unit;
 

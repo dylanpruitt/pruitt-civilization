@@ -182,7 +182,7 @@ void updateCityBuildingProduction (int cityIndex, int civilizationIndex, GameVar
 
     gameVariables.Cities[cityIndex].Production += (gameVariables.Cities[cityIndex].ProductionFromTiles + gameVariables.Cities[cityIndex].ProductionPerTurn)*gameVariables.Cities[cityIndex].ProductionModifier;
 
-    if (gameVariables.Cities[cityIndex].Production >= gameVariables.Cities[cityIndex].buildingBeingProduced.ProductionCost && gameVariables.Cities[cityIndex].isProducing == true) {
+    if (gameVariables.Cities[cityIndex].Production >= gameVariables.Cities[cityIndex].buildingBeingProduced.productionCost && gameVariables.Cities[cityIndex].isProducing == true) {
 
         gameVariables.Cities[cityIndex].FoodPerTurnFromCity += gameVariables.Cities[cityIndex].buildingBeingProduced.FoodYield;
 
@@ -209,7 +209,7 @@ void updateCityBuildingProduction (int cityIndex, int civilizationIndex, GameVar
             gameVariables.Cities[cityIndex].AvailableBuildingsToCreate.erase (gameVariables.Cities[cityIndex].AvailableBuildingsToCreate.begin() + indexToErase);
 
         }
-        gameVariables.Cities[cityIndex].Production -= gameVariables.Cities[cityIndex].buildingBeingProduced.ProductionCost;
+        gameVariables.Cities[cityIndex].Production -= gameVariables.Cities[cityIndex].buildingBeingProduced.productionCost;
 
         gameVariables.Cities[cityIndex].isProducing = false;
         gameVariables.Cities[cityIndex].isProducingUnit = false;

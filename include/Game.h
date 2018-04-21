@@ -71,11 +71,11 @@ class Game
         void DisplayCitiesStatusesOwnedByCivilization (int civilizationIndex);
         void getPlayerChoiceAndReact (int civilizationIndex);
 
-        void showAvailableUnits (int civilizationIndex, bool forProduction, bool forBuying);
+        void showAvailableUnits (int civilizationIndex, int cityIndex, bool forProduction, bool forBuying);
 
         void showAvailableBuildings (int cityIndex);
 
-        void buyUnits (int civilizationIndex);
+        void buyUnits (int civilizationIndex, int cityIndex);
 
         void produceUnits (int cityIndex, int civilizationIndex);
 

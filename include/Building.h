@@ -15,7 +15,7 @@ struct Building
     int ScienceYield;
     int FaithYield;
 
-    int ProductionCost = 40;
+    int productionCost = 40;
     int GoldCost = 150;
 
     int aiFocus_offense = 0;
