@@ -505,64 +505,6 @@ void Game::loadCivilizationsFromFile (std::string filename, std::vector<Civiliza
 
 }
 
-void Game::loadMinorCivilizationsFromFile (std::string filename, std::vector<Civilization> &civs) {
-
-    std::string line;
-    ifstream file (filename);
-
-    if (file.is_open())  {
-
-    int civsSize;
-    Civilization temp; temp.ExpansionRate = 0.8; temp.ScienceRate = 0.75;
-
-    file >> civsSize;
-
-    for (int i = 0; i < civsSize; i++) {
-
-           file >> temp.CivName;
-
-           int freeTechSize = 0;
-
-           file >> freeTechSize;
-
-           for (int j = 0; j < freeTechSize; j++) {
-
-                std::string tempString;
-                file >> tempString;
-
-                temp.learnedTechnologies.push_back(tempString);
-
-           }
-
-           file >> temp.aiFocus_defense;
-           file >> temp.aiFocus_diplomatic;
-           file >> temp.aiFocus_economic;
-           file >> temp.aiFocus_exploration;
-           file >> temp.aiFocus_offense;
-           file >> temp.aiFocus_population;
-           file >> temp.aiFocus_production;
-           file >> temp.aiFocus_religion;
-           file >> temp.aiFocus_scientific;
-           file >> temp.ai_fairness;
-
-            temp.cityNames.push_back(temp.CivName);
-
-            for (int j = 0; j < 3; j++) {
-
-                file >> temp.rgbValues[j];
-
-           }
-
-           civs.push_back(temp);
-
-    }
-
-    file.close();
-
-    } else cout << "Unable to open file";
-
-}
-
 void Game::saveGame (std::string filename) {
 
     std::string line;
@@ -1078,7 +1020,7 @@ void Game::generateMinorCiv (int Civ) {
 
     std::vector<Civilization> civs;
 
-    loadMinorCivilizationsFromFile("minorCivilizations.sav",civs);
+    loadCivilizationsFromFile("minorCivilizations.sav",civs);
 
      bool loopSpawn = true;
 
@@ -1101,7 +1043,10 @@ void Game::generateMinorCiv (int Civ) {
             }
         }
 
-        if (gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::OCEAN && gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::COAST && returnLandTiles(x, y) > 2 && numberOfCivilizationsPositionIsFarAwayFrom == gameVariables.Civilizations.size()) {
+        if (gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::OCEAN
+            && gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::COAST
+            && returnLandTiles(x, y) > 2
+            && numberOfCivilizationsPositionIsFarAwayFrom == gameVariables.Civilizations.size()) {
 
                 loopSpawn = false;
 
@@ -1158,20 +1103,22 @@ void Game::generateMinorCiv (int Civ) {
 
     }
 
+    int new_civilization_index = gameVariables.Civilizations.size()-1;
+
     for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
 
         for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
 
-            if (sharedMethods::getDistance(gameVariables.Civilizations[Civ].startingX, gameVariables.Civilizations[Civ].startingY, i, j) <= 3) {
+            if (sharedMethods::getDistance(gameVariables.Civilizations[new_civilization_index].startingX, gameVariables.Civilizations[new_civilization_index].startingY, i, j) <= 3) {
 
-                gameVariables.Civilizations[Civ].WorldExplorationMap[i][j] = 1;
+                gameVariables.Civilizations[new_civilization_index].WorldExplorationMap[i][j] = 1;
 
             } else {
 
-                gameVariables.Civilizations[Civ].WorldExplorationMap[i][j] = 0;
-
-            }
+                gameVariables.Civilizations[new_civilization_index].WorldExplorationMap[i][j] = 0;
         }
+
+    }
 
     }
 

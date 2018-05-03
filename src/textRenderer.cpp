@@ -1,4 +1,5 @@
 #include "textRenderer.h"
+#include "sharedMethods.h"
 #include <iostream>
 #include <sstream>
 
@@ -135,25 +136,29 @@ void textRenderer::DisplayUnit (int i, int j) {
 
 void textRenderer::DisplayTextBasedOnEntitiesAtPosition (int i, int j, int currentCivilizationIndex, GameVariables &gameVariables) {
 
-    if (gameVariables.Civilizations[currentCivilizationIndex].WorldExplorationMap[i][j] == 1 && isUnitAtPosition(i, j, gameVariables) == false && isCityAtPosition(i, j,gameVariables) == false) {
+    if (gameVariables.Civilizations[currentCivilizationIndex].WorldExplorationMap[i][j] == 1) {
 
-        std::cout << colorTextByTerritory(i,j,gameVariables) << colorTextByCity(i,j, gameVariables) << renderTextBasedOnWorldFeature(i,j,gameVariables);
+        if (isUnitAtPosition(i, j, gameVariables) == false && isCityAtPosition(i, j, gameVariables) == false) {
 
+            std::cout << colorTextByTerritory(i,j,gameVariables) << colorTextByCity(i,j, gameVariables) << renderTextBasedOnWorldFeature(i,j,gameVariables);
 
-    } else if (gameVariables.Civilizations[currentCivilizationIndex].WorldExplorationMap[i][j] == 0) {
+        } else if (isCityAtPosition(i,j, gameVariables) == true && isUnitAtPosition(i,j, gameVariables) == false) {
 
-        if(i % 2 == 0 && j % 2 == 0) { std::cout << "\e[47;30m?\e[0m"; } else { std::cout << "\e[47m \e[0m"; }
+            std::cout << colorTextByTerritory(i,j,gameVariables) << "✪";
 
-    } else if (isUnitAtPosition(i,j, gameVariables)){
+        } else if (isUnitAtPosition(i,j, gameVariables) == true) {
 
-        std::cout << colorTextByTerritory(i,j,gameVariables) << colorTextByCity(i,j, gameVariables);
-        DisplayUnit (i,j);
+            std::cout << colorTextByTerritory(i,j,gameVariables) << colorTextByCity(i,j, gameVariables);
+            DisplayUnit (i,j);
 
-    } else if (isCityAtPosition(i,j, gameVariables) == true && gameVariables.Civilizations[currentCivilizationIndex].WorldExplorationMap[i][j] == 1) {
+        }
 
-        std::cout << colorTextByTerritory(i,j,gameVariables) << "✪";
+    } else {
+
+        if (i % 2 == 0 && j % 2 == 0) { std::cout << "\e[47;30m?\e[0m"; } else { std::cout << "\e[47m \e[0m"; }
 
     }
+
 }
 
 void textRenderer::renderStatusTextRightOfWorldMap (int i, int currentCivilizationIndex, int turnNumber, GameVariables &gameVariables) {
@@ -227,6 +232,7 @@ void textRenderer::spectate (int turnNumber, GameVariables &gameVariables) {
 
             for (int i = 0; i < gameVariables.worldMap.worldSize; i++){
             for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++){
+
             if (isUnitAtPosition(i,j, gameVariables) == false && isCityAtPosition(i, j, gameVariables) == false) {
 
                 std::cout << colorTextByTerritory(i,j,gameVariables) << colorTextByCity(i,j,gameVariables) << renderTextBasedOnWorldFeature(i,j,gameVariables);
@@ -241,6 +247,7 @@ void textRenderer::spectate (int turnNumber, GameVariables &gameVariables) {
                 std::cout << colorTextByTerritory(i,j,gameVariables) << "✪";
 
             }
+
             }
             std::cout << "\n";
             }

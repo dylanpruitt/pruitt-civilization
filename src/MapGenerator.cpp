@@ -50,7 +50,7 @@ enum resources : int {
 
 };
 
-int islandMaxSize; double sizeScale = 0.84;
+int islandMaxSize; double sizeScale = 0.81;
 
 MapGenerator::MapGenerator()
 {

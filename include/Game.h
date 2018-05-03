@@ -107,6 +107,7 @@ class Game
 
         void updateUnitTraining ();
 
+
 };
 
 #endif // GAME_H

@@ -465,11 +465,11 @@ void UpdateCivilizationExploredTerritory (int civilizationIndex, GameVariables &
 
             if (gameVariables.worldMap.WorldTerritoryMap[i][j] == (civilizationIndex+1)) {
 
-                for (int k = 0; k < gameVariables.worldMap.worldSize; k++) {
+                for (int k = -4; k < 5; k++) {
 
-                    for (int l = 0; l < gameVariables.worldMap.worldSize*4; l++) {
+                    for (int l = -4; l < 5; l++) {
 
-                        if (sharedMethods::getDistance(i,j,k,l) < 3 && gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[k][l] == 0) { gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[k][l] = 1; }
+                        if (sharedMethods::getDistance(i,j,i+k,j+l) < 3 && gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[i+k][j+l] == 0) { gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[i+k][j+l] = 1; }
 
                     }
 
