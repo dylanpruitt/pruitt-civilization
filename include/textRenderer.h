@@ -29,6 +29,9 @@ class textRenderer
         std::string colorTextByCity (int i, int j, GameVariables &gameVariables);
 
         std::string renderTextBasedOnWorldFeature (int i, int j, GameVariables &gameVariables);
+
+        void DisplayTextBasedOnFeature (int i, int j, GameVariables &gameVariables);
+
         void DisplayTextBasedOnEntitiesAtPosition (int i, int j, int currentCivilizationIndex, GameVariables &gameVariables);
 
         void renderStatusTextRightOfWorldMap (int i, int currentCivilizationIndex, int turnNumber, GameVariables &gameVariables);

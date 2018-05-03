@@ -899,11 +899,64 @@ int Game::getCivilizationPopulation (int civilizationIndex) {
 
 }
 
-void Game::generateCiv (int Civ) {
+bool Game::startLocationIsValid (int x, int y) {
 
-    std::vector<Civilization> civs;
+    int numberOfCivilizationsPositionIsFarAwayFrom = 0;
 
-    loadCivilizationsFromFile("civilizations.sav",civs);
+    if (gameVariables.Civilizations.size() >= 1) {
+
+        for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
+
+            if (sharedMethods::getDistance(x, y, gameVariables.Civilizations[i].startingX, gameVariables.Civilizations[i].startingY) > 5) {
+
+                numberOfCivilizationsPositionIsFarAwayFrom++;
+
+            }
+
+        }
+
+    }
+
+    if (gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::OCEAN
+            && gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::COAST
+            && isLandTile (x, y) && returnLandTiles(x, y) > 2
+            && numberOfCivilizationsPositionIsFarAwayFrom == gameVariables.Civilizations.size()) {
+
+        return true;
+
+    } else {
+
+        return false;
+
+    }
+
+}
+
+void Game::setNewCivilizationExploration () {
+
+    int new_civilization_index = gameVariables.Civilizations.size()-1;
+
+    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
+
+        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
+
+            if (sharedMethods::getDistance(gameVariables.Civilizations[new_civilization_index].startingX, gameVariables.Civilizations[new_civilization_index].startingY, i, j) <= 3) {
+
+                gameVariables.Civilizations[new_civilization_index].WorldExplorationMap[i][j] = 1;
+
+            } else {
+
+                gameVariables.Civilizations[new_civilization_index].WorldExplorationMap[i][j] = 0;
+
+            }
+
+        }
+
+    }
+
+}
+
+void Game::spawnInNewCivilization (std::vector<Civilization> civs) {
 
      bool loopSpawn = true;
 
@@ -913,20 +966,9 @@ void Game::generateCiv (int Civ) {
 
         int x = rand() % (gameVariables.worldMap.worldSize);
         int y = rand() % (gameVariables.worldMap.worldSize*4);
-        int numberOfCivilizationsPositionIsFarAwayFrom = 0;
 
-        if (gameVariables.Civilizations.size() >= 1){
 
-            for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++){
-
-                if (sharedMethods::getDistance(x, y, gameVariables.Civilizations[i].startingX, gameVariables.Civilizations[i].startingY) > 5){
-                    numberOfCivilizationsPositionIsFarAwayFrom++;
-                }
-
-            }
-        }
-
-        if (isLandTile (x, y) && returnLandTiles(x, y) > 2 && numberOfCivilizationsPositionIsFarAwayFrom == gameVariables.Civilizations.size()) {
+        if (startLocationIsValid(x, y)) {
 
                 loopSpawn = false;
 
@@ -971,8 +1013,6 @@ void Game::generateCiv (int Civ) {
                 loadTechnologiesFromFile("techs.sav", gameVariables.Civilizations.size() - 1);
 
                 gameVariables.Civilizations[gameVariables.Civilizations.size() - 1].technologyBeingResearched.researchName = "";
-
-                /** SPAWN IN CIV UNITS **/
 
                 Unit explorer = gameVariables.Units[sharedMethods::getUnitIndexByName("Explorer", gameVariables)];
                 explorer.position.setCoordinates(civ.startingX, civ.startingY);
@@ -997,22 +1037,17 @@ void Game::generateCiv (int Civ) {
 
     }
 
-    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
+}
 
-        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
+void Game::generateCiv (int Civ) {
 
-            if (sharedMethods::getDistance(gameVariables.Civilizations[Civ].startingX, gameVariables.Civilizations[Civ].startingY, i, j) <= 3) {
+    std::vector<Civilization> civs;
 
-                gameVariables.Civilizations[Civ].WorldExplorationMap[i][j] = 1;
+    loadCivilizationsFromFile("civilizations.sav",civs);
 
-            } else {
+    spawnInNewCivilization (civs);
 
-                gameVariables.Civilizations[Civ].WorldExplorationMap[i][j] = 0;
-
-            }
-        }
-
-    }
+    setNewCivilizationExploration ();
 
 }
 
@@ -1022,105 +1057,9 @@ void Game::generateMinorCiv (int Civ) {
 
     loadCivilizationsFromFile("minorCivilizations.sav",civs);
 
-     bool loopSpawn = true;
+    spawnInNewCivilization (civs);
 
-     while (loopSpawn) {
-
-        Civilization civ;
-
-        int x = rand() % (gameVariables.worldMap.worldSize);
-        int y = rand() % (gameVariables.worldMap.worldSize*4);
-        int numberOfCivilizationsPositionIsFarAwayFrom = 0;
-
-        if (gameVariables.Civilizations.size() >= 1){
-
-            for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++){
-
-                if (sharedMethods::getDistance(x, y, gameVariables.Civilizations[i].startingX, gameVariables.Civilizations[i].startingY) > 3){
-                    numberOfCivilizationsPositionIsFarAwayFrom++;
-                }
-
-            }
-        }
-
-        if (gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::OCEAN
-            && gameVariables.worldMap.featureMap[x][y] != gameVariables.worldMap.mapTiles::COAST
-            && returnLandTiles(x, y) > 2
-            && numberOfCivilizationsPositionIsFarAwayFrom == gameVariables.Civilizations.size()) {
-
-                loopSpawn = false;
-
-                std::cout << "Is Civilization #" << gameVariables.Civilizations.size() << " being played by a human? (Y/N)" << std::endl;
-
-                char Choice;
-
-                std::cin >> Choice;
-
-                if (Choice == 'y' || Choice == 'Y') {
-
-                    std::cout << "Pick a civilization to choose from." << std::endl;
-
-                    for (int i = 0; i < civs.size(); i++) {
-
-                        std::cout << "[" << i << "] " << civs[i].CivName << std::endl;
-
-                    }
-
-                    int choice = sharedMethods::bindIntegerInputToRange(0, civs.size()-1, 0);
-
-                    civ = civs[choice];
-
-                    civ.playedByHumans = true;
-
-                } else {
-
-                    int civIndex = rand() % civs.size();
-
-                    civ = civs[civIndex];
-
-                }
-
-                civ.AvailableUnitsToCreate.push_back("Warrior");
-                civ.AvailableUnitsToCreate.push_back("Explorer");
-                civ.AvailableUnitsToCreate.push_back("Settler");
-
-                civ.startingX = x; civ.startingY = y; gameVariables.Civilizations.push_back(civ);
-
-                sharedMethods::foundCity(x, y, gameVariables.Civilizations.size() - 1, gameVariables);
-
-                loadTechnologiesFromFile("techs.sav", gameVariables.Civilizations.size() - 1);
-
-                gameVariables.Civilizations[gameVariables.Civilizations.size() - 1].technologyBeingResearched.researchName = "";
-
-                Unit warrior = gameVariables.Units[sharedMethods::getUnitIndexByName("Warrior", gameVariables)];
-                warrior.position.setCoordinates(civ.startingX, civ.startingY);
-                warrior.parentCivilizationIndex = gameVariables.Civilizations.size() - 1;
-
-                gameVariables.UnitsInGame.push_back(warrior);
-
-
-        }
-
-    }
-
-    int new_civilization_index = gameVariables.Civilizations.size()-1;
-
-    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
-
-        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
-
-            if (sharedMethods::getDistance(gameVariables.Civilizations[new_civilization_index].startingX, gameVariables.Civilizations[new_civilization_index].startingY, i, j) <= 3) {
-
-                gameVariables.Civilizations[new_civilization_index].WorldExplorationMap[i][j] = 1;
-
-            } else {
-
-                gameVariables.Civilizations[new_civilization_index].WorldExplorationMap[i][j] = 0;
-        }
-
-    }
-
-    }
+    setNewCivilizationExploration ();
 
 }
 

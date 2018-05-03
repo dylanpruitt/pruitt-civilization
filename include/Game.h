@@ -32,6 +32,12 @@ class Game
     protected:
     private:
 
+        bool startLocationIsValid (int x, int y);
+
+        void setNewCivilizationExploration ();
+
+        void spawnInNewCivilization (std::vector<Civilization> civs);
+
         void loadTechnologiesFromFile (std::string filename, int civilizationIndex);
 
         void loadUnitsFromFile (std::string filename);

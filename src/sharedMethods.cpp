@@ -115,11 +115,49 @@ bool UnitisOnAnAncientRuin (Unit &unit, WorldMap worldMap) {
 
 void getAncientRuinBenefits (Unit &unit, Civilization &civ, WorldMap worldMap) {
 
+    const int technologyBoost = 1, explorationBoost = 2;
+
     if (UnitisOnAnAncientRuin(unit, worldMap)) {
 
-        civ.researchPoints = civ.technologyBeingResearched.scienceCostToLearnResearch;
+        int boostCode = rand () % 2 + 1;
 
-        worldMap.featureMap[unit.position.x][unit.position.y] = worldMap.mapTiles::GRASSLAND;
+        switch (boostCode) {
+
+            case technologyBoost: {
+
+                civ.researchPoints = civ.technologyBeingResearched.scienceCostToLearnResearch;
+
+                worldMap.featureMap[unit.position.x][unit.position.y] = worldMap.mapTiles::GRASSLAND;
+
+                std::cout << civ.CivName << " found a technology in an ancient ruin!" << std::endl;
+
+            } break;
+
+            case explorationBoost: {
+
+                int x = rand() % 6 - 3;
+                int y = rand() % 6 - 3;
+
+                for (int i = -3; i < 4; i++) {
+
+                    for (int j = -3; j < 4; j++) {
+
+                        if (i+x+unit.position.x >= 0 && i+x+unit.position.x < worldMap.worldSize
+                            && j+y+unit.position.y >= 0 && j+y+unit.position.y < worldMap.worldSize*4) {
+
+                            civ.WorldExplorationMap[i+x+unit.position.x][j+y+unit.position.y] = 1;
+
+                        }
+
+                    }
+
+                }
+
+                std::cout << civ.CivName << " found a map of the surrounding territory in an ancient ruin!" << std::endl;
+
+            } break;
+
+        }
 
     }
 

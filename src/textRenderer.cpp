@@ -134,9 +134,7 @@ void textRenderer::DisplayUnit (int i, int j) {
 
 }
 
-void textRenderer::DisplayTextBasedOnEntitiesAtPosition (int i, int j, int currentCivilizationIndex, GameVariables &gameVariables) {
-
-    if (gameVariables.Civilizations[currentCivilizationIndex].WorldExplorationMap[i][j] == 1) {
+void textRenderer::DisplayTextBasedOnFeature (int i, int j, GameVariables &gameVariables) {
 
         if (isUnitAtPosition(i, j, gameVariables) == false && isCityAtPosition(i, j, gameVariables) == false) {
 
@@ -152,6 +150,14 @@ void textRenderer::DisplayTextBasedOnEntitiesAtPosition (int i, int j, int curre
             DisplayUnit (i,j);
 
         }
+
+}
+
+void textRenderer::DisplayTextBasedOnEntitiesAtPosition (int i, int j, int currentCivilizationIndex, GameVariables &gameVariables) {
+
+    if (gameVariables.Civilizations[currentCivilizationIndex].WorldExplorationMap[i][j] == 1) {
+
+        DisplayTextBasedOnFeature (i, j, gameVariables);
 
     } else {
 
@@ -231,26 +237,17 @@ void textRenderer::spectate (int turnNumber, GameVariables &gameVariables) {
         } else {
 
             for (int i = 0; i < gameVariables.worldMap.worldSize; i++){
-            for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++){
 
-            if (isUnitAtPosition(i,j, gameVariables) == false && isCityAtPosition(i, j, gameVariables) == false) {
+                for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++){
 
-                std::cout << colorTextByTerritory(i,j,gameVariables) << colorTextByCity(i,j,gameVariables) << renderTextBasedOnWorldFeature(i,j,gameVariables);
+                        DisplayTextBasedOnFeature (i, j, gameVariables);
 
-            } else if (isUnitAtPosition(i,j,gameVariables)){
+                }
 
-                std::cout << colorTextByTerritory(i,j,gameVariables) << colorTextByCity(i,j,gameVariables);
-                DisplayUnit (i,j);
-
-            } else if (isCityAtPosition(i,j,gameVariables) == true) {
-
-                std::cout << colorTextByTerritory(i,j,gameVariables) << "✪";
+                std::cout << "\n";
 
             }
 
-            }
-            std::cout << "\n";
-            }
         }
 
         char input = ' ';
