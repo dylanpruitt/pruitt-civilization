@@ -13,6 +13,7 @@ void updateForCivilization (int civilizationIndex, GameVariables &gameVariables,
     updateCivilizationHappiness (civilizationIndex, gameVariables);
     updateTrades (civilizationIndex, gameVariables, ai);
     updateGoldPerTurn (civilizationIndex, gameVariables);
+    updateEffectsFromUnitUpkeep (civilizationIndex, gameVariables);
 
 }
 
@@ -235,7 +236,47 @@ void updateGoldPerTurn (int civilizationIndex, GameVariables &gameVariables) {
 
     }
 
+    for (unsigned int i = 0; i < gameVariables.Units.size(); i++) {
+
+        if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civilizationIndex) {
+
+            gpt -= gameVariables.Civilizations[civilizationIndex].upkeepCostPerUnit;
+
+        }
+
+    }
+
     gameVariables.Civilizations[civilizationIndex].GoldPerTurn = gpt;
+
+}
+
+void updateEffectsFromUnitUpkeep (int civilizationIndex, GameVariables &gameVariables) {
+
+    int requiredUpkeep = sharedMethods::returnBaseUnitUpkeep (civilizationIndex, gameVariables),
+        actualUpkeep = gameVariables.Civilizations[civilizationIndex].upkeepCostPerUnit;
+
+    if (actualUpkeep < requiredUpkeep) {
+
+        gameVariables.Civilizations[civilizationIndex].warSupportPercentage = gameVariables.Civilizations[civilizationIndex].baseWarSupportPercentage - 10;
+
+        gameVariables.Civilizations[civilizationIndex].unitAttackModifier = 0.65;
+        gameVariables.Civilizations[civilizationIndex].unitDefenseModifier = 0.65;
+
+    } else if (actualUpkeep == requiredUpkeep) {
+
+        gameVariables.Civilizations[civilizationIndex].warSupportPercentage = gameVariables.Civilizations[civilizationIndex].baseWarSupportPercentage;
+
+        gameVariables.Civilizations[civilizationIndex].unitAttackModifier = 1.00;
+        gameVariables.Civilizations[civilizationIndex].unitDefenseModifier = 1.00;
+
+    } else {
+
+        gameVariables.Civilizations[civilizationIndex].warSupportPercentage = gameVariables.Civilizations[civilizationIndex].baseWarSupportPercentage + 5;
+
+        gameVariables.Civilizations[civilizationIndex].unitAttackModifier = 1.15;
+        gameVariables.Civilizations[civilizationIndex].unitDefenseModifier = 1.15;
+
+    }
 
 }
 

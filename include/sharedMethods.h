@@ -48,6 +48,8 @@ namespace sharedMethods
         extern bool isResearchComplete (int civilizationIndex, GameVariables &gameVariables);
 
         extern void foundCity (int x, int y, int civilizationIndex, GameVariables &gameVariables);
+
+        extern int returnBaseUnitUpkeep (int civilizationIndex, GameVariables &gameVariables);
 };
 
 #endif // SHAREDMETHODS_H

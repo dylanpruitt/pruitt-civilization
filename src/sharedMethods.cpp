@@ -505,5 +505,10 @@ void assignWorkByPopulation (int cityIndex, bool stopAfterNeededAmountIsCollecte
 
 }
 
+int returnBaseUnitUpkeep (int civilizationIndex, GameVariables &gameVariables) {
+
+    return gameVariables.Civilizations[civilizationIndex].era;
+
+}
 
 }

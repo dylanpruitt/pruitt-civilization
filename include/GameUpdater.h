@@ -45,6 +45,8 @@ namespace GameUpdater
         void unlockUnitsFromResearchCompletion (Research research, int civilizationIndex, GameVariables &gameVariables);
 
         void promoteUnitsFromResearchCompletion (Research research, int civilizationIndex, GameVariables &gameVariables);
+
+        void updateEffectsFromUnitUpkeep (int civilizationIndex, GameVariables &gameVariables);
 };
 
 #endif // GAMEUPDATER_H

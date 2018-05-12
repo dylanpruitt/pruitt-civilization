@@ -827,6 +827,12 @@ void Game::saveGame (std::string filename) {
 
             }
 
+            file << gameVariables.Cities[i].unitBeingProduced.parentCivilizationIndex << "\n";
+
+            file << gameVariables.Cities[i].unitBeingProduced.name << "\n";
+
+            file << gameVariables.Cities[i].buildingBeingProduced.name << "\n";
+
         }
 
         file.close();
@@ -1288,6 +1294,40 @@ void Game::buyUnits (int civilizationIndex, int cityIndex) {
     }
 }
 
+void Game::setUnitUpkeep (int civilizationIndex) {
+
+    bool stillInputting = true;
+
+    int upkeepCost = gameVariables.Civilizations[civilizationIndex].upkeepCostPerUnit;
+
+    while (stillInputting) {
+
+        std::cout << "Current unit upkeep is " << upkeepCost
+            << ".\nNecessary upkeep costs for units to perform effectively is " << sharedMethods::returnBaseUnitUpkeep (civilizationIndex, gameVariables)
+            << ".\nYou can spend up to " << sharedMethods::returnBaseUnitUpkeep (civilizationIndex, gameVariables) + 2 << " gold per turn on units for upkeep."
+            << "Press [N] to input new upkeep value, or press [C] to confirm it." << std::endl;
+
+        char input;
+
+        std::cin >> input;
+
+        if (input == 'n' || input == 'N') {
+
+            upkeepCost = sharedMethods::bindIntegerInputToRange (0, sharedMethods::returnBaseUnitUpkeep (civilizationIndex, gameVariables) + 2,
+                sharedMethods::returnBaseUnitUpkeep (civilizationIndex, gameVariables));
+
+        } else if (input == 'c' || input == 'C') {
+
+            gameVariables.Civilizations[civilizationIndex].upkeepCostPerUnit = upkeepCost;
+
+            stillInputting = false;
+
+        }
+
+    }
+
+}
+
 void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
     char Choice;
@@ -1353,6 +1393,8 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
         }
 
     }
+
+    if (Choice == 'p') { setUnitUpkeep (civilizationIndex); }
 
     if (Choice == 'u' || Choice == 'U') {
 

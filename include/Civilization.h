@@ -11,6 +11,21 @@ struct Civilization
 {
     public:
 
+        enum eras : int {
+
+            ANCIENT = 1,
+            CLASSICAL = 2,
+            MEDIEVAL = 3,
+            RENAISSANCE = 4,
+            COLONIAL = 5,
+            INDUSTRIAL = 6,
+            MODERN = 7,
+            FUTURE = 8,
+
+        };
+
+        int era = eras::ANCIENT;
+
         std::string CivName;
 
         int startingX; int startingY; int Gold = 125;
@@ -22,6 +37,15 @@ struct Civilization
         double ScienceRate = 1.00;
 
         int WorldExplorationMap[50][200];
+
+        int upkeepCostPerUnit = 1;
+
+        int baseWarSupportPercentage = 75;
+
+        int warSupportPercentage = 75;
+
+        double unitAttackModifier = 1.0;
+        double unitDefenseModifier = 1.0;
 
         bool playedByHumans = false;
 

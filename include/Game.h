@@ -113,6 +113,7 @@ class Game
 
         void updateUnitTraining ();
 
+        void setUnitUpkeep (int civilizationIndex);
 
 };
 

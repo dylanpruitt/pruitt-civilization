@@ -202,6 +202,9 @@ void textRenderer::renderStatusTextRightOfWorldMap (int i, int currentCivilizati
     if (i == (gameVariables.Civilizations.size() + 12) && gameVariables.Civilizations[currentCivilizationIndex].technologyBeingResearched.researchName != "") { std::cout << " " << gameVariables.Civilizations[currentCivilizationIndex].researchPoints << " / " << gameVariables.Civilizations[currentCivilizationIndex].technologyBeingResearched.scienceCostToLearnResearch; }
 
     if (i == (gameVariables.Civilizations.size() + 13)) { std::cout << " HAPPINESS : " << gameVariables.Civilizations[currentCivilizationIndex].Happiness; }
+
+    if (i == (gameVariables.Civilizations.size() + 14)) { std::cout << " WAR SUPPORT : " << gameVariables.Civilizations[currentCivilizationIndex].warSupportPercentage << "%"; }
+
     std::cout << "\n";
 
 }

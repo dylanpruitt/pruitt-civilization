@@ -29,7 +29,7 @@ class City
 
         int FoodSurplus = 0;
 
-        int GoldPerTurnFromCity = 3;
+        int GoldPerTurnFromCity = 5;
 
         int GoldPerTurn = 0;
 
