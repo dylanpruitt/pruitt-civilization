@@ -75,6 +75,10 @@ class AI
 
         std::string returnGroupNameFromIndex (int civilizationIndex, int groupIndex, GameVariables &gameVariables);
 
+        void decideIfCivilizationShouldOfferLoan (int civilizationIndex, GameVariables &gameVariables);
+
+        int calculatePotentialLoanValue (int civilizationIndex, int potentialCivilizationIndex, GameVariables &gameVariables);
+
 };
 
 #endif // AI_H

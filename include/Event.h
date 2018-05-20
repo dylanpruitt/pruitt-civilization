@@ -29,11 +29,11 @@ class Event
     protected:
     private:
 
-        void trigger (std::vector<Civilization> &Civilizations);
+        virtual void trigger (std::vector<Civilization> &Civilizations);
 
-        void trigger_ai (std::vector<Civilization> &Civilizations);
+        virtual void trigger_ai (std::vector<Civilization> &Civilizations);
 
-        void responseLogic (int Choice, std::vector<Civilization> &Civilizations);
+        virtual void responseLogic (int Choice, std::vector<Civilization> &Civilizations);
 };
 
 #endif // EVENT_H

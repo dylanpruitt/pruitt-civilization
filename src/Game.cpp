@@ -15,7 +15,7 @@
 #include "sharedMethods.h"
 #include "GameUpdater.h"
 #include "AI.h"
-#include "Event.h"
+#include "LoanEvent.h"
 
 using namespace std;
 
@@ -274,6 +274,8 @@ void Game::loadTechnologiesFromFile (std::string filename, int civilizationIndex
            temp.prerequisiteTechnologiesRequired.clear();
 
            file >> temp.researchName;
+           file >> temp.type;
+           file >> temp.era;
            file >> temp.scienceCostToLearnResearch;
            file >> prereqSize;
 
@@ -1328,6 +1330,119 @@ void Game::setUnitUpkeep (int civilizationIndex) {
 
 }
 
+void Game::editLoan (int civilizationIndex, Loan &loan) {
+
+    bool isStillEditingTrade = true;
+
+    while (isStillEditingTrade) {
+
+        std::cout << "= LOAN ITEMS =" << std::endl;
+
+        std::cout << "GOLD: " << loan.amountDue << std::endl;
+
+        std::cout << "\n[Z] Edit your gold sum [E] Confirm loan" << std::endl;
+
+        char characterInput;
+
+        std::cin >> characterInput;
+
+        if (characterInput == 'E' || characterInput == 'e') {
+
+            isStillEditingTrade = false;
+
+        }
+
+        if (characterInput == 'Z' || characterInput == 'z') {
+
+            int amountOfGold = 0;
+
+            std::cout << "Please input the amount of gold you want to trade: ";
+
+            amountOfGold = sharedMethods::bindIntegerInputToRange (0, gameVariables.Civilizations[civilizationIndex].Gold, 0);
+
+            loan.amountDue = amountOfGold;
+
+        }
+    }
+}
+
+void Game::offerLoan (int civilizationIndex) {
+
+    int Choice = 0;
+
+    std::cout << "Trade with what Civilization?" << std::endl;
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
+
+        if (i != civilizationIndex) {
+
+            std::cout << "[" << i << "] " << gameVariables.Civilizations[i].CivName << std::endl;
+
+        }
+
+    }
+
+    Choice = sharedMethods::bindIntegerInputToRange (0, gameVariables.Civilizations.size() -1, 0);
+
+    Loan temp_loan;
+
+    temp_loan.creditorCivilizationIndex = civilizationIndex;
+    temp_loan.debtorCivilizationIndex = Choice;
+
+    editLoan (civilizationIndex, temp_loan);
+
+    gameVariables.activeLoans.push_back (temp_loan);
+
+
+
+    LoanEvent loanEvent;
+
+    loanEvent.LoanID = gameVariables.activeLoans.size() - 1;
+
+    loanEvent.EventName = "Loan Request from " + gameVariables.Civilizations[civilizationIndex].CivName;
+    loanEvent.EventMessage = "A foreign civilization has offered to loan us " + std::to_string(temp_loan.amountDue) + " gold.";
+
+    loanEvent.ResponseChoices.push_back ("We'll take all the help we can get.");
+    loanEvent.ResponseChoices.push_back ("We do not need help from lesser civilizations.");
+
+    loanEvent.targetCivilizationIndex = temp_loan.debtorCivilizationIndex;
+
+    gameVariables.gameEvents.push_back (loanEvent);
+
+}
+
+void Game::openTradingMenu (int civilizationIndex) {
+
+    std::cout << "-= TRADE MENU =- " << std::endl;
+
+    std::cout << "\n[T]rade\n[L]oan" << std::endl;
+
+    char temp_input;
+
+    std::cin >> temp_input;
+
+    if (temp_input == 't' || temp_input == 'T') {
+
+        trade (civilizationIndex);
+
+    }
+
+    if (temp_input == 'l' || temp_input == 'L') {
+
+        std::cout << "[R]equest a loan from another civilization, or [o]ffer a loan of your own." << std::endl;
+
+        std::cin >> temp_input;
+
+        if (temp_input == 'o' || temp_input == 'O') {
+
+            offerLoan (civilizationIndex);
+
+        }
+
+    }
+
+}
+
 void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
     char Choice;
@@ -1350,7 +1465,7 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
     if (Choice == 'T' || Choice == 't') {
 
-        trade (civilizationIndex);
+        openTradingMenu (civilizationIndex);
 
     }
 
@@ -1609,9 +1724,9 @@ void Game::setCityProduction (int cityIndex) {
     gameVariables.Cities[cityIndex].Production = 0;
 }
 
-int Game::getTerrainCodeUnitIsOn (Unit &Unit) {
+int Game::getTerrainCodeUnitIsOn (Unit &unit) {
 
-    return gameVariables.worldMap.featureMap[Unit.position.x][Unit.position.y];
+    return gameVariables.worldMap.featureMap[unit.position.x][unit.position.y];
 
 }
 
@@ -1966,6 +2081,161 @@ void Game::loop () {
         GameUpdater::updateCities (gameVariables);
 
         GameUpdater::UpdateAllUnitsMovement (gameVariables);
+    }
+
+}
+
+double Game::calculateUnitAttackingModifier (Unit &attacker, Unit &defender) {
+
+    switch (getTerrainCodeUnitIsOn(defender)) {
+
+    case gameVariables.worldMap.mapTiles::GRASSLAND :
+
+        return attacker.grasslandModifier.attackModifier * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier;
+
+    break;
+    case gameVariables.worldMap.mapTiles::FOREST :
+
+        return attacker.forestModifier.attackModifier * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier;
+
+    break;
+    case gameVariables.worldMap.mapTiles::DESERT :
+
+        return attacker.desertModifier.attackModifier * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier;
+
+    break;
+    case gameVariables.worldMap.mapTiles::MOUNTAIN :
+
+        return attacker.mountainModifier.attackModifier * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier;
+
+    break;
+    case gameVariables.worldMap.mapTiles::SNOW :
+
+        return attacker.snowModifier.attackModifier * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier;
+
+    break;
+    default :
+
+        return 1.00;
+
+    break;
+
+    }
+
+}
+
+double Game::calculateUnitDefendingModifier (Unit &defender) {
+
+    switch (getTerrainCodeUnitIsOn(defender)) {
+
+    case gameVariables.worldMap.mapTiles::GRASSLAND :
+
+        return defender.grasslandModifier.defenseModifier * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier;
+
+    break;
+    case gameVariables.worldMap.mapTiles::FOREST :
+
+        return defender.forestModifier.defenseModifier * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier;
+
+    break;
+    case gameVariables.worldMap.mapTiles::DESERT :
+
+        return defender.desertModifier.defenseModifier * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier;
+
+    break;
+    case gameVariables.worldMap.mapTiles::MOUNTAIN :
+
+        return defender.mountainModifier.defenseModifier * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier;
+
+    break;
+    case gameVariables.worldMap.mapTiles::SNOW :
+
+        return defender.snowModifier.defenseModifier * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier;
+
+    break;
+    default :
+
+        return 1.00;
+
+    break;
+
+    }
+
+}
+
+int Game::returnUnitIndexFromPosition (int civilizationIndex, int x, int y) {
+
+    for (unsigned int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
+
+        if (gameVariables.UnitsInGame[i].position.x == x && gameVariables.UnitsInGame[i].position.y == y
+            && gameVariables.UnitsInGame[i].parentCivilizationIndex == civilizationIndex) {
+
+            return i;
+
+        }
+
+    }
+
+}
+
+void Game::combat (Unit &attacker, Unit &defender) {
+
+    double attackingModifier = calculateUnitAttackingModifier (attacker, defender),
+        defenseModifier = calculateUnitDefendingModifier (defender);
+
+    unsigned int attackerMaxDamage = ((attacker.combat * attacker.health * attackingModifier * 1.5) / (defender.combat * defender.health * defenseModifier)) + 1;
+    unsigned int defenderMaxDamage = ((defender.combat * defender.health * defenseModifier * 1.5) / (attacker.combat * attacker.health * attackingModifier)) + 1;
+
+    int attackerDamage = rand () % attackerMaxDamage;
+    int defenderDamage = rand () % defenderMaxDamage;
+
+    attacker.health -= defenderDamage;
+    defender.health -= attackerDamage;
+
+    std::cout << attacker.name << " of " << gameVariables.Civilizations[attacker.parentCivilizationIndex].CivName
+        << " dealt " << attackerDamage << " to the defender" << std::endl;
+
+    std::cout << defender.name << " of " << gameVariables.Civilizations[defender.parentCivilizationIndex].CivName
+        << " dealt " << defenderDamage << " to the attacker" << std::endl;
+
+    if (attacker.health <= 0) {
+
+        int unitIndex = returnUnitIndexFromPosition (attacker.parentCivilizationIndex, attacker.position.x, attacker.position.y);
+
+        gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
+
+        Event unit_died;
+
+        unit_died.EventName = "Unit died in battle";
+
+        unit_died.EventMessage = "Your " + attacker.name + " died attacking a " + defender.name + ".";
+
+        unit_died.ResponseChoices.push_back ("Okay.");
+
+        unit_died.targetCivilizationIndex = attacker.parentCivilizationIndex;
+
+        gameVariables.gameEvents.push_back (unit_died);
+
+    }
+
+    if (defender.health <= 0) {
+
+        int unitIndex = returnUnitIndexFromPosition (defender.parentCivilizationIndex, defender.position.x, defender.position.y);
+
+        gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
+
+        Event unit_died;
+
+        unit_died.EventName = "Unit died in battle";
+
+        unit_died.EventMessage = "Your " + defender.name + " died defending against a " + attacker.name + ".";
+
+        unit_died.ResponseChoices.push_back ("Okay.");
+
+        unit_died.test_canBeTriggered = true;
+
+        unit_died.targetCivilizationIndex = defender.parentCivilizationIndex;
+
     }
 
 }

@@ -12,7 +12,7 @@ Event::~Event()
     //dtor
 }
 
-enum choiceResponseCodes {
+enum choiceResponseCodes : int {
 
     YES = 1,
     NO = 2,

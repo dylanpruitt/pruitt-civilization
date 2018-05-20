@@ -49,6 +49,10 @@ class Research
 
         std::string unlockablePromotion = "none";
 
+        std::string type;
+
+        int era;
+
     protected:
     private:
 };

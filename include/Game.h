@@ -109,11 +109,25 @@ class Game
 
         void displayUnitDetails (Unit unit);
 
-        int getTerrainCodeUnitIsOn (Unit &Unit);
+        int getTerrainCodeUnitIsOn (Unit &unit);
 
         void updateUnitTraining ();
 
         void setUnitUpkeep (int civilizationIndex);
+
+        double calculateUnitAttackingModifier (Unit &attacker, Unit &defender);
+
+        double calculateUnitDefendingModifier (Unit &defender);
+
+        int returnUnitIndexFromPosition (int civilizationIndex, int x, int y);
+
+        void combat (Unit &attacker, Unit &defender);
+
+        void openTradingMenu (int civilizationIndex);
+
+        void offerLoan (int civilizationIndex);
+
+        void editLoan (int civilizationIndex, Loan &loan);
 
 };
 

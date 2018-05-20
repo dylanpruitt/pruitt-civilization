@@ -149,6 +149,30 @@ void updateCityProductionModifier (int cityIndex, int civilizationIndex, GameVar
 
     }
 
+    if (gameVariables.Civilizations[civilizationIndex].GoldPerTurn >= 75) {
+
+        tempModifier += 15;
+
+    } else if (gameVariables.Civilizations[civilizationIndex].GoldPerTurn >= 15) {
+
+        tempModifier += 5;
+
+    } else if (gameVariables.Civilizations[civilizationIndex].GoldPerTurn >= -5 && gameVariables.Civilizations[civilizationIndex].GoldPerTurn < 0) {
+
+        tempModifier -= 5;
+
+    } else {
+
+        tempModifier -= 15;
+
+    }
+
+    if (gameVariables.Civilizations[civilizationIndex].Gold <= 0 && gameVariables.Civilizations[civilizationIndex].GoldPerTurn <= 0) {
+
+        tempModifier -= 85;
+
+    }
+
     if (sharedMethods::civilizationHasTechnology(civilizationIndex, "Masonry", gameVariables)) {
 
         tempModifier += 5;

@@ -6,6 +6,7 @@
 #include "WorldMap.h"
 #include "Event.h"
 #include "Trade.h"
+#include "Loan.h"
 
 struct GameVariables
 {
@@ -23,6 +24,8 @@ struct GameVariables
         std::vector<Event> gameEvents;
 
         std::vector<Trade> trades;
+
+        std::vector<Loan> activeLoans;
 
         WorldMap worldMap;
 

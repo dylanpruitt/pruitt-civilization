@@ -4,6 +4,8 @@
 #include "AI.h"
 #include "sharedMethods.h"
 #include "AStar.h"
+#include "LoanEvent.h"
+#include "Loan.h"
 
 AI::AI()
 {
@@ -538,6 +540,86 @@ void AI::tradingLogic (int civilizationIndex, GameVariables &gameVariables) {
 
 }
 
+void AI::decideIfCivilizationShouldOfferLoan (int civilizationIndex, GameVariables &gameVariables) {
+
+    int CivilizationToLoanTo = -1; int highestValue = 0; int temp_value = 0;
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
+
+        if (i != civilizationIndex) {
+
+            temp_value = calculatePotentialLoanValue (civilizationIndex, i, gameVariables);
+
+            if (temp_value > highestValue) {
+
+                highestValue = temp_value;
+
+                if (temp_value >= 30) {
+
+                    CivilizationToLoanTo = i;
+
+                }
+
+            }
+
+        }
+
+    }
+
+    if (CivilizationToLoanTo != -1) {
+
+        Loan temp_loan;
+
+        temp_loan.creditorCivilizationIndex = civilizationIndex;
+        temp_loan.debtorCivilizationIndex = CivilizationToLoanTo;
+
+        temp_loan.amountDue = 75;
+
+        gameVariables.activeLoans.push_back (temp_loan);
+
+
+
+        LoanEvent loanEvent;
+
+        loanEvent.LoanID = gameVariables.activeLoans.size() - 1;
+
+        loanEvent.EventName = "Loan Request from " + gameVariables.Civilizations[civilizationIndex].CivName;
+        loanEvent.EventMessage = "A foreign civilization has offered to loan us " + std::to_string(temp_loan.amountDue) + " gold.";
+
+        loanEvent.ResponseChoices.push_back ("We'll take all the help we can get.");
+        loanEvent.ResponseChoices.push_back ("We do not need help from lesser civilizations.");
+
+        loanEvent.targetCivilizationIndex = temp_loan.debtorCivilizationIndex;
+
+        gameVariables.gameEvents.push_back (loanEvent);
+
+
+    }
+
+}
+
+int AI::calculatePotentialLoanValue (int civilizationIndex, int potentialCivilizationIndex, GameVariables &gameVariables) {
+
+    int loan_value = 0;
+
+    loan_value += gameVariables.Civilizations[civilizationIndex].relationsWithOtherCivilizations[potentialCivilizationIndex];
+
+    if (gameVariables.Civilizations[potentialCivilizationIndex].Gold >= 0 && gameVariables.Civilizations[potentialCivilizationIndex].Gold < 100) {
+
+        loan_value += 50;
+
+    }
+
+    if (gameVariables.Civilizations[civilizationIndex].Gold <= 150) {
+
+        loan_value -= 100;
+
+    }
+
+    return loan_value;
+
+}
+
 void AI::think (int civilizationIndex, GameVariables &gameVariables) {
 
     groupUnits (civilizationIndex, gameVariables);
@@ -549,6 +631,8 @@ void AI::think (int civilizationIndex, GameVariables &gameVariables) {
     }
 
     tradingLogic (civilizationIndex, gameVariables);
+
+    decideIfCivilizationShouldOfferLoan (civilizationIndex, gameVariables);
 
     for (unsigned int a = 0; a < gameVariables.Cities.size(); a++) {
 
