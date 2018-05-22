@@ -52,7 +52,7 @@ Terrain matters in more than how much food and production it gives, however : te
 
 For example, Horsemen excel in flat terrain like Grasslands but are much weaker attacking on terrain such as Mountains.
 
-In this example, the Horseman attacking in Grasslands would deal 10% more damage than normal, but the Horseman attacking the Mountains would deal 55% less damage.
+In this example, the Horseman attacking in Grasslands would deal 10% more damage than normal, but the Horseman attacking in the Mountains would deal 55% less damage.
 
 
 Because terrain plays such an important role in combat, it is also a good idea to keep it in mind when settling new cities. 
