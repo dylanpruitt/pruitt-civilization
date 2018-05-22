@@ -1,0 +1,73 @@
+
+                PLEBS
+_        _
+\\      //
+ \\    //__  _   _     __
+  \\  //|   | | |   | |  | |\\  |
+   \\// |-- |-  |_  | |  | | \\ |
+    \/  |__ | \\__| | |__| |  \\|  o.o.5
+
+-== Instructions ==-
+
+[R] : Research
+[T] : Trading
+    > [T] : Trade
+    > [L] : Loan
+[C] : Browse Cities
+    > [P] : Produce building / unit
+[G] : Browse Unit Groupings
+    > [C] : Create new unit grouping
+[P] : Set Unit Upkeep
+[U] : Check units
+    > [A] : Add unit to grouping
+    > [M] : Move unit
+    > [D] : Check a unit's details
+    > [T] : Train units
+    > [S] : Use unit special abilities (ex. settling cities for Settler)
+[W] : Resources overview
+[E] : End your turn
+[;] : Spectate other civilizations and view the world map (For testing purposes only).
+    > [< and >] : Cycle through civilizations.
+    > [X] : Exit spectating mode.
+
+ = Production =
+
+Production is influenced by several factors when building units and cities in the game.
+
+The happiness of a civilization, the surrounding terrain, and said civilization's economic status all have an impact on the production output of your civilization.
+
+ = Terrain Types =
+
+Terrain Character - Type - Food Yield - Production Yield
+
+Blank space - Ocean - 1 - 0
+"-" - Coast - 1 - 0
+"#" - Grassland - 2 - 0
+"*" - Forest - 1 - 1
+"^" - Mountain - 0 - 2
+"s" - Snow - 0 - 0
+"." - Desert - 0 - 0
+
+Terrain matters in more than how much food and production it gives, however : terrain is also very important in combat.
+
+For example, Horsemen excel in flat terrain like Grasslands but are much weaker attacking on terrain such as Mountains.
+
+In this example, the Horseman attacking in Grasslands would deal 10% more damage than normal, but the Horseman attacking the Mountains would deal 55% less damage.
+
+
+Because terrain plays such an important role in combat, it is also a good idea to keep it in mind when settling new cities. 
+If you are more concerned with defending your civilization, settle cities near Mountains and Forests to give nearby units defensive boosts from the terrain.
+
+ = Unit Upkeep =
+
+Unit upkeep can be changed in this game.
+
+There is a base upkeep value when you set the upkeep you will spend on units each turn : set your upkeep lower than the base value, and they will do poorly in combat.
+However, if you spend more than necessary on upkeep, your units will perform better in combat.
+
+-== Update Log ==-
+
+05 - 22 - 2018
+--------------
+
+Fixed a bug where a trading civilization might give away GPT instead of gold.
