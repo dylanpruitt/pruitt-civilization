@@ -22,7 +22,7 @@ class Unit
 
         int health = 10; int maxHealth = 10;
 
-        int combat = 5;
+        int combatStrength = 5;
 
         int terrainMoveCost = 2;
 

@@ -4,9 +4,10 @@
 #include "City.h"
 #include "Unit.h"
 #include "WorldMap.h"
-#include "Event.h"
+#include "LoanEvent.h"
 #include "Trade.h"
 #include "Loan.h"
+#include "Alliance.h"
 
 struct GameVariables
 {
@@ -26,6 +27,8 @@ struct GameVariables
         std::vector<Trade> trades;
 
         std::vector<Loan> activeLoans;
+
+        std::vector<Alliance> alliances;
 
         WorldMap worldMap;
 

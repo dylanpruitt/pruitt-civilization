@@ -32,21 +32,6 @@ class Research
 
         std::vector<std::string> unlockableUnits;
 
-        void resetResearchfocus () {
- /*flag (R: unnecessary after tests*/
-            aiFocus_offense = 0;
-            aiFocus_defense = 0;
-            aiFocus_economic = 0;
-            aiFocus_population = 0;
-            aiFocus_production = 0;
-            aiFocus_diplomatic = 0;
-            aiFocus_scientific = 0;
-            aiFocus_exploration = 0;
-            aiFocus_religion = 0;
-            aiFocus_overall_importance = 1;
-
-        }
-
         std::string unlockablePromotion = "none";
 
         std::string type;

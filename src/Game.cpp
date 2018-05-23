@@ -336,7 +336,7 @@ void Game::loadUnitsFromFile (std::string filename) {
 
            file >> temp.name;
            file >> temp.health; temp.maxHealth = temp.health;
-           file >> temp.combat;
+           file >> temp.combatStrength;
            file >> temp.maxMovePoints;
            file >> temp.terrainMoveCost;
            file >> temp.productionCost;
@@ -450,6 +450,7 @@ void Game::loadCivilizationsFromFile (std::string filename, std::vector<Civiliza
     for (int i = 0; i < civsSize; i++) {
 
            file >> temp.CivName;
+           file >> temp.CivilizationAdjective;
 
            file >> temp.ExpansionRate;
            file >> temp.ScienceRate;
@@ -558,7 +559,7 @@ void Game::saveGame (std::string filename) {
 
             file << gameVariables.UnitsInGame[i].health << "\n";
             file << gameVariables.UnitsInGame[i].maxHealth << "\n";
-            file << gameVariables.UnitsInGame[i].combat << "\n";
+            file << gameVariables.UnitsInGame[i].combatStrength << "\n";
 
             file << gameVariables.UnitsInGame[i].isRanged << "\n";
 
@@ -1443,6 +1444,23 @@ void Game::openTradingMenu (int civilizationIndex) {
 
 }
 
+void Game::displayAlliances () {
+
+    std::cout << "Alliances" << std::endl;
+    for (unsigned int i = 0; i < gameVariables.alliances.size(); i++) {
+
+        std::cout << "- " << gameVariables.alliances[i].name << std::endl;
+
+        for (unsigned int j = 0; j < gameVariables.alliances[i].memberCivilizationIndices.size(); j++) {
+
+            std::cout << "   " << gameVariables.Civilizations[gameVariables.alliances[i].memberCivilizationIndices[j]].CivName << std::endl;
+
+        }
+
+    }
+
+}
+
 void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
     char Choice;
@@ -1478,6 +1496,12 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
     if (Choice == 'o') {
 
         playerRequestAlliance (civilizationIndex);
+
+    }
+
+    if (Choice == 'a') {
+
+        displayAlliances ();
 
     }
 
@@ -1525,7 +1549,7 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
                 << gameVariables.UnitsInGame[i].position.y << " | MOVEMENT LEFT : " << gameVariables.UnitsInGame[i].movementPoints << std::endl;
                 x++; int y = i; unitIndices.push_back(y);
 
-                militarypower += (gameVariables.UnitsInGame[i].combat * gameVariables.UnitsInGame[i].combat);
+                militarypower += (gameVariables.UnitsInGame[i].combatStrength * gameVariables.UnitsInGame[i].combatStrength);
 
             }
 
@@ -2178,13 +2202,37 @@ int Game::returnUnitIndexFromPosition (int civilizationIndex, int x, int y) {
 
 }
 
-void Game::combat (Unit &attacker, Unit &defender) {
+void Game::displayLikelyCombatOutcome (Unit &attacker, Unit &defender) {
 
     double attackingModifier = calculateUnitAttackingModifier (attacker, defender),
         defenseModifier = calculateUnitDefendingModifier (defender);
 
-    unsigned int attackerMaxDamage = ((attacker.combat * attacker.health * attackingModifier * 1.5) / (defender.combat * defender.health * defenseModifier)) + 1;
-    unsigned int defenderMaxDamage = ((defender.combat * defender.health * defenseModifier * 1.5) / (attacker.combat * attacker.health * attackingModifier)) + 1;
+    unsigned int attackerMaxDamage = ((attacker.combatStrength * attacker.health * attackingModifier * 1.5) / (defender.combatStrength * defender.health * defenseModifier)) + 1;
+    unsigned int defenderMaxDamage = ((defender.combatStrength * defender.health * defenseModifier * 1.5) / (attacker.combatStrength * attacker.health * attackingModifier)) + 1;
+
+
+    std::cout << attacker.name << " - " << gameVariables.Civilizations[attacker.parentCivilizationIndex].CivName << "       vs.      " << defender.name
+        << " - " << gameVariables.Civilizations[defender.parentCivilizationIndex].CivName << std::endl;
+
+    std::cout << "HP " << attacker.health << " | " << defender.health << std::endl;
+    std::cout << "STRENGTH " << attacker.combatStrength << " | " << defender.combatStrength << std::endl;
+
+    std::cout << "MODIFIER for Attacker : " << calculateUnitAttackingModifier(attacker, defender)*100 << "%" << std::endl;
+    std::cout << "MODIFIER for Defender : " << calculateUnitDefendingModifier(defender)*100 << "%" << std::endl;
+
+    std::cout << "Maximum possible damage : \n" << attackerMaxDamage << " | " << defenderMaxDamage << std::endl;
+
+}
+
+void Game::combat (Unit &attacker, Unit &defender) {
+
+    displayLikelyCombatOutcome (attacker, defender);
+
+    double attackingModifier = calculateUnitAttackingModifier (attacker, defender),
+        defenseModifier = calculateUnitDefendingModifier (defender);
+
+    unsigned int attackerMaxDamage = ((attacker.combatStrength * attacker.health * attackingModifier * 1.5) / (defender.combatStrength * defender.health * defenseModifier)) + 1;
+    unsigned int defenderMaxDamage = ((defender.combatStrength * defender.health * defenseModifier * 1.5) / (attacker.combatStrength * attacker.health * attackingModifier)) + 1;
 
     int attackerDamage = rand () % attackerMaxDamage;
     int defenderDamage = rand () % defenderMaxDamage;

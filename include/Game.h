@@ -123,6 +123,10 @@ class Game
 
         void combat (Unit &attacker, Unit &defender);
 
+        void displayLikelyCombatOutcome (Unit &attacker, Unit &defender);
+
+        void displayAlliances ();
+
         void openTradingMenu (int civilizationIndex);
 
         void offerLoan (int civilizationIndex);

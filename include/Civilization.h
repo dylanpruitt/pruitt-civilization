@@ -27,6 +27,7 @@ struct Civilization
         int era = eras::ANCIENT;
 
         std::string CivName;
+        std::string CivilizationAdjective;
 
         int startingX; int startingY; int Gold = 125;
 

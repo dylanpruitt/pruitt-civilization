@@ -365,11 +365,12 @@ void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
                 gameVariables.Civilizations[gameVariables.trades[i].traderIndex].Gold += gameVariables.trades[i].goldSumFromRecipient;
 
-                gameVariables.Civilizations[gameVariables.trades[i].traderIndex].GoldPerTurn -= gameVariables.trades[i].GPTFromTrader;
+                gameVariables.Civilizations[gameVariables.trades[i].traderIndex].GoldPerTurn -= gameVariables.trades[i].goldSumFromTrader;
 
                 gameVariables.Civilizations[civilizationIndex].GoldPerTurn += gameVariables.trades[i].GPTFromTrader;
 
                 gameVariables.Civilizations[civilizationIndex].GoldPerTurn -= gameVariables.trades[i].GPTFromRecipient;
+
 
                 gameVariables.Civilizations[gameVariables.trades[i].traderIndex].GoldPerTurn += gameVariables.trades[i].GPTFromRecipient;
 

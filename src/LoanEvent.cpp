@@ -21,6 +21,8 @@ enum choiceResponseCodes : int {
 
 void LoanEvent::responseLogic (int Choice, std::vector<Civilization> &Civilizations, std::vector<Loan> &Loans) {
 
+        std::cout << Choice << std::endl;
+
         if (Choice == choiceResponseCodes::YES) {
 
             Loans[LoanID].isAccepted = true; std::cout << Civilizations[Loans[LoanID].creditorCivilizationIndex].Gold  << std::endl;
@@ -30,6 +32,8 @@ void LoanEvent::responseLogic (int Choice, std::vector<Civilization> &Civilizati
             Civilizations[Loans[LoanID].debtorCivilizationIndex].Gold += Loans[LoanID].amountDue;
 
         } else {
+
+            std::cout << "Is this even being called??" << std::endl;
 
             Loans.erase (Loans.begin() + LoanID);
 
@@ -44,13 +48,21 @@ void LoanEvent::trigger (std::vector<Civilization> &Civilizations, std::vector<L
 
     for (unsigned int i = 1; i <= ResponseChoices.size(); i++) {
 
+        std::cout << ResponseChoices.size() << std::endl;
+
+
         std::cout << "[" << i << "] " << ResponseChoices[i-1] << std::endl;
 
     }
 
-    int Choice = sharedMethods::bindIntegerInputToRange(1, ResponseChoices.size(), 1);
 
-    responseLogic(Choice, Civilizations, Loans);
+    if (ResponseChoices.size() >= 1) {
+
+        int choice = sharedMethods::bindIntegerInputToRange(1, ResponseChoices.size(), 1);
+
+        responseLogic(choice, Civilizations, Loans);
+
+    }
 
 }
 

@@ -1,6 +1,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 #include "Civilization.h"
+#include "Alliance.h"
 
 #include <string>
 
@@ -34,6 +35,7 @@ class Event
         virtual void trigger_ai (std::vector<Civilization> &Civilizations);
 
         virtual void responseLogic (int Choice, std::vector<Civilization> &Civilizations);
+
 };
 
 #endif // EVENT_H

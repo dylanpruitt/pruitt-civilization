@@ -1,5 +1,6 @@
 #include "Event.h"
 #include "sharedMethods.h"
+#include "Alliance.h"
 #include <iostream>
 
 Event::Event()
@@ -40,17 +41,6 @@ void Event::listen (int civilizationIndex, std::vector<Civilization> &Civilizati
 }
 
 void Event::responseLogic (int Choice, std::vector<Civilization> &Civilizations) {
-
-    if (eventType == "alliance") {
-
-        if (Choice == choiceResponseCodes::YES) {
-
-            Civilizations[targetCivilizationIndex].relationsWithOtherCivilizations[initializerCivilization] += 30;
-            Civilizations[initializerCivilization].relationsWithOtherCivilizations[targetCivilizationIndex] += 30;
-
-        }
-
-    }
 
 }
 

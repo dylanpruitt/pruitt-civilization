@@ -53,7 +53,7 @@ int textRenderer::returnCivMilitaryPower (int civ_index, GameVariables &gameVari
 
         if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civ_index) {
 
-                militarypower += (gameVariables.UnitsInGame[i].combat * gameVariables.UnitsInGame[i].combat);
+                militarypower += (gameVariables.UnitsInGame[i].combatStrength * gameVariables.UnitsInGame[i].combatStrength);
 
         }
 

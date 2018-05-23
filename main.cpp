@@ -6,7 +6,7 @@ using namespace std;
 
 void showTitle () {
 
-std::cout << "Pruitt's Linux Based Exploration Survival Game (PLEBS)\n_        _\n\\\\      //\n \\\\    //__  _   _     __\n  \\\\  //|   | | |   | |  | |\\  |\n   \\\\// |-- |-  |_  | |  | | \\ |\n    \\/  |__ | \\ __| | |__| |  \\|  o.o.5\nCradle of Civilizations\n\n";
+std::cout << "Pruitt's Linux Exploration Based Simulation (PLEBS)\n_        _\n\\\\      //\n \\\\    //__  _   _     __\n  \\\\  //|   | | |   | |  | |\\  |\n   \\\\// |-- |-  |_  | |  | | \\ |\n    \\/  |__ | \\ __| | |__| |  \\|  o.o.5\nCradle of Civilizations\n\n";
 
 }
 
