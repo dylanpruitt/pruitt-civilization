@@ -39,7 +39,15 @@ void updateCities (GameVariables &gameVariables) {
 
     for (int w = 0; w < gameVariables.Cities.size(); w++) {
 
-        gameVariables.Cities[w].FoodSurplus += ((gameVariables.Cities[w].FoodPerTurnFromCity + gameVariables.Cities[w].FoodPerTurnFromTiles) - (gameVariables.Cities[w].Population*2));
+        double FoodModifier = 1.0;
+
+        if (gameVariables.Civilizations[gameVariables.Cities[w].parentIndex].focus == "Population") {
+
+            FoodModifier = 1.10;
+
+        }
+
+        gameVariables.Cities[w].FoodSurplus += FoodModifier * ((gameVariables.Cities[w].FoodPerTurnFromCity + gameVariables.Cities[w].FoodPerTurnFromTiles) - (gameVariables.Cities[w].Population*2));
 
         gameVariables.Cities[w].turnsToExpand -= gameVariables.Civilizations[gameVariables.Cities[w].parentIndex].ExpansionRate;
 
@@ -179,6 +187,13 @@ void updateCityProductionModifier (int cityIndex, int civilizationIndex, GameVar
 
     }
 
+    if (gameVariables.Cities[cityIndex].isProducing == true && gameVariables.Cities[cityIndex].isProducingUnit == false
+        && gameVariables.Civilizations[civilizationIndex].focus == "Construction") {
+
+        tempModifier += 15;
+
+    }
+
     gameVariables.Cities[cityIndex].ProductionModifier = (tempModifier/100);
 
 }
@@ -247,7 +262,13 @@ void updateCityBuildingProduction (int cityIndex, int civilizationIndex, GameVar
 
 void updateGoldPerTurn (int civilizationIndex, GameVariables &gameVariables) {
 
-    int gpt = 0;
+    int gpt = 0; double gptModifier = 1.0;
+
+    if (gameVariables.Civilizations[civilizationIndex].focus == "Economic") {
+
+        gptModifier = 1.15;
+
+    }
 
     for (unsigned int i = 0; i < gameVariables.Cities.size(); i++) {
 
@@ -255,6 +276,8 @@ void updateGoldPerTurn (int civilizationIndex, GameVariables &gameVariables) {
 
             gpt += gameVariables.Cities[i].GoldPerTurn;
             gpt += gameVariables.Cities[i].GoldPerTurnFromCity;
+
+            gpt *= gptModifier;
 
         }
 

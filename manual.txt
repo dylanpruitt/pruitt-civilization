@@ -30,6 +30,21 @@ _        _
     > [< and >] : Cycle through civilizations.
     > [X] : Exit spectating mode.
 
+ = Civilization Focuses =
+
+Civilizations can choose areas to focus on such as economics and military for a few turns.
+
+ - Focuses -
+
+Construction - +15% Production when constructing buildings
+
+Economic - +15% GPT
+
+Military - +15% Research speed for Military technologies
+
+Population - +10% Population growth
+
+
  = Production =
 
 Production is influenced by several factors when building units and cities in the game.

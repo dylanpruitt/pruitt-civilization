@@ -26,6 +26,8 @@ struct Civilization
 
         int era = eras::ANCIENT;
 
+        std::string focus = "none";
+
         std::string CivName;
         std::string CivilizationAdjective;
 

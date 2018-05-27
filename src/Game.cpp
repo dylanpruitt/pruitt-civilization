@@ -1534,6 +1534,41 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
     }
 
+    if (Choice == 'F' || Choice == 'f') {
+
+        std::cout << "Current focus : " << gameVariables.Civilizations[civilizationIndex].focus << std::endl;
+
+        std::cout << "Change focus? [Y/N]" << std::endl;
+
+        std::cin >> Choice;
+
+        if (Choice == 'Y' || Choice == 'y') {
+
+            std::cout << "[1] Construction\n[2] Economic\n[3] Military\n[4] Population" << std::endl;
+
+            Choice = sharedMethods::bindIntegerInputToRange (1, 4, 1);
+
+            switch (Choice) {
+
+                case 1:
+                    gameVariables.Civilizations[civilizationIndex].focus = "Construction";
+                    break;
+                case 2:
+                    gameVariables.Civilizations[civilizationIndex].focus = "Economic";
+                    break;
+                case 3:
+                    gameVariables.Civilizations[civilizationIndex].focus = "Military";
+                    break;
+                case 4:
+                    gameVariables.Civilizations[civilizationIndex].focus = "Population";
+                    break;
+
+            }
+
+        }
+
+    }
+
     if (Choice == 'r' || Choice == 'R') {
 
         pickResearchForHumanPlayer (civilizationIndex);
