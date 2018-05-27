@@ -1461,6 +1461,33 @@ void Game::displayAlliances () {
 
 }
 
+void Game::displayWars () {
+
+    std::cout << "Wars" << std::endl;
+    for (unsigned int i = 0; i < gameVariables.wars.size(); i++) {
+
+        std::cout << "- " << gameVariables.wars[i].name << std::endl;
+
+        for (unsigned int j = 0; j < gameVariables.wars[i].offenderCivilizationIndices.size(); j++) {
+
+            std::cout << "  " << gameVariables.Civilizations[gameVariables.wars[i].offenderCivilizationIndices[j]].CivName << " ("
+                << gameVariables.wars[i].offenderCivilizationWarScores[j] << ")" << std::endl;
+
+        }
+
+        std::cout << "  VS." << std::endl;
+
+        for (unsigned int j = 0; j < gameVariables.wars[i].defenderCivilizationIndices.size(); j++) {
+
+            std::cout << "  " << gameVariables.Civilizations[gameVariables.wars[i].defenderCivilizationIndices[j]].CivName << " ("
+                << gameVariables.wars[i].defenderCivilizationWarScores[j] << ")" << std::endl;
+
+        }
+
+    }
+
+}
+
 void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
     char Choice;
@@ -1502,6 +1529,12 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
     if (Choice == 'a') {
 
         displayAlliances ();
+
+    }
+
+    if (Choice == 'd') {
+
+        displayWars ();
 
     }
 

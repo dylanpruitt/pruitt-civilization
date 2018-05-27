@@ -9,13 +9,13 @@ struct War
 {
     public:
 
-        std::vector<Civilization> offenderCivilizations;
+        std::vector<int> offenderCivilizationIndices;
 
         std::vector<int> offenderCivilizationWarScores;
 
 
 
-        std::vector<Civilization> defenderCivilizations;
+        std::vector<int> defenderCivilizationIndices;
 
         std::vector<int> defenderCivilizationWarScores;
 

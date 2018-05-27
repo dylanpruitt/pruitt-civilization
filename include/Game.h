@@ -127,6 +127,8 @@ class Game
 
         void displayAlliances ();
 
+        void displayWars ();
+
         void openTradingMenu (int civilizationIndex);
 
         void offerLoan (int civilizationIndex);

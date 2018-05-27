@@ -8,6 +8,7 @@
 #include "Trade.h"
 #include "Loan.h"
 #include "Alliance.h"
+#include "War.h"
 
 struct GameVariables
 {
@@ -29,6 +30,8 @@ struct GameVariables
         std::vector<Loan> activeLoans;
 
         std::vector<Alliance> alliances;
+
+        std::vector<War> wars;
 
         WorldMap worldMap;
 
