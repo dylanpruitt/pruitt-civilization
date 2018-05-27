@@ -58,6 +58,8 @@ struct Civilization
 
         std::vector<int> relationsWithOtherCivilizations;
 
+        std::vector<bool> hasMetCivilizations;
+
         std::vector<Resource> resources;
 
         Research technologyBeingResearched;
@@ -98,6 +100,25 @@ struct Civilization
 
             unitGroups.push_back (newGroup);
 
+        }
+
+        bool hasMetCivilization (int civilizationIndex) {
+
+            if (civilizationIndex >= 0) {
+
+                if (hasMetCivilizations[civilizationIndex] == true) {
+
+                    return true;
+
+                } else {
+
+                    return false;
+
+                }
+
+            }
+
+            return false;
         }
 
 };

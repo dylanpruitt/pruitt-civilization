@@ -11,13 +11,7 @@ struct War
 
         std::vector<int> offenderCivilizationIndices;
 
-        std::vector<int> offenderCivilizationWarScores;
-
-
-
         std::vector<int> defenderCivilizationIndices;
-
-        std::vector<int> defenderCivilizationWarScores;
 
         std::string name;
 

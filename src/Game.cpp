@@ -238,6 +238,16 @@ void Game::setupWorld () {
 
     }
 
+    for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
+
+        for (unsigned int j = 0; j < gameVariables.Civilizations.size(); j++) {
+
+            gameVariables.Civilizations[i].hasMetCivilizations.push_back (false);
+
+        }
+
+    }
+
     setupDiplomacy();
 
 }
@@ -1369,46 +1379,58 @@ void Game::editLoan (int civilizationIndex, Loan &loan) {
 
 void Game::offerLoan (int civilizationIndex) {
 
-    int Choice = 0;
-
-    std::cout << "Trade with what Civilization?" << std::endl;
+    int Choice = 0; std::vector<int> valid_civilization_indices;
 
     for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
 
-        if (i != civilizationIndex) {
+        if (i != civilizationIndex && gameVariables.Civilizations[civilizationIndex].hasMetCivilization (i)) {
 
-            std::cout << "[" << i << "] " << gameVariables.Civilizations[i].CivName << std::endl;
+           valid_civilization_indices.push_back(i);
 
         }
 
     }
 
-    Choice = sharedMethods::bindIntegerInputToRange (0, gameVariables.Civilizations.size() -1, 0);
+    if (valid_civilization_indices.size () >= 1) {
 
-    Loan temp_loan;
+        for (unsigned int i = 0; i < valid_civilization_indices.size(); i++) {
 
-    temp_loan.creditorCivilizationIndex = civilizationIndex;
-    temp_loan.debtorCivilizationIndex = Choice;
+            std::cout << "[" << i << "] " << gameVariables.Civilizations[valid_civilization_indices[i]].CivName << std::endl;
 
-    editLoan (civilizationIndex, temp_loan);
+        }
 
-    gameVariables.activeLoans.push_back (temp_loan);
+        Choice = sharedMethods::bindIntegerInputToRange (0, valid_civilization_indices.size() -1, 0);
+
+        Loan temp_loan;
+
+        temp_loan.creditorCivilizationIndex = civilizationIndex;
+        temp_loan.debtorCivilizationIndex = valid_civilization_indices[Choice];
+
+        editLoan (civilizationIndex, temp_loan);
+
+        gameVariables.activeLoans.push_back (temp_loan);
 
 
 
-    LoanEvent loanEvent;
+        LoanEvent loanEvent;
 
-    loanEvent.LoanID = gameVariables.activeLoans.size() - 1;
+        loanEvent.LoanID = gameVariables.activeLoans.size() - 1;
 
-    loanEvent.EventName = "Loan Request from " + gameVariables.Civilizations[civilizationIndex].CivName;
-    loanEvent.EventMessage = "A foreign civilization has offered to loan us " + std::to_string(temp_loan.amountDue) + " gold.";
+        loanEvent.EventName = "Loan Request from " + gameVariables.Civilizations[civilizationIndex].CivName;
+        loanEvent.EventMessage = "A foreign civilization has offered to loan us " + std::to_string(temp_loan.amountDue) + " gold.";
 
-    loanEvent.ResponseChoices.push_back ("We'll take all the help we can get.");
-    loanEvent.ResponseChoices.push_back ("We do not need help from lesser civilizations.");
+        loanEvent.ResponseChoices.push_back ("We'll take all the help we can get.");
+        loanEvent.ResponseChoices.push_back ("We do not need help from lesser civilizations.");
 
-    loanEvent.targetCivilizationIndex = temp_loan.debtorCivilizationIndex;
+        loanEvent.targetCivilizationIndex = temp_loan.debtorCivilizationIndex;
 
-    gameVariables.gameEvents.push_back (loanEvent);
+        gameVariables.gameEvents.push_back (loanEvent);
+
+    } else {
+
+        std::cout << "There aren't any civilizations you can trade with!" << std::endl;
+
+    }
 
 }
 
@@ -1470,8 +1492,7 @@ void Game::displayWars () {
 
         for (unsigned int j = 0; j < gameVariables.wars[i].offenderCivilizationIndices.size(); j++) {
 
-            std::cout << "  " << gameVariables.Civilizations[gameVariables.wars[i].offenderCivilizationIndices[j]].CivName << " ("
-                << gameVariables.wars[i].offenderCivilizationWarScores[j] << ")" << std::endl;
+            std::cout << "  " << gameVariables.Civilizations[gameVariables.wars[i].offenderCivilizationIndices[j]].CivName << std::endl;
 
         }
 
@@ -1479,8 +1500,7 @@ void Game::displayWars () {
 
         for (unsigned int j = 0; j < gameVariables.wars[i].defenderCivilizationIndices.size(); j++) {
 
-            std::cout << "  " << gameVariables.Civilizations[gameVariables.wars[i].defenderCivilizationIndices[j]].CivName << " ("
-                << gameVariables.wars[i].defenderCivilizationWarScores[j] << ")" << std::endl;
+            std::cout << "  " << gameVariables.Civilizations[gameVariables.wars[i].defenderCivilizationIndices[j]].CivName << std::endl;
 
         }
 
@@ -1843,20 +1863,32 @@ void Game::requestAlliance (int civilizationIndex, int targetCivilizationIndex) 
 
 void Game::playerRequestAlliance (int civilizationIndex) {
 
+    int Choice = 0; std::vector<int> valid_civilization_indices;
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
+
+        if (i != civilizationIndex && gameVariables.Civilizations[civilizationIndex].hasMetCivilization (i)) {
+
+           valid_civilization_indices.push_back(i);
+
+        }
+
+    }
+
     std::cout << "Request an alliance with what Civilization?" << std::endl;
 
-    for (unsigned int a = 0; a < gameVariables.Civilizations.size(); a++) {
+    for (unsigned int a = 0; a < valid_civilization_indices.size(); a++) {
 
         if (a != civilizationIndex) {
 
-            std::cout << "[" << a << "] " << gameVariables.Civilizations[a].CivName << std::endl;
+            std::cout << "[" << a << "] " << gameVariables.Civilizations[valid_civilization_indices[a]].CivName << std::endl;
 
         }
     }
 
-    int Choice = sharedMethods::bindIntegerInputToRange(0,gameVariables.Civilizations.size()-1,0);
+    Choice = sharedMethods::bindIntegerInputToRange(0,valid_civilization_indices.size()-1,0);
 
-    requestAlliance (civilizationIndex, Choice);
+    requestAlliance (civilizationIndex, valid_civilization_indices[Choice]);
 
 }
 
@@ -2059,30 +2091,40 @@ void Game::editTrade (int civilizationIndex, Trade &trade, int Choice) {
 
 void Game::trade (int civilizationIndex) {
 
-    int Choice = 0;
+    int Choice = 0; std::vector<int> valid_civilization_indices;
 
     std::cout << "Trade with what Civilization?" << std::endl;
 
     for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
 
-        if (i != civilizationIndex) {
+        if (i != civilizationIndex && gameVariables.Civilizations[civilizationIndex].hasMetCivilization (i)) {
 
-            std::cout << "[" << i << "] " << gameVariables.Civilizations[i].CivName << std::endl;
+            valid_civilization_indices.push_back (i);
 
         }
 
     }
 
-    Choice = sharedMethods::bindIntegerInputToRange (0, gameVariables.Civilizations.size() -1, 0);
+    if (valid_civilization_indices.size () >= 1) {
 
-    Trade trade;
+        for (unsigned int i = 0; i < valid_civilization_indices.size(); i++) {
 
-    trade.recipientIndex = Choice;
-    trade.traderIndex = civilizationIndex;
+            std::cout << "[" << i << "] " << gameVariables.Civilizations[valid_civilization_indices[i]].CivName << std::endl;
 
-    editTrade (civilizationIndex, trade, Choice);
+        }
 
-    gameVariables.trades.push_back (trade);
+        Choice = sharedMethods::bindIntegerInputToRange (0, valid_civilization_indices.size() -1, 0);
+
+        Trade trade;
+
+        trade.recipientIndex = Choice;
+        trade.traderIndex = civilizationIndex;
+
+        editTrade (civilizationIndex, trade, valid_civilization_indices[Choice]);
+
+        gameVariables.trades.push_back (trade);
+
+    }
 
 }
 
@@ -2105,6 +2147,8 @@ void Game::loop () {
             loopVariable = true;
 
             GameUpdater::updateForCivilization (civilizationIndex, gameVariables, ai);
+
+            sharedMethods::checkIfCivilizationHasMetNewCivilization (civilizationIndex, gameVariables);
 
             gameVariables.Civilizations[civilizationIndex].Gold += gameVariables.Civilizations[civilizationIndex].GoldPerTurn;
 

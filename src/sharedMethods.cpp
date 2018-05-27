@@ -511,4 +511,64 @@ int returnBaseUnitUpkeep (int civilizationIndex, GameVariables &gameVariables) {
 
 }
 
+void checkIfCivilizationHasMetNewCivilization (int civilizationIndex, GameVariables &gameVariables) {
+
+    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
+
+        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
+
+            if (gameVariables.Civilizations[civilizationIndex].WorldExplorationMap[i][j] == 1) {
+
+                checkIfUnmetCivilizationUnitIsAtPosition (i, j, civilizationIndex, gameVariables);
+
+                checkIfUnmetCivilizationOwnsPosition (i, j, civilizationIndex, gameVariables);
+
+            }
+
+
+        }
+
+    }
+
 }
+
+void checkIfUnmetCivilizationUnitIsAtPosition (int x, int y, int civilizationIndex, GameVariables &gameVariables) {
+
+    for (unsigned int k = 0; k < gameVariables.UnitsInGame.size(); k++) {
+
+        if (gameVariables.UnitsInGame[k].position.x == x && gameVariables.UnitsInGame[k].position.y == y) {
+
+            if (gameVariables.Civilizations[civilizationIndex].hasMetCivilization (gameVariables.UnitsInGame[k].parentCivilizationIndex) == false) {
+
+                gameVariables.Civilizations[civilizationIndex].hasMetCivilizations[gameVariables.UnitsInGame[k].parentCivilizationIndex] = true;
+
+                gameVariables.Civilizations[gameVariables.UnitsInGame[k].parentCivilizationIndex].hasMetCivilizations[civilizationIndex] = true;
+
+            }
+
+        }
+
+    }
+
+
+}
+
+void checkIfUnmetCivilizationOwnsPosition (int x, int y, int civilizationIndex, GameVariables &gameVariables) {
+
+    if (gameVariables.worldMap.WorldTerritoryMap[x][y] != civilizationIndex+1
+        && gameVariables.Civilizations[civilizationIndex].hasMetCivilization (gameVariables.worldMap.WorldTerritoryMap[x][y]-1) == false) {
+
+        if (gameVariables.worldMap.WorldTerritoryMap[x][y]-1 > -1) {
+
+            gameVariables.Civilizations[civilizationIndex].hasMetCivilizations[gameVariables.worldMap.WorldTerritoryMap[x][y]-1] = true;
+
+            gameVariables.Civilizations[gameVariables.worldMap.WorldTerritoryMap[x][y]-1].hasMetCivilizations[civilizationIndex] = true;
+
+        }
+
+    }
+
+}
+
+}
+

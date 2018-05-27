@@ -178,7 +178,19 @@ void textRenderer::renderStatusTextRightOfWorldMap (int i, int currentCivilizati
         if (i == w+1 && i == currentCivilizationIndex+1) {
             std::cout << " > YOU < ";
         } else if (i == w+1) {
-            std::cout << " " << gameVariables.Civilizations[w].CivName << " - [" << gameVariables.Civilizations[currentCivilizationIndex].relationsWithOtherCivilizations[w] << " | " << gameVariables.Civilizations[w].relationsWithOtherCivilizations[currentCivilizationIndex] << "]";
+
+            if (gameVariables.Civilizations[currentCivilizationIndex].hasMetCivilization (w)) {
+
+                std::cout << " " << gameVariables.Civilizations[w].CivName << " - ["
+                    << gameVariables.Civilizations[currentCivilizationIndex].relationsWithOtherCivilizations[w] << " | "
+                    << gameVariables.Civilizations[w].relationsWithOtherCivilizations[currentCivilizationIndex] << "]";
+
+            } else {
+
+                std::cout << "???";
+
+            }
+
         }
 
     }

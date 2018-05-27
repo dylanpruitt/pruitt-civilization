@@ -51,6 +51,12 @@ namespace sharedMethods
 
         extern int returnBaseUnitUpkeep (int civilizationIndex, GameVariables &gameVariables);
 
+        extern void checkIfCivilizationHasMetNewCivilization (int civilizationIndex, GameVariables &gameVariables);
+
+        void checkIfUnmetCivilizationUnitIsAtPosition (int x, int y, int civilizationIndex, GameVariables &gameVariables);
+
+        void checkIfUnmetCivilizationOwnsPosition (int x, int y, int civilizationIndex, GameVariables &gameVariables);
+
 };
 
 #endif // SHAREDMETHODS_H
