@@ -3,8 +3,6 @@
 
 #include <vector>
 
-#include "Civilization.h"
-
 struct War
 {
     public:

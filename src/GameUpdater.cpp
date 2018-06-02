@@ -526,6 +526,8 @@ void updateCivilizationHappiness (int civilizationIndex, GameVariables &gameVari
 
     }
 
+    if (gameVariables.Civilizations[civilizationIndex].isAtWar) { baseHappiness -= 30; }
+
     gameVariables.Civilizations[civilizationIndex].Happiness = baseHappiness;
 
 }

@@ -17,9 +17,11 @@ int main()
     Game game;
 
     std::cout << "\033]0;PLEBS Version 0.0.5 - Cradle of Civilizations\007" << std::endl; /*flag (r:windows port will need SetConsoleTitle()*/
+
     showTitle();
 
     game.setupWorld();
+
     game.loop();
     return 0;
 }

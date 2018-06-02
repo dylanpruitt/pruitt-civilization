@@ -88,6 +88,8 @@ struct Civilization
 
         std::vector<UnitGrouping> unitGroups;
 
+        bool isAtWar = false;
+
         void addNewGrouping (std::string name, int rgb[3]) {
 
             UnitGrouping newGroup;

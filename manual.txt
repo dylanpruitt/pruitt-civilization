@@ -8,7 +8,9 @@ _        _
     \/  |__ | \\__| | |__| |  \\|  o.o.5
 
 -== Instructions ==-
-
+[D] : Diplomacy
+    > [O] : Offer alliance
+    > [D] : Declare War
 [R] : Research
 [T] : Trading
     > [T] : Trade
@@ -80,9 +82,10 @@ Unit upkeep can be changed in this game.
 There is a base upkeep value when you set the upkeep you will spend on units each turn : set your upkeep lower than the base value, and they will do poorly in combat.
 However, if you spend more than necessary on upkeep, your units will perform better in combat.
 
--== Update Log ==-
+ = Wars =
 
-05 - 22 - 2018
---------------
+You can take enemy civilizations' territory and cities in wars.
 
-Fixed a bug where a trading civilization might give away GPT instead of gold.
+Any civilizations in an alliance with a civilization that goes to war will go to war on said civilization's side.
+
+ex. If Portugal allies with America and America declares war on England, Portugal also declares war on England.

@@ -5,6 +5,7 @@
 #include "Domain.h"
 #include "Position.h"
 #include "TerrainModifier.h"
+#include "WorldMap.h"
 
 #include <vector>
 
@@ -58,6 +59,12 @@ class Unit
         bool destinationHasBeenAssigned = false;
 
         bool isTraining = false;
+
+        void seizeTerritory (WorldMap &worldMap) {
+
+            worldMap.WorldTerritoryMap[position.x][position.y] = parentCivilizationIndex+1;
+
+        }
 
     protected:
     private:

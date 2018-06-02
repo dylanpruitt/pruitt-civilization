@@ -163,17 +163,63 @@ void getAncientRuinBenefits (Unit &unit, Civilization &civ, WorldMap worldMap) {
 
 }
 
-void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civilization &civ, WorldMap worldMap) {
+void seizeTerritory (int civilizationIndex, int x, int y, GameVariables &gameVariables) {
+
+    gameVariables.worldMap.WorldTerritoryMap[x][y] = civilizationIndex+1;
+
+}
+
+void civilizationTakeCity (int civilizationIndex, int cityIndex, GameVariables &gameVariables) {
+
+
+
+    int cityX = gameVariables.Cities[cityIndex].position.x, cityY = gameVariables.Cities[cityIndex].position.y;
+
+    for (int i = -3; i < 4; i++) {
+
+        for (int j = -3; j < 4; j++) {
+
+            if (sharedMethods::getDistance (cityX, cityY, cityX+i, cityY+j) <= 3
+                && gameVariables.worldMap.WorldTerritoryMap[cityX+i][cityY+j] == gameVariables.Cities[cityIndex].parentIndex+1) {
+
+                gameVariables.worldMap.WorldTerritoryMap[cityX+i][cityY+j] = civilizationIndex+1;
+
+            }
+
+        }
+
+    }
+
+    gameVariables.Cities[cityIndex].parentIndex = civilizationIndex;
+
+}
+
+int getCityIndexAtPosition (int x, int y, GameVariables &gameVariables) {
+
+    const int no_city_on_position = -1;
+
+    for (unsigned int i = 0; i < gameVariables.Cities.size(); i++) {
+
+        if (gameVariables.Cities[i].position.x == x && gameVariables.Cities[i].position.y == y) {
+
+            return i;
+
+        }
+
+    }
+
+    return no_city_on_position;
+
+}
+
+void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civilization &civ, GameVariables &gameVariables) {
 
     bool isFlatTerrain = true;
 
-    if
-    (((unit.domain.canCoastalEmbark == false && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::COAST) || unit.domain.canCoastalEmbark)
-    && ((unit.domain.canCrossOceans == false && worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != worldMap.mapTiles::OCEAN) || unit.domain.canCrossOceans)
-    && unitIsNotTrespassing(unit.parentCivilizationIndex, xPositionToMoveTo, yPositionToMoveTo, worldMap)) {
+    if (unitCanMoveToTile (unit, xPositionToMoveTo, yPositionToMoveTo, gameVariables)) {
 
-        if (worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == worldMap.mapTiles::MOUNTAIN
-            || worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == worldMap.mapTiles::FOREST) {
+        if (gameVariables.worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == gameVariables.worldMap.mapTiles::MOUNTAIN
+            || gameVariables.worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] == gameVariables.worldMap.mapTiles::FOREST) {
 
             isFlatTerrain = false;
         }
@@ -182,18 +228,51 @@ void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civiliz
 
         unit.position.setCoordinates(xPositionToMoveTo, yPositionToMoveTo);
 
-        getAncientRuinBenefits (unit, civ, worldMap);
+        getAncientRuinBenefits (unit, civ, gameVariables.worldMap);
+
+        if (areCivsAtWar(unit.parentCivilizationIndex, gameVariables.worldMap.WorldTerritoryMap[xPositionToMoveTo][yPositionToMoveTo]-1, gameVariables)) {
+
+            seizeTerritory (unit.parentCivilizationIndex, xPositionToMoveTo, yPositionToMoveTo, gameVariables);
+
+            int cityIndex = getCityIndexAtPosition (unit.position.x, unit.position.y, gameVariables);
+
+            if (cityIndex != -1) {
+
+                civilizationTakeCity (unit.parentCivilizationIndex, cityIndex, gameVariables);
+
+            }
+
+        }
     }
 
-    for (int i = 0; i < worldMap.worldSize; i++) {
+    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
 
-        for (int j = 0; j < worldMap.worldSize*4; j++) {
+        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
 
             if (getDistance(i,j,unit.position.x,unit.position.y) <= 2) {
                 civ.WorldExplorationMap[i][j] = 1;
             }
 
         }
+    }
+
+}
+
+bool unitCanMoveToTile (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, GameVariables &gameVariables) {
+
+    if (((unit.domain.canCoastalEmbark == false && gameVariables.worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != gameVariables.worldMap.mapTiles::COAST)
+            || unit.domain.canCoastalEmbark)
+        && ((unit.domain.canCrossOceans == false && gameVariables.worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != gameVariables.worldMap.mapTiles::OCEAN)
+            || unit.domain.canCrossOceans)
+        && (unitIsNotTrespassing(unit.parentCivilizationIndex, xPositionToMoveTo, yPositionToMoveTo, gameVariables.worldMap))
+            ||  areCivsAtWar(unit.parentCivilizationIndex, gameVariables.worldMap.WorldTerritoryMap[xPositionToMoveTo][yPositionToMoveTo]-1,gameVariables)) {
+
+        return true;
+
+    } else {
+
+        return false;
+
     }
 
 }
@@ -567,6 +646,67 @@ void checkIfUnmetCivilizationOwnsPosition (int x, int y, int civilizationIndex, 
         }
 
     }
+
+}
+
+bool areCivsAtWar (int civilizationIndex, int targetCivilizationIndex, GameVariables &gameVariables) {
+
+    int warIndex = returnIndexOfWarContainingCivilizations (civilizationIndex, targetCivilizationIndex, gameVariables);
+
+    if (warIndex > -1) {
+
+        bool civOneIsAttacking = false, civTwoIsAttacking = false;
+
+         for (unsigned int j = 0; j < gameVariables.wars[warIndex].offenderCivilizationIndices.size(); j++) {
+
+            if (gameVariables.wars[warIndex].offenderCivilizationIndices[j] == civilizationIndex) { civOneIsAttacking = true; }
+            if (gameVariables.wars[warIndex].offenderCivilizationIndices[j] == targetCivilizationIndex) { civTwoIsAttacking = true; }
+
+        }
+
+        if ((civOneIsAttacking && !civTwoIsAttacking) || (!civOneIsAttacking && civTwoIsAttacking)) {
+
+            return true;
+
+        }
+
+    } else {
+
+        return false;
+
+    }
+
+    return false;
+
+}
+
+int returnIndexOfWarContainingCivilizations (int civilizationIndex, int targetCivilizationIndex, GameVariables &gameVariables) {
+
+    bool containsCivOne = false, containsCivTwo = false;
+
+    for (unsigned int i = 0; i < gameVariables.wars.size(); i++) {
+
+        containsCivOne = false; containsCivTwo = false;
+
+        for (unsigned int j = 0; j < gameVariables.wars[i].offenderCivilizationIndices.size(); j++) {
+
+            if (gameVariables.wars[i].offenderCivilizationIndices[j] == civilizationIndex) { containsCivOne = true; }
+            if (gameVariables.wars[i].offenderCivilizationIndices[j] == targetCivilizationIndex) { containsCivTwo = true; }
+
+        }
+
+        for (unsigned int j = 0; j < gameVariables.wars[i].defenderCivilizationIndices.size(); j++) {
+
+            if (gameVariables.wars[i].defenderCivilizationIndices[j] == civilizationIndex) { containsCivOne = true; }
+            if (gameVariables.wars[i].defenderCivilizationIndices[j] == targetCivilizationIndex) { containsCivTwo = true; }
+
+        }
+
+        if (containsCivOne && containsCivTwo) { return i; }
+
+    }
+
+    return -1;
 
 }
 

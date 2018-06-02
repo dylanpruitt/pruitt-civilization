@@ -131,9 +131,13 @@ class Game
 
         void openTradingMenu (int civilizationIndex);
 
+        void openDiplomacyMenu (int civilizationIndex);
+
         void offerLoan (int civilizationIndex);
 
         void editLoan (int civilizationIndex, Loan &loan);
+
+        void declareWar (int civilizationIndex, int targetCivilizationIndex);
 
 };
 

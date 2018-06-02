@@ -247,16 +247,16 @@ void AI::moveUnit (int unitIndex, int civilizationIndex, GameVariables &gameVari
     switch (directionToMoveIn) {
 
         case directions::NORTH:
-            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x-1, gameVariables.UnitsInGame[unitIndex].position.y, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap);
+            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x-1, gameVariables.UnitsInGame[unitIndex].position.y, gameVariables.Civilizations[civilizationIndex], gameVariables);
         break;
         case directions::WEST:
-            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x, gameVariables.UnitsInGame[unitIndex].position.y-1, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap);
+            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x, gameVariables.UnitsInGame[unitIndex].position.y-1, gameVariables.Civilizations[civilizationIndex], gameVariables);
         break;
         case directions::SOUTH:
-            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x+1, gameVariables.UnitsInGame[unitIndex].position.y, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap);
+            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x+1, gameVariables.UnitsInGame[unitIndex].position.y, gameVariables.Civilizations[civilizationIndex], gameVariables);
         break;
         case directions::EAST:
-            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x, gameVariables.UnitsInGame[unitIndex].position.y+1, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap);
+            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x, gameVariables.UnitsInGame[unitIndex].position.y+1, gameVariables.Civilizations[civilizationIndex], gameVariables);
         break;
         case -1:
             gameVariables.UnitsInGame[unitIndex].movementPoints = 0;

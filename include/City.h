@@ -39,8 +39,6 @@ class City
 
         int parentIndex;
 
-        int Health = 100;
-
         bool isCapital = false;
 
         bool isProducing = false;

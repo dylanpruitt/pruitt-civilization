@@ -800,8 +800,6 @@ void Game::saveGame (std::string filename) {
 
             file << gameVariables.Cities[i].parentIndex << "\n";
 
-            file << gameVariables.Cities[i].Health << "\n";
-
             file << gameVariables.Cities[i].turnsToExpand << "\n";
 
             file << gameVariables.Cities[i].position.x << "\n";
@@ -1466,6 +1464,60 @@ void Game::openTradingMenu (int civilizationIndex) {
 
 }
 
+void Game::openDiplomacyMenu (int civilizationIndex) {
+
+       std::cout << "Diplomacy" << std::endl;
+
+        displayAlliances ();
+
+        displayWars ();
+
+        std::cout << "[O]ffer Alliance\n[D]eclare War" << std::endl;
+
+        char Choice;
+
+        std::cin >> Choice;
+
+        if (Choice == 'o' || Choice == 'O') {
+
+            playerRequestAlliance (civilizationIndex);
+
+        }
+
+        if (Choice == 'd' || Choice == 'D') {
+
+            int Choice = 0; std::vector<int> valid_civilization_indices;
+
+            for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
+
+                if (i != civilizationIndex && gameVariables.Civilizations[civilizationIndex].hasMetCivilization (i)) {
+
+                   valid_civilization_indices.push_back(i);
+
+                }
+
+            }
+
+            if (valid_civilization_indices.size () >= 1) {
+
+                for (unsigned int i = 0; i < valid_civilization_indices.size(); i++) {
+
+                    std::cout << "[" << i << "] " << gameVariables.Civilizations[valid_civilization_indices[i]].CivName << std::endl;
+
+                }
+
+                int Choice = 0;
+
+                Choice = sharedMethods::bindIntegerInputToRange(0,valid_civilization_indices.size()-1,0);
+
+                declareWar (civilizationIndex, valid_civilization_indices[Choice]);
+
+            }
+
+    }
+
+}
+
 void Game::displayAlliances () {
 
     std::cout << "Alliances" << std::endl;
@@ -1575,21 +1627,9 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
     }
 
-    if (Choice == 'o') {
-
-        playerRequestAlliance (civilizationIndex);
-
-    }
-
-    if (Choice == 'a') {
-
-        displayAlliances ();
-
-    }
-
     if (Choice == 'd') {
 
-        displayWars ();
+        openDiplomacyMenu (civilizationIndex);
 
     }
 
@@ -1681,10 +1721,45 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
                 std::cin >> d;
 
-                if (d == 1 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.x < gameVariables.worldMap.worldSize) { sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]], gameVariables.UnitsInGame[unitIndices[whichOne]].position.x+1, gameVariables.UnitsInGame[unitIndices[whichOne]].position.y, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap); std::cout << gameVariables.UnitsInGame[unitIndices[whichOne]].movementPoints; }
-                if (d == 2 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.y < gameVariables.worldMap.worldSize*4) { sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]], gameVariables.UnitsInGame[unitIndices[whichOne]].position.x, gameVariables.UnitsInGame[unitIndices[whichOne]].position.y+1, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap); }
-                if (d == 3 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.x > 0) { sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]], gameVariables.UnitsInGame[unitIndices[whichOne]].position.x-1, gameVariables.UnitsInGame[unitIndices[whichOne]].position.y, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap); }
-                if (d == 4 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.y > 0) { sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]], gameVariables.UnitsInGame[unitIndices[whichOne]].position.x, gameVariables.UnitsInGame[unitIndices[whichOne]].position.y-1, gameVariables.Civilizations[civilizationIndex], gameVariables.worldMap); }
+                if (d == 1 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.x < gameVariables.worldMap.worldSize) {
+
+                    sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]],
+                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.x+1,
+                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.y,
+                        gameVariables.Civilizations[civilizationIndex],
+                        gameVariables);
+
+                }
+
+                if (d == 2 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.y < gameVariables.worldMap.worldSize*4) {
+
+                    sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]],
+                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.x,
+                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.y+1,
+                        gameVariables.Civilizations[civilizationIndex],
+                        gameVariables);
+
+                }
+
+                if (d == 3 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.x > 0) {
+
+                    sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]],
+                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.x-1,
+                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.y,
+                        gameVariables.Civilizations[civilizationIndex],
+                        gameVariables);
+
+                }
+
+                if (d == 4 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.y > 0) {
+
+                    sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]],
+                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.x,
+                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.y-1,
+                        gameVariables.Civilizations[civilizationIndex],
+                        gameVariables);
+
+                }
             }
         }
 
@@ -1910,20 +1985,28 @@ void Game::playerRequestAlliance (int civilizationIndex) {
 
     }
 
-    std::cout << "Request an alliance with what Civilization?" << std::endl;
+    if (valid_civilization_indices.size() >= 1) {
 
-    for (unsigned int a = 0; a < valid_civilization_indices.size(); a++) {
+        std::cout << "Request an alliance with what Civilization?" << std::endl;
 
-        if (a != civilizationIndex) {
+        for (unsigned int a = 0; a < valid_civilization_indices.size(); a++) {
 
-            std::cout << "[" << a << "] " << gameVariables.Civilizations[valid_civilization_indices[a]].CivName << std::endl;
+            if (a != civilizationIndex) {
 
+                std::cout << "[" << a << "] " << gameVariables.Civilizations[valid_civilization_indices[a]].CivName << std::endl;
+
+            }
         }
+
+        Choice = sharedMethods::bindIntegerInputToRange(0,valid_civilization_indices.size()-1,0);
+
+        requestAlliance (civilizationIndex, valid_civilization_indices[Choice]);
+
+    } else {
+
+        std::cout << "You haven't met any other civilizations yet!" << std::endl;
+
     }
-
-    Choice = sharedMethods::bindIntegerInputToRange(0,valid_civilization_indices.size()-1,0);
-
-    requestAlliance (civilizationIndex, valid_civilization_indices[Choice]);
 
 }
 
@@ -2395,6 +2478,50 @@ void Game::combat (Unit &attacker, Unit &defender) {
         unit_died.test_canBeTriggered = true;
 
         unit_died.targetCivilizationIndex = defender.parentCivilizationIndex;
+
+        gameVariables.gameEvents.push_back (unit_died);
+
+    }
+
+}
+
+void Game::declareWar (int civilizationIndex, int targetCivilizationIndex) {
+
+    if (!sharedMethods::areCivsAtWar(civilizationIndex, targetCivilizationIndex, gameVariables)
+        && gameVariables.Civilizations[civilizationIndex].hasMetCivilization (targetCivilizationIndex)) {
+
+        gameVariables.Civilizations[civilizationIndex].isAtWar = true;
+        gameVariables.Civilizations[targetCivilizationIndex].isAtWar = true;
+
+        War new_war;
+
+        new_war.offenderCivilizationIndices.push_back (civilizationIndex);
+
+        new_war.defenderCivilizationIndices.push_back (targetCivilizationIndex);
+
+        new_war.name = gameVariables.Civilizations[civilizationIndex].CivilizationAdjective + "-"
+            + gameVariables.Civilizations[targetCivilizationIndex].CivilizationAdjective + " War";
+
+        gameVariables.wars.push_back (new_war);
+
+         Event war_started;
+
+        war_started.EventName = "Declaration of War";
+
+        war_started.EventMessage = gameVariables.Civilizations[civilizationIndex].CivName + " has declared war on you!";
+
+        war_started.ResponseChoices.push_back ("I knew they couldn't be trusted!");
+
+        war_started.test_canBeTriggered = true;
+
+        war_started.targetCivilizationIndex = targetCivilizationIndex;
+
+        gameVariables.gameEvents.push_back (war_started);
+
+        /// These civilizations are at war, they don't like each other.
+        gameVariables.Civilizations[civilizationIndex].relationsWithOtherCivilizations[targetCivilizationIndex] -= 60;
+        gameVariables.Civilizations[targetCivilizationIndex].relationsWithOtherCivilizations[civilizationIndex] -= 60;
+
 
     }
 

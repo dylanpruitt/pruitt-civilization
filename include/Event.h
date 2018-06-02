@@ -9,6 +9,7 @@ class Event
 {
     public:
         Event();
+
         virtual ~Event();
 
         std::string EventName;

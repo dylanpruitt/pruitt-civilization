@@ -19,7 +19,9 @@ namespace sharedMethods
 
         extern bool unitIsNotTrespassing (int civilizationIndex, int xPositionToMoveTo, int yPositionToMoveTo, WorldMap worldMap);
 
-        extern void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civilization &civ, WorldMap worldMap);
+        extern void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civilization &civ, GameVariables &gameVariables);
+
+        bool unitCanMoveToTile (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, GameVariables &gameVariables);
 
         bool UnitisOnAnAncientRuin (Unit &unit, WorldMap worldMap);
 
@@ -56,6 +58,16 @@ namespace sharedMethods
         void checkIfUnmetCivilizationUnitIsAtPosition (int x, int y, int civilizationIndex, GameVariables &gameVariables);
 
         void checkIfUnmetCivilizationOwnsPosition (int x, int y, int civilizationIndex, GameVariables &gameVariables);
+
+        extern bool areCivsAtWar (int civilizationIndex, int targetCivilizationIndex, GameVariables &gameVariables);
+
+        extern int returnIndexOfWarContainingCivilizations (int civilizationIndex, int targetCivilizationIndex, GameVariables &gameVariables);
+
+        void seizeTerritory (int civilizationIndex, int x, int y, GameVariables &gameVariables);
+
+        void civilizationTakeCity (int civilizationIndex, int cityIndex, GameVariables &gameVariables);
+
+        int getCityIndexAtPosition (int x, int y, GameVariables &GameVariables);
 
 };
 
