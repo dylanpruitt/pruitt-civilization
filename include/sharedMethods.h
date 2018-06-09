@@ -21,6 +21,8 @@ namespace sharedMethods
 
         extern void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civilization &civ, GameVariables &gameVariables);
 
+        bool enemyUnitIsNotOnTile (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, GameVariables &gameVariables);
+
         bool unitCanMoveToTile (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, GameVariables &gameVariables);
 
         bool UnitisOnAnAncientRuin (Unit &unit, WorldMap worldMap);

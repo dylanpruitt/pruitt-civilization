@@ -123,6 +123,8 @@ class Game
 
         void combat (Unit &attacker, Unit &defender);
 
+        void rangedCombat (Unit &attacker, Unit &defender);
+
         void displayLikelyCombatOutcome (Unit &attacker, Unit &defender);
 
         void displayAlliances ();

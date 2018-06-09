@@ -45,6 +45,8 @@ class Unit
 
         int rangedCombat = 0;
 
+        int range = 2;
+
         Domain domain;
 
         int aiFocus_offense = 0;

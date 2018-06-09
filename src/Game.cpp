@@ -364,6 +364,11 @@ void Game::loadUnitsFromFile (std::string filename) {
            if (temp.isRanged == true) {
 
               file >> temp.rangedCombat;
+              file >> temp.range;
+
+           } else {
+
+              temp.range = 1;
 
            }
 
@@ -1805,6 +1810,69 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
             }
 
         }
+
+        if (Choice == 'c' || Choice == 'C') {
+
+            std::cout << "\nAttack with which unit? " << std::endl;
+
+            int whichOne;
+
+            whichOne = sharedMethods::bindIntegerInputToRange(0, unitIndices.size()-1, 0);
+
+            std::vector<int> validEnemyUnitIndices;
+
+            for (unsigned int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
+
+                if (gameVariables.UnitsInGame[i].parentCivilizationIndex != civilizationIndex
+                    && sharedMethods::areCivsAtWar (civilizationIndex, gameVariables.UnitsInGame[i].parentCivilizationIndex, gameVariables)
+                    && sharedMethods::getDistance(gameVariables.UnitsInGame[unitIndices[whichOne]].position.x,
+                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.y,
+                        gameVariables.UnitsInGame[i].position.x, gameVariables.UnitsInGame[i].position.y) < (gameVariables.UnitsInGame[unitIndices[whichOne]].range+1)) {
+
+                    validEnemyUnitIndices.push_back (i);
+
+                }
+
+            }
+
+            if (validEnemyUnitIndices.size() >= 1) {
+
+                std::cout << "Attack which unit?" << std::endl;
+
+                for (unsigned int i = 0; i < validEnemyUnitIndices.size(); i++) {
+
+                    std::cout << "[" << i << "] " << gameVariables.UnitsInGame[validEnemyUnitIndices[i]].name << " : "
+                        << gameVariables.Civilizations[gameVariables.UnitsInGame[validEnemyUnitIndices[i]].parentCivilizationIndex].CivName << " ("
+                        << gameVariables.UnitsInGame[validEnemyUnitIndices[i]].position.x << ", "
+                        << gameVariables.UnitsInGame[validEnemyUnitIndices[i]].position.y << ") - "
+                        << gameVariables.UnitsInGame[validEnemyUnitIndices[i]].health << " HP" << std::endl;
+
+                }
+
+                Choice = sharedMethods::bindIntegerInputToRange (0, validEnemyUnitIndices.size() - 1, 0);
+
+                if (sharedMethods::getDistance(gameVariables.UnitsInGame[unitIndices[whichOne]].position.x,
+                    gameVariables.UnitsInGame[unitIndices[whichOne]].position.y,
+                    gameVariables.UnitsInGame[validEnemyUnitIndices[Choice]].position.x,
+                    gameVariables.UnitsInGame[validEnemyUnitIndices[Choice]].position.y) < 2
+                    && gameVariables.UnitsInGame[validEnemyUnitIndices[Choice]].isRanged == false) {
+
+                    combat (gameVariables.UnitsInGame[unitIndices[whichOne]], gameVariables.UnitsInGame[validEnemyUnitIndices[Choice]]);
+
+                } else {
+
+                    rangedCombat (gameVariables.UnitsInGame[unitIndices[whichOne]], gameVariables.UnitsInGame[validEnemyUnitIndices[Choice]]);
+
+                }
+
+            } else {
+
+                std::cout << "You can't attack any units with this unit!" << std::endl;
+
+            }
+
+        }
+
     }
 
     if (Choice == 'w') {
@@ -2440,6 +2508,76 @@ void Game::combat (Unit &attacker, Unit &defender) {
 
     std::cout << defender.name << " of " << gameVariables.Civilizations[defender.parentCivilizationIndex].CivName
         << " dealt " << defenderDamage << " to the attacker" << std::endl;
+
+    if (attacker.health <= 0) {
+
+        int unitIndex = returnUnitIndexFromPosition (attacker.parentCivilizationIndex, attacker.position.x, attacker.position.y);
+
+        gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
+
+        Event unit_died;
+
+        unit_died.EventName = "Unit died in battle";
+
+        unit_died.EventMessage = "Your " + attacker.name + " died attacking a " + defender.name + ".";
+
+        unit_died.ResponseChoices.push_back ("Okay.");
+
+        unit_died.targetCivilizationIndex = attacker.parentCivilizationIndex;
+
+        gameVariables.gameEvents.push_back (unit_died);
+
+    }
+
+    if (defender.health <= 0) {
+
+        int unitIndex = returnUnitIndexFromPosition (defender.parentCivilizationIndex, defender.position.x, defender.position.y);
+
+        gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
+
+        Event unit_died;
+
+        unit_died.EventName = "Unit died in battle";
+
+        unit_died.EventMessage = "Your " + defender.name + " died defending against a " + attacker.name + ".";
+
+        unit_died.ResponseChoices.push_back ("Okay.");
+
+        unit_died.test_canBeTriggered = true;
+
+        unit_died.targetCivilizationIndex = defender.parentCivilizationIndex;
+
+        gameVariables.gameEvents.push_back (unit_died);
+
+    }
+
+}
+
+void Game::rangedCombat (Unit &attacker, Unit &defender) {
+
+    double attackingModifier = calculateUnitAttackingModifier (attacker, defender),
+        defenseModifier = calculateUnitDefendingModifier (defender);
+
+    unsigned int attackerMaxDamage = ((attacker.rangedCombat * attacker.health * attackingModifier * 1.5) / (defender.rangedCombat * defender.health * defenseModifier)) + 1;
+    unsigned int defenderMaxDamage = ((defender.rangedCombat * defender.health * defenseModifier * 1.5) / (attacker.rangedCombat * attacker.health * attackingModifier)) + 1;
+
+    int attackerDamage = rand () % attackerMaxDamage;
+    int defenderDamage = rand () % defenderMaxDamage;
+
+    attacker.health -= defenderDamage;
+
+    if (defender.isRanged) {
+
+        defender.health -= attackerDamage;
+
+        std::cout << defender.name << " of " << gameVariables.Civilizations[defender.parentCivilizationIndex].CivName
+            << " dealt " << defenderDamage << " to the attacker" << std::endl;
+
+
+    }
+
+    std::cout << attacker.name << " of " << gameVariables.Civilizations[attacker.parentCivilizationIndex].CivName
+        << " dealt " << attackerDamage << " to the defender" << std::endl;
 
     if (attacker.health <= 0) {
 

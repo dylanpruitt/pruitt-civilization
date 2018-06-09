@@ -26,6 +26,7 @@ _        _
     > [D] : Check a unit's details
     > [T] : Train units
     > [S] : Use unit special abilities (ex. settling cities for Settler)
+    > [C] : Attack units
 [W] : Resources overview
 [E] : End your turn
 [;] : Spectate other civilizations and view the world map (For testing purposes only).

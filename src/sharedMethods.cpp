@@ -264,8 +264,9 @@ bool unitCanMoveToTile (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo
             || unit.domain.canCoastalEmbark)
         && ((unit.domain.canCrossOceans == false && gameVariables.worldMap.featureMap[xPositionToMoveTo][yPositionToMoveTo] != gameVariables.worldMap.mapTiles::OCEAN)
             || unit.domain.canCrossOceans)
-        && (unitIsNotTrespassing(unit.parentCivilizationIndex, xPositionToMoveTo, yPositionToMoveTo, gameVariables.worldMap))
-            ||  areCivsAtWar(unit.parentCivilizationIndex, gameVariables.worldMap.WorldTerritoryMap[xPositionToMoveTo][yPositionToMoveTo]-1,gameVariables)) {
+        && (unitIsNotTrespassing(unit.parentCivilizationIndex, xPositionToMoveTo, yPositionToMoveTo, gameVariables.worldMap)
+            ||  areCivsAtWar(unit.parentCivilizationIndex, gameVariables.worldMap.WorldTerritoryMap[xPositionToMoveTo][yPositionToMoveTo]-1,gameVariables))
+        && enemyUnitIsNotOnTile (unit, xPositionToMoveTo, yPositionToMoveTo, gameVariables)) {
 
         return true;
 
@@ -274,6 +275,26 @@ bool unitCanMoveToTile (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo
         return false;
 
     }
+
+}
+
+bool enemyUnitIsNotOnTile (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, GameVariables &gameVariables) {
+
+    for (unsigned int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
+
+        if (gameVariables.UnitsInGame[i].position.x == xPositionToMoveTo && gameVariables.UnitsInGame[i].position.y == yPositionToMoveTo) {
+
+            if (areCivsAtWar(unit.parentCivilizationIndex, gameVariables.UnitsInGame[i].parentCivilizationIndex, gameVariables)) {
+
+                return false;
+
+            }
+
+        }
+
+    }
+
+    return true;
 
 }
 
