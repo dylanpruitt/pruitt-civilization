@@ -58,6 +58,8 @@ class Unit
 
         std::vector<int> moveDirectionQueue;
 
+        std::vector<std::string> accolades;
+
         bool destinationHasBeenAssigned = false;
 
         bool isTraining = false;

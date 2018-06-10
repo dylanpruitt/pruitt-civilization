@@ -121,6 +121,8 @@ class Game
 
         int returnUnitIndexFromPosition (int civilizationIndex, int x, int y);
 
+        void giveUnitsCombatExperience (Unit &attacker, Unit &defender);
+
         void combat (Unit &attacker, Unit &defender);
 
         void rangedCombat (Unit &attacker, Unit &defender);

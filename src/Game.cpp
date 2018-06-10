@@ -1994,19 +1994,74 @@ void Game::updateUnitTraining () {
             switch (getTerrainCodeUnitIsOn(gameVariables.UnitsInGame[i])) {
 
                 case 2: // grassland
-                    gameVariables.UnitsInGame[i].grasslandModifier.experience += 0.1;
+                    gameVariables.UnitsInGame[i].grasslandModifier.experience += 0.08;
+
+                    if (gameVariables.UnitsInGame[i].grasslandModifier.experience >= 1.00) {
+
+                            gameVariables.UnitsInGame[i].grasslandModifier.experience = 1.00;
+
+                            gameVariables.UnitsInGame[i].isTraining = false;
+
+                            gameVariables.UnitsInGame[i].accolades.push_back ("[#] - Plains Regulars");
+
+                    }
+
                 break;
                 case 3: // mountain
-                    gameVariables.UnitsInGame[i].mountainModifier.experience += 0.1;
+                    gameVariables.UnitsInGame[i].mountainModifier.experience += 0.08;
+
+                    if (gameVariables.UnitsInGame[i].mountainModifier.experience >= 1.00) {
+
+                            gameVariables.UnitsInGame[i].mountainModifier.experience = 1.00;
+
+                            gameVariables.UnitsInGame[i].isTraining = false;
+
+                            gameVariables.UnitsInGame[i].accolades.push_back ("[^] - Mountaineers");
+
+                    }
+
                 break;
                 case 4: // forest
-                    gameVariables.UnitsInGame[i].forestModifier.experience += 0.1;
+                    gameVariables.UnitsInGame[i].forestModifier.experience += 0.08;
+
+                    if (gameVariables.UnitsInGame[i].forestModifier.experience >= 1.00) {
+
+                            gameVariables.UnitsInGame[i].forestModifier.experience = 1.00;
+
+                            gameVariables.UnitsInGame[i].isTraining = false;
+
+                            gameVariables.UnitsInGame[i].accolades.push_back ("[*] - Rangers");
+
+                    }
+
                 break;
                 case 6: // snow
-                    gameVariables.UnitsInGame[i].snowModifier.experience += 0.1;
+                    gameVariables.UnitsInGame[i].snowModifier.experience += 0.08;
+
+                    if (gameVariables.UnitsInGame[i].snowModifier.experience >= 1.00) {
+
+                            gameVariables.UnitsInGame[i].snowModifier.experience = 1.00;
+
+                            gameVariables.UnitsInGame[i].isTraining = false;
+
+                            gameVariables.UnitsInGame[i].accolades.push_back ("[s] - Snowtroopers");
+
+                    }
+
                 break;
                 case 7: // desert
-                    gameVariables.UnitsInGame[i].desertModifier.experience += 0.1;
+                    gameVariables.UnitsInGame[i].desertModifier.experience += 0.08;
+
+                     if (gameVariables.UnitsInGame[i].snowModifier.experience >= 1.00) {
+
+                            gameVariables.UnitsInGame[i].snowModifier.experience = 1.00;
+
+                            gameVariables.UnitsInGame[i].isTraining = false;
+
+                            gameVariables.UnitsInGame[i].accolades.push_back ("[.] - Desert Troopers");
+
+                    }
+
                 break;
 
             }
@@ -2091,12 +2146,28 @@ void Game::displayCivilizationResources (int civilizationIndex) {
 void Game::displayUnitDetails (Unit unit) {
 
     std::cout << unit.name << " - " << unit.position.x << ", " << unit.position.y << std::endl;
+
+    if (unit.isTraining) { std::cout << "Unit is training!" << std::endl; }
+
     std::cout << "HEALTH: " << unit.health << " / " << unit.maxHealth << std::endl;
-    std::cout << "TERRAIN MODIFIERS\n~ Grassland\n  ~ Attack " << unit.grasslandModifier.attackModifier*100 << " | Defense " << unit.grasslandModifier.defenseModifier*100 << std::endl;
-    std::cout << "~ Forest\n  ~ Attack " << unit.forestModifier.attackModifier*100 << " | Defense " << unit.forestModifier.defenseModifier*100 << std::endl;
-    std::cout << "~ Mountain\n  ~ Attack " << unit.mountainModifier.attackModifier*100 << " | Defense " << unit.mountainModifier.defenseModifier*100 << std::endl;
-    std::cout << "~ Desert\n  ~ Attack " << unit.desertModifier.attackModifier*100 << " | Defense " << unit.desertModifier.defenseModifier*100 << std::endl;
-    std::cout << "~ Snow\n  ~ Attack " << unit.snowModifier.attackModifier*100 << " | Defense " << unit.snowModifier.defenseModifier*100 << std::endl;
+    std::cout << "TERRAIN MODIFIERS\n~ Grassland\n  ~ Attack " << unit.grasslandModifier.attackModifier*100
+        << " | Defense " << unit.grasslandModifier.defenseModifier*100 << " XP " << unit.grasslandModifier.experience*100 << "%" << std::endl;
+    std::cout << "~ Forest\n  ~ Attack " << unit.forestModifier.attackModifier*100
+        << " | Defense " << unit.forestModifier.defenseModifier*100 << " XP " << unit.forestModifier.experience*100 << "%" <<  std::endl;
+    std::cout << "~ Mountain\n  ~ Attack " << unit.mountainModifier.attackModifier*100
+        << " | Defense " << unit.mountainModifier.defenseModifier*100 << " XP " << unit.mountainModifier.experience*100 << "%" <<  std::endl;
+    std::cout << "~ Desert\n  ~ Attack " << unit.desertModifier.attackModifier*100
+        << " | Defense " << unit.desertModifier.defenseModifier*100 << " XP " << unit.desertModifier.experience*100 << "%" <<  std::endl;
+    std::cout << "~ Snow\n  ~ Attack " << unit.snowModifier.attackModifier*100
+        << " | Defense " << unit.snowModifier.defenseModifier*100 << " XP " << unit.snowModifier.experience*100 << "%" <<  std::endl;
+
+    std::cout << "ACCOLADES:" << std::endl;
+
+    for (unsigned int i = 0; i < unit.accolades.size(); i++) {
+
+        std::cout << unit.accolades[i] << std::endl;
+
+    }
 
     std::cin.ignore();
 }
@@ -2381,27 +2452,37 @@ double Game::calculateUnitAttackingModifier (Unit &attacker, Unit &defender) {
 
     case gameVariables.worldMap.mapTiles::GRASSLAND :
 
-        return attacker.grasslandModifier.attackModifier * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier;
+        return attacker.grasslandModifier.attackModifier
+            * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier
+            * (0.5 + (0.5 * attacker.grasslandModifier.experience));
 
     break;
     case gameVariables.worldMap.mapTiles::FOREST :
 
-        return attacker.forestModifier.attackModifier * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier;
+        return attacker.forestModifier.attackModifier
+            * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier
+            * (0.5 + (0.5 * attacker.forestModifier.experience));
 
     break;
     case gameVariables.worldMap.mapTiles::DESERT :
 
-        return attacker.desertModifier.attackModifier * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier;
+        return attacker.desertModifier.attackModifier
+            * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier
+            * (0.5 + (0.5 * attacker.desertModifier.experience));
 
     break;
     case gameVariables.worldMap.mapTiles::MOUNTAIN :
 
-        return attacker.mountainModifier.attackModifier * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier;
+        return attacker.mountainModifier.attackModifier
+            * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier
+            * (0.5 + (0.5 * attacker.mountainModifier.experience));
 
     break;
     case gameVariables.worldMap.mapTiles::SNOW :
 
-        return attacker.snowModifier.attackModifier * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier;
+        return attacker.snowModifier.attackModifier
+            * gameVariables.Civilizations[attacker.parentCivilizationIndex].unitAttackModifier
+            * (0.5 + (0.5 * attacker.snowModifier.experience));
 
     break;
     default :
@@ -2420,27 +2501,37 @@ double Game::calculateUnitDefendingModifier (Unit &defender) {
 
     case gameVariables.worldMap.mapTiles::GRASSLAND :
 
-        return defender.grasslandModifier.defenseModifier * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier;
+        return defender.grasslandModifier.defenseModifier
+            * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier
+            * (0.5 + (0.5 * defender.grasslandModifier.experience));
 
     break;
     case gameVariables.worldMap.mapTiles::FOREST :
 
-        return defender.forestModifier.defenseModifier * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier;
+        return defender.forestModifier.defenseModifier
+            * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier
+            * (0.5 + (0.5 * defender.forestModifier.experience));
 
     break;
     case gameVariables.worldMap.mapTiles::DESERT :
 
-        return defender.desertModifier.defenseModifier * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier;
+        return defender.desertModifier.defenseModifier
+            * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier
+            * (0.5 + (0.5 * defender.desertModifier.experience));
 
     break;
     case gameVariables.worldMap.mapTiles::MOUNTAIN :
 
-        return defender.mountainModifier.defenseModifier * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier;
+        return defender.mountainModifier.defenseModifier
+            * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier
+            * (0.5 + (0.5 * defender.mountainModifier.experience));
 
     break;
     case gameVariables.worldMap.mapTiles::SNOW :
 
-        return defender.snowModifier.defenseModifier * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier;
+        return defender.snowModifier.defenseModifier
+            * gameVariables.Civilizations[defender.parentCivilizationIndex].unitDefenseModifier
+            * (0.5 + (0.5 * defender.snowModifier.experience));
 
     break;
     default :
@@ -2473,8 +2564,8 @@ void Game::displayLikelyCombatOutcome (Unit &attacker, Unit &defender) {
     double attackingModifier = calculateUnitAttackingModifier (attacker, defender),
         defenseModifier = calculateUnitDefendingModifier (defender);
 
-    unsigned int attackerMaxDamage = ((attacker.combatStrength * attacker.health * attackingModifier * 1.8) / (defender.combatStrength * defender.health * defenseModifier)) + 1;
-    unsigned int defenderMaxDamage = ((defender.combatStrength * defender.health * defenseModifier * 1.8) / (attacker.combatStrength * attacker.health * attackingModifier)) + 1;
+    unsigned int attackerMaxDamage = ((attacker.combatStrength * attacker.health * attackingModifier * 2.6) / (defender.combatStrength * defender.health * defenseModifier)) + 1;
+    unsigned int defenderMaxDamage = ((defender.combatStrength * defender.health * defenseModifier * 2.6) / (attacker.combatStrength * attacker.health * attackingModifier)) + 1;
 
 
     std::cout << attacker.name << " - " << gameVariables.Civilizations[attacker.parentCivilizationIndex].CivName << "       vs.      " << defender.name
@@ -2497,8 +2588,8 @@ void Game::combat (Unit &attacker, Unit &defender) {
     double attackingModifier = calculateUnitAttackingModifier (attacker, defender),
         defenseModifier = calculateUnitDefendingModifier (defender);
 
-    unsigned int attackerMaxDamage = ((attacker.combatStrength * attacker.health * attackingModifier * 1.8) / (defender.combatStrength * defender.health * defenseModifier)) + 1;
-    unsigned int defenderMaxDamage = ((defender.combatStrength * defender.health * defenseModifier * 1.8) / (attacker.combatStrength * attacker.health * attackingModifier)) + 1;
+    unsigned int attackerMaxDamage = ((attacker.combatStrength * attacker.health * attackingModifier * 2.6) / (defender.combatStrength * defender.health * defenseModifier)) + 1;
+    unsigned int defenderMaxDamage = ((defender.combatStrength * defender.health * defenseModifier * 2.6) / (attacker.combatStrength * attacker.health * attackingModifier)) + 1;
 
     int attackerDamage = rand () % attackerMaxDamage + 190;
     int defenderDamage = rand () % defenderMaxDamage;
@@ -2511,6 +2602,8 @@ void Game::combat (Unit &attacker, Unit &defender) {
 
     std::cout << defender.name << " of " << gameVariables.Civilizations[defender.parentCivilizationIndex].CivName
         << " dealt " << defenderDamage << " to the attacker" << std::endl;
+
+    giveUnitsCombatExperience (attacker, defender);
 
     if (attacker.health <= 0) {
 
@@ -2621,6 +2714,50 @@ void Game::rangedCombat (Unit &attacker, Unit &defender) {
         unit_died.targetCivilizationIndex = defender.parentCivilizationIndex;
 
         gameVariables.gameEvents.push_back (unit_died);
+
+    }
+
+}
+
+void Game::giveUnitsCombatExperience (Unit &attacker, Unit &defender) {
+
+    switch (getTerrainCodeUnitIsOn(defender)) {
+
+        case gameVariables.worldMap.mapTiles::GRASSLAND :
+
+            attacker.grasslandModifier.experience += 0.1;
+            defender.grasslandModifier.experience += 0.1;
+
+        break;
+
+        case gameVariables.worldMap.mapTiles::FOREST :
+
+            attacker.forestModifier.experience += 0.1;
+            defender.forestModifier.experience += 0.1;
+
+        break;
+
+        case gameVariables.worldMap.mapTiles::MOUNTAIN :
+
+            attacker.mountainModifier.experience += 0.1;
+            defender.mountainModifier.experience += 0.1;
+
+        break;
+
+        case gameVariables.worldMap.mapTiles::SNOW :
+
+            attacker.snowModifier.experience += 0.1;
+            defender.snowModifier.experience += 0.1;
+
+        break;
+
+        case gameVariables.worldMap.mapTiles::DESERT :
+
+            attacker.desertModifier.experience += 0.1;
+            defender.desertModifier.experience += 0.1;
+
+        break;
+
 
     }
 
