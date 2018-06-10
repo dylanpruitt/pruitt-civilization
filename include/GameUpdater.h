@@ -47,6 +47,12 @@ namespace GameUpdater
         void promoteUnitsFromResearchCompletion (Research research, int civilizationIndex, GameVariables &gameVariables);
 
         void updateEffectsFromUnitUpkeep (int civilizationIndex, GameVariables &gameVariables);
+
+        extern void removeEliminatedCivilizations (GameVariables &gameVariables);
+
+        void cleanupAfterCivilizationRemoval (int eliminatedCivilizationIndex, GameVariables &gameVariables);
+
+        bool civilizationStillHasLand (int civilizationIndex, GameVariables &gameVariables);
 };
 
 #endif // GAMEUPDATER_H

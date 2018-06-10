@@ -179,7 +179,7 @@ void civilizationTakeCity (int civilizationIndex, int cityIndex, GameVariables &
 
         for (int j = -3; j < 4; j++) {
 
-            if (sharedMethods::getDistance (cityX, cityY, cityX+i, cityY+j) <= 3
+            if (sharedMethods::getDistance (cityX, cityY, cityX+i, cityY+j) < 2
                 && gameVariables.worldMap.WorldTerritoryMap[cityX+i][cityY+j] == gameVariables.Cities[cityIndex].parentIndex+1) {
 
                 gameVariables.worldMap.WorldTerritoryMap[cityX+i][cityY+j] = civilizationIndex+1;

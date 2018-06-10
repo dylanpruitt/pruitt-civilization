@@ -2365,9 +2365,12 @@ void Game::loop () {
 
         turnNumber++;
 
+        GameUpdater::removeEliminatedCivilizations (gameVariables);
+
         GameUpdater::updateCities (gameVariables);
 
         GameUpdater::UpdateAllUnitsMovement (gameVariables);
+
     }
 
 }
@@ -2470,8 +2473,8 @@ void Game::displayLikelyCombatOutcome (Unit &attacker, Unit &defender) {
     double attackingModifier = calculateUnitAttackingModifier (attacker, defender),
         defenseModifier = calculateUnitDefendingModifier (defender);
 
-    unsigned int attackerMaxDamage = ((attacker.combatStrength * attacker.health * attackingModifier * 1.5) / (defender.combatStrength * defender.health * defenseModifier)) + 1;
-    unsigned int defenderMaxDamage = ((defender.combatStrength * defender.health * defenseModifier * 1.5) / (attacker.combatStrength * attacker.health * attackingModifier)) + 1;
+    unsigned int attackerMaxDamage = ((attacker.combatStrength * attacker.health * attackingModifier * 1.8) / (defender.combatStrength * defender.health * defenseModifier)) + 1;
+    unsigned int defenderMaxDamage = ((defender.combatStrength * defender.health * defenseModifier * 1.8) / (attacker.combatStrength * attacker.health * attackingModifier)) + 1;
 
 
     std::cout << attacker.name << " - " << gameVariables.Civilizations[attacker.parentCivilizationIndex].CivName << "       vs.      " << defender.name
@@ -2494,10 +2497,10 @@ void Game::combat (Unit &attacker, Unit &defender) {
     double attackingModifier = calculateUnitAttackingModifier (attacker, defender),
         defenseModifier = calculateUnitDefendingModifier (defender);
 
-    unsigned int attackerMaxDamage = ((attacker.combatStrength * attacker.health * attackingModifier * 1.5) / (defender.combatStrength * defender.health * defenseModifier)) + 1;
-    unsigned int defenderMaxDamage = ((defender.combatStrength * defender.health * defenseModifier * 1.5) / (attacker.combatStrength * attacker.health * attackingModifier)) + 1;
+    unsigned int attackerMaxDamage = ((attacker.combatStrength * attacker.health * attackingModifier * 1.8) / (defender.combatStrength * defender.health * defenseModifier)) + 1;
+    unsigned int defenderMaxDamage = ((defender.combatStrength * defender.health * defenseModifier * 1.8) / (attacker.combatStrength * attacker.health * attackingModifier)) + 1;
 
-    int attackerDamage = rand () % attackerMaxDamage;
+    int attackerDamage = rand () % attackerMaxDamage + 190;
     int defenderDamage = rand () % defenderMaxDamage;
 
     attacker.health -= defenderDamage;

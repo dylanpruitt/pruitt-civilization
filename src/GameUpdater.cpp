@@ -505,7 +505,6 @@ void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
 }
 
-
 void updateCivilizationHappiness (int civilizationIndex, GameVariables &gameVariables) {
 
     int baseHappiness = 75;
@@ -656,7 +655,6 @@ void promoteUnitsFromResearchCompletion (Research research, int civilizationInde
 
 }
 
-
 void updateResearch (int civilizationIndex, GameVariables &gameVariables) {
 
     if (sharedMethods::isResearchComplete(civilizationIndex, gameVariables)) {
@@ -679,6 +677,150 @@ void updateResearch (int civilizationIndex, GameVariables &gameVariables) {
 
         gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.researchName = "";
 
+
+    }
+
+}
+
+void removeEliminatedCivilizations (GameVariables &gameVariables) {
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
+
+        if (!civilizationStillHasLand (i, gameVariables)) {
+
+            std::cout << gameVariables.Civilizations[i].CivName << " was eliminated!" << std::endl;
+
+            gameVariables.Civilizations.erase (gameVariables.Civilizations.begin() + i);
+
+            cleanupAfterCivilizationRemoval (i, gameVariables);
+
+        }
+
+    }
+
+}
+
+void cleanupAfterCivilizationRemoval (int eliminatedCivilizationIndex, GameVariables &gameVariables) {
+
+    for (unsigned int j = 0; j < gameVariables.trades.size(); j++) {
+
+        if (gameVariables.trades[j].traderIndex == eliminatedCivilizationIndex
+            && gameVariables.trades[j].recipientIndex == eliminatedCivilizationIndex) {
+
+            gameVariables.trades.erase (gameVariables.trades.begin () + j);
+
+        } else {
+
+            if (gameVariables.trades[j].traderIndex > eliminatedCivilizationIndex) {
+
+                gameVariables.trades[j].traderIndex--;
+
+            }
+
+            if (gameVariables.trades[j].recipientIndex > eliminatedCivilizationIndex) {
+
+                gameVariables.trades[j].recipientIndex--;
+
+            }
+
+        }
+
+    }
+
+    for (unsigned int j = 0; j < gameVariables.activeLoans.size(); j++) {
+
+        if (gameVariables.activeLoans[j].creditorCivilizationIndex == eliminatedCivilizationIndex
+            && gameVariables.activeLoans[j].debtorCivilizationIndex == eliminatedCivilizationIndex) {
+
+            gameVariables.activeLoans.erase (gameVariables.activeLoans.begin () + j);
+
+        } else {
+
+            if (gameVariables.activeLoans[j].creditorCivilizationIndex > eliminatedCivilizationIndex) {
+
+                gameVariables.activeLoans[j].creditorCivilizationIndex--;
+
+            }
+
+            if (gameVariables.activeLoans[j].debtorCivilizationIndex > eliminatedCivilizationIndex) {
+
+                gameVariables.activeLoans[j].debtorCivilizationIndex--;
+
+            }
+
+        }
+
+    }
+
+    for (unsigned int j = 0; j < gameVariables.wars.size(); j++) {
+
+        for (unsigned int i = 0; i < gameVariables.wars[j].offenderCivilizationIndices.size(); i++) {
+
+            if (gameVariables.wars[j].offenderCivilizationIndices[i] > eliminatedCivilizationIndex) {
+
+                gameVariables.wars[j].offenderCivilizationIndices[i]--;
+
+            } else if (gameVariables.wars[j].offenderCivilizationIndices[i] == eliminatedCivilizationIndex) {
+
+                gameVariables.wars[j].offenderCivilizationIndices.erase (gameVariables.wars[j].offenderCivilizationIndices.begin () + i);
+
+            }
+
+        }
+
+        for (unsigned int i = 0; i < gameVariables.wars[j].defenderCivilizationIndices.size(); i++) {
+
+            if (gameVariables.wars[j].defenderCivilizationIndices[i] > eliminatedCivilizationIndex) {
+
+                gameVariables.wars[j].defenderCivilizationIndices[i]--;
+
+            } else if (gameVariables.wars[j].defenderCivilizationIndices[i] == eliminatedCivilizationIndex) {
+
+                gameVariables.wars[j].defenderCivilizationIndices.erase (gameVariables.wars[j].defenderCivilizationIndices.begin () + i);
+
+            }
+
+        }
+
+    }
+
+    for (unsigned int j = 0; j < gameVariables.alliances.size(); j++) {
+
+        for (unsigned int i = 0; i < gameVariables.alliances[j].memberCivilizationIndices.size(); i++) {
+
+            if (gameVariables.alliances[j].memberCivilizationIndices[i] > eliminatedCivilizationIndex) {
+
+                gameVariables.alliances[j].memberCivilizationIndices[i]--;
+
+            } else if (gameVariables.alliances[j].memberCivilizationIndices[i] == eliminatedCivilizationIndex) {
+
+                gameVariables.alliances[j].memberCivilizationIndices.erase (gameVariables.alliances[j].memberCivilizationIndices.begin () + i);
+
+            }
+
+        }
+
+    }
+
+}
+
+bool civilizationStillHasLand (int civilizationIndex, GameVariables &gameVariables) {
+
+    int numberOfOwnedCities = 0;
+
+    for (unsigned int i = 0; i < gameVariables.Cities.size(); i++) {
+
+        if (gameVariables.Cities[i].parentIndex == civilizationIndex) { numberOfOwnedCities++; }
+
+    }
+
+    if (numberOfOwnedCities > 0) {
+
+        return true;
+
+    } else {
+
+        return false;
 
     }
 
