@@ -52,7 +52,7 @@ struct Civilization
 
         bool playedByHumans = false;
 
-        int rgbValues[3] = {0, 0, 0};
+        int rgbValues[3];
 
         std::vector<std::string> learnedTechnologies;
 
@@ -68,17 +68,17 @@ struct Civilization
 
         int researchPoints = 0;
 
-        int aiFocus_offense = 0;
-        int aiFocus_defense = 0;
-        int aiFocus_economic = 0;
-        int aiFocus_population = 0;
-        int aiFocus_production = 0;
-        int aiFocus_diplomatic = 0;
-        int aiFocus_scientific = 0;
-        int aiFocus_exploration = 0;
-        int aiFocus_religion = 0;
+        int aiFocus_offense = 5;
+        int aiFocus_defense = 5;
+        int aiFocus_economic = 5;
+        int aiFocus_population = 5;
+        int aiFocus_production = 5;
+        int aiFocus_diplomatic = 5;
+        int aiFocus_scientific = 5;
+        int aiFocus_exploration = 5;
+        int aiFocus_religion = 5;
 
-        int ai_fairness = 0;
+        int ai_fairness = 5;
 
         int GoldPerTurn = 5;
 

@@ -25,9 +25,9 @@ namespace sharedMethods
 
         bool unitCanMoveToTile (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, GameVariables &gameVariables);
 
-        bool UnitisOnAnAncientRuin (Unit &unit, WorldMap worldMap);
+        bool UnitisOnAnAncientRuin (Unit &unit, WorldMap &worldMap);
 
-        void getAncientRuinBenefits (Unit &unit, Civilization &civ, WorldMap worldMap);
+        void getAncientRuinBenefits (Unit &unit, Civilization &civ, WorldMap &worldMap);
 
         Position returnValidPositionForUnitDeployment (Unit &unit, int cityIndex, int civilizationIndex, GameVariables &gameVariables);
 

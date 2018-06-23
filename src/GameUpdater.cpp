@@ -260,6 +260,135 @@ void updateCityBuildingProduction (int cityIndex, int civilizationIndex, GameVar
 
 }
 
+void updateCityRevoltChances (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
+
+    int baseChance = 100;
+
+    if (gameVariables.Cities[cityIndex].isCapital) {
+
+        baseChance -= 100;
+
+    }
+
+    if (gameVariables.Civilizations[civilizationIndex].Happiness <= 40) {
+
+        baseChance += (41 - gameVariables.Civilizations[civilizationIndex].Happiness);
+
+    }
+
+    gameVariables.Cities[cityIndex].chanceOfRevoltingPerTurnOutOf100 = baseChance;
+
+}
+
+void startRevolt (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
+
+    Civilization revolting_civilization;
+
+    revolting_civilization.CivName = gameVariables.Cities[cityIndex].cityName;
+    revolting_civilization.CivilizationAdjective = gameVariables.Cities[cityIndex].cityName;
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].learnedTechnologies.size(); i++) {
+
+        revolting_civilization.learnedTechnologies.push_back (gameVariables.Civilizations[civilizationIndex].learnedTechnologies[i]);
+
+    }
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].technologiesToResearch.size(); i++) {
+
+        Research temp_research;
+
+        temp_research = gameVariables.Civilizations[civilizationIndex].technologiesToResearch[i];
+
+        revolting_civilization.technologiesToResearch.push_back (temp_research);
+
+    }
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate.size(); i++) {
+
+         revolting_civilization.AvailableUnitsToCreate.push_back (gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i]);
+
+    }
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
+
+        revolting_civilization.relationsWithOtherCivilizations.push_back (0);
+
+        gameVariables.Civilizations[i].relationsWithOtherCivilizations.push_back (0);
+
+    }
+
+    for (unsigned int i = 0; i < gameVariables.worldMap.worldSize; i++) {
+
+        for (unsigned int j = 0; j < gameVariables.worldMap.worldSize * 4; j++) {
+
+            if (sharedMethods::getDistance (gameVariables.Cities[cityIndex].position.x, gameVariables.Cities[cityIndex].position.y, i, j) < 3) {
+
+                revolting_civilization.WorldExplorationMap[i][j] = 1;
+
+            } else {
+
+                 revolting_civilization.WorldExplorationMap[i][j] = 0;
+
+            }
+
+        }
+
+    }
+
+    revolting_civilization.startingX = gameVariables.Cities[cityIndex].position.x;
+    revolting_civilization.startingY = gameVariables.Cities[cityIndex].position.y;
+
+    revolting_civilization.rgbValues[0] = 200, revolting_civilization.rgbValues[1] = 200, revolting_civilization.rgbValues[2] = 200;
+
+    revolting_civilization.warSupportPercentage = gameVariables.Cities[cityIndex].chanceOfRevoltingPerTurnOutOf100*2;
+
+    gameVariables.Civilizations.push_back (revolting_civilization);
+
+    gameVariables.Cities[cityIndex].parentIndex = gameVariables.Civilizations.size () - 1;
+    gameVariables.Cities[cityIndex].isCapital = true;
+
+    for (unsigned int i = -1; i < 2; i++) {
+
+        for (unsigned int j = -1; j < 2; j++) {
+
+            gameVariables.worldMap.WorldTerritoryMap [gameVariables.Cities[cityIndex].position.x+i][gameVariables.Cities[cityIndex].position.y+j]
+            = gameVariables.Civilizations.size ();
+
+        }
+
+    }
+
+
+    War city_revolt;
+
+    city_revolt.name = gameVariables.Civilizations[civilizationIndex].CivilizationAdjective;
+
+    city_revolt.offenderCivilizationIndices.push_back (gameVariables.Civilizations.size () - 1);
+
+    city_revolt.defenderCivilizationIndices.push_back (civilizationIndex);
+
+    gameVariables.wars.push_back (city_revolt);
+
+}
+
+void updateRevolts (GameVariables &gameVariables) {
+
+    for (unsigned int i = 0; i < gameVariables.Cities.size(); i++) {
+
+        updateCityRevoltChances (i, gameVariables.Cities[i].parentIndex, gameVariables);
+
+        int temp_random_number = rand () % 99 + 1;
+
+        if (temp_random_number <= gameVariables.Cities[i].chanceOfRevoltingPerTurnOutOf100) {
+
+            startRevolt (i, gameVariables.Cities[i].parentIndex, gameVariables);
+
+        }
+
+    }
+
+}
+
 void updateGoldPerTurn (int civilizationIndex, GameVariables &gameVariables) {
 
     int gpt = 0; double gptModifier = 1.0;
@@ -795,6 +924,20 @@ void cleanupAfterCivilizationRemoval (int eliminatedCivilizationIndex, GameVaria
             } else if (gameVariables.alliances[j].memberCivilizationIndices[i] == eliminatedCivilizationIndex) {
 
                 gameVariables.alliances[j].memberCivilizationIndices.erase (gameVariables.alliances[j].memberCivilizationIndices.begin () + i);
+
+            }
+
+        }
+
+    }
+
+    for (unsigned int i = 0; i < gameVariables.worldMap.worldSize; i++) {
+
+        for (unsigned int j = 0; j < gameVariables.worldMap.worldSize; j++) {
+
+            if (gameVariables.worldMap.WorldTerritoryMap[i][j]-1 > eliminatedCivilizationIndex) {
+
+                gameVariables.worldMap.WorldTerritoryMap[i][j]--;
 
             }
 

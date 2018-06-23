@@ -32,6 +32,12 @@ namespace GameUpdater
 
         void updateCityProductionModifier (int cityIndex, int civilizationIndex, GameVariables &gameVariables);
 
+        void updateCityRevoltChances (int cityIndex, int civilizationIndex, GameVariables &gameVariables);
+
+        void startRevolt (int cityIndex, int civilizationIndex, GameVariables &gameVariables);
+
+        extern void updateRevolts (GameVariables &gameVariables);
+
         void updateGoldPerTurn (int civilizationIndex, GameVariables &gameVariables);
 
         void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai);

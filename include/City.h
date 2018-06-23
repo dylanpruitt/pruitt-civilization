@@ -35,6 +35,8 @@ class City
 
         int turnsToExpand = 5;
 
+        int chanceOfRevoltingPerTurnOutOf100 = 0;
+
         std::string cityName;
 
         int parentIndex;

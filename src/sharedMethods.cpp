@@ -97,7 +97,7 @@ bool unitIsNotTrespassing (int civilizationIndex, int xPositionToMoveTo, int yPo
 
 }
 
-bool UnitisOnAnAncientRuin (Unit &unit, WorldMap worldMap) {
+bool UnitisOnAnAncientRuin (Unit &unit, WorldMap &worldMap) {
 
     const int RUINS_CODE = 5;
 
@@ -113,7 +113,7 @@ bool UnitisOnAnAncientRuin (Unit &unit, WorldMap worldMap) {
 
 }
 
-void getAncientRuinBenefits (Unit &unit, Civilization &civ, WorldMap worldMap) {
+void getAncientRuinBenefits (Unit &unit, Civilization &civ, WorldMap &worldMap) {
 
     const int technologyBoost = 1, explorationBoost = 2;
 

@@ -1032,6 +1032,8 @@ void Game::spawnInNewCivilization (std::vector<Civilization> civs) {
 
                 sharedMethods::foundCity(x, y, gameVariables.Civilizations.size() - 1, gameVariables);
 
+                gameVariables.Cities [gameVariables.Cities.size () - 1].isCapital = true;
+
                 loadTechnologiesFromFile("techs.sav", gameVariables.Civilizations.size() - 1);
 
                 gameVariables.Civilizations[gameVariables.Civilizations.size() - 1].technologyBeingResearched.researchName = "";
@@ -1140,6 +1142,8 @@ void Game::DisplayCitiesStatusesOwnedByCivilization (int civilizationIndex) {
             std::cout << gameVariables.Cities[i].ProductionPerTurn + gameVariables.Cities[i].ProductionFromTiles;
 
             std::cout << " | GPT: " << gameVariables.Cities[i].GoldPerTurn + gameVariables.Cities[i].GoldPerTurnFromCity << std::endl;
+
+            std::cout << "  - Revolt Chance : " << gameVariables.Cities[i].chanceOfRevoltingPerTurnOutOf100 << "%" << std::endl;
 
             std::string productionString = "";
 
@@ -2441,6 +2445,8 @@ void Game::loop () {
         GameUpdater::updateCities (gameVariables);
 
         GameUpdater::UpdateAllUnitsMovement (gameVariables);
+
+        GameUpdater::updateRevolts (gameVariables);
 
     }
 
