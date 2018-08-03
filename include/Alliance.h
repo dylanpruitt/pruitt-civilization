@@ -1,6 +1,7 @@
 #ifndef ALLIANCE_H
 #define ALLIANCE_H
 #include <vector>
+#include <string>
 
 struct Alliance
 {

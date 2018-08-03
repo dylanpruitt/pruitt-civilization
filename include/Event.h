@@ -1,9 +1,11 @@
 #ifndef EVENT_H
 #define EVENT_H
 #include "Civilization.h"
-#include "Alliance.h"
+#include "GameVariables.h"
+#include "sharedMethods.h"
 
 #include <string>
+#include <iostream>
 
 class Event
 {
@@ -17,25 +19,31 @@ class Event
 
         std::vector<std::string> ResponseChoices;
 
-        bool test_canBeTriggered = true;
         bool hasBeenTriggered = false;
 
         int targetCivilizationIndex;
 
-        std::string eventType;
-
         int initializerCivilization; /// Index of civ that triggers the event (ex. alliance)
 
-        void listen (int civilizationIndex, std::vector<Civilization> &Civilizations);
+        void listen (int civilizationIndex, GameVariables &gameVariables);
 
     protected:
+
+
+        enum choiceResponseCodes : int {
+
+            YES = 1,
+            NO = 2,
+
+        };
+
     private:
 
-        virtual void trigger (std::vector<Civilization> &Civilizations);
+        virtual void trigger (GameVariables &gameVariables);
 
-        virtual void trigger_ai (std::vector<Civilization> &Civilizations);
+        virtual void trigger_ai (GameVariables &gameVariables);
 
-        virtual void responseLogic (int Choice, std::vector<Civilization> &Civilizations);
+        virtual void responseLogic (int Choice, GameVariables &gameVariables);
 
 };
 

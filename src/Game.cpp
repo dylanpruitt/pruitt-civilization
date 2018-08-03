@@ -16,6 +16,7 @@
 #include "GameUpdater.h"
 #include "AI.h"
 #include "LoanEvent.h"
+#include "AllianceEvent.h"
 
 using namespace std;
 
@@ -242,7 +243,7 @@ void Game::setupWorld () {
 
         for (unsigned int j = 0; j < gameVariables.Civilizations.size(); j++) {
 
-            gameVariables.Civilizations[i].hasMetCivilizations.push_back (false);
+            gameVariables.Civilizations[i].hasMetCivilizations.push_back (true);
 
         }
 
@@ -1431,7 +1432,7 @@ void Game::offerLoan (int civilizationIndex) {
 
         loanEvent.targetCivilizationIndex = temp_loan.debtorCivilizationIndex;
 
-        gameVariables.gameEvents.push_back (loanEvent);
+        gameVariables.gameEvents.push_back (&loanEvent);
 
     } else {
 
@@ -2078,21 +2079,17 @@ void Game::updateUnitTraining () {
 
 void Game::requestAlliance (int civilizationIndex, int targetCivilizationIndex) {
 
-    Event alliance;
+    AllianceEvent *alliance = new AllianceEvent;
 
-    alliance.eventType = "alliance";
+    alliance->EventName = "Alliance Request from " + gameVariables.Civilizations[civilizationIndex].CivName;
 
-    alliance.test_canBeTriggered = true;
+    alliance->EventMessage = "The wise leaders of " + gameVariables.Civilizations[civilizationIndex].CivName + " recognize that an alliance with us would be beneficial and request a formal alliance.";
 
-    alliance.EventName = "Alliance Request from " + gameVariables.Civilizations[civilizationIndex].CivName;
+    alliance->ResponseChoices.push_back("Accept Request");
 
-    alliance.EventMessage = "The wise leaders of " + gameVariables.Civilizations[civilizationIndex].CivName + " recognize that an alliance with us would be beneficial and request a formal alliance.";
+    alliance->ResponseChoices.push_back("Deny Request");
 
-    alliance.ResponseChoices.push_back("Accept Request");
-
-    alliance.ResponseChoices.push_back("Deny Request");
-
-    alliance.initializerCivilization = civilizationIndex; alliance.targetCivilizationIndex = targetCivilizationIndex;
+    alliance->initializerCivilization = civilizationIndex; alliance->targetCivilizationIndex = targetCivilizationIndex;
 
     gameVariables.gameEvents.push_back(alliance);
 
@@ -2104,9 +2101,9 @@ void Game::playerRequestAlliance (int civilizationIndex) {
 
     for (unsigned int i = 0; i < gameVariables.Civilizations.size(); i++) {
 
-        if (i != civilizationIndex && gameVariables.Civilizations[civilizationIndex].hasMetCivilization (i)) {
+        if (gameVariables.Civilizations[civilizationIndex].hasMetCivilization (i)) {
 
-           valid_civilization_indices.push_back(i);
+           valid_civilization_indices.push_back (i);
 
         }
 
@@ -2118,7 +2115,7 @@ void Game::playerRequestAlliance (int civilizationIndex) {
 
         for (unsigned int a = 0; a < valid_civilization_indices.size(); a++) {
 
-            if (a != civilizationIndex) {
+            if (valid_civilization_indices [a] != civilizationIndex) {
 
                 std::cout << "[" << a << "] " << gameVariables.Civilizations[valid_civilization_indices[a]].CivName << std::endl;
 
@@ -2627,7 +2624,7 @@ void Game::combat (Unit &attacker, Unit &defender) {
 
         unit_died.targetCivilizationIndex = attacker.parentCivilizationIndex;
 
-        gameVariables.gameEvents.push_back (unit_died);
+        gameVariables.gameEvents.push_back (&unit_died);
 
     }
 
@@ -2645,11 +2642,9 @@ void Game::combat (Unit &attacker, Unit &defender) {
 
         unit_died.ResponseChoices.push_back ("Okay.");
 
-        unit_died.test_canBeTriggered = true;
-
         unit_died.targetCivilizationIndex = defender.parentCivilizationIndex;
 
-        gameVariables.gameEvents.push_back (unit_died);
+        gameVariables.gameEvents.push_back (&unit_died);
 
     }
 
@@ -2697,7 +2692,7 @@ void Game::rangedCombat (Unit &attacker, Unit &defender) {
 
         unit_died.targetCivilizationIndex = attacker.parentCivilizationIndex;
 
-        gameVariables.gameEvents.push_back (unit_died);
+        gameVariables.gameEvents.push_back (&unit_died);
 
     }
 
@@ -2715,11 +2710,9 @@ void Game::rangedCombat (Unit &attacker, Unit &defender) {
 
         unit_died.ResponseChoices.push_back ("Okay.");
 
-        unit_died.test_canBeTriggered = true;
-
         unit_died.targetCivilizationIndex = defender.parentCivilizationIndex;
 
-        gameVariables.gameEvents.push_back (unit_died);
+        gameVariables.gameEvents.push_back (&unit_died);
 
     }
 
@@ -2786,6 +2779,10 @@ void Game::declareWar (int civilizationIndex, int targetCivilizationIndex) {
         new_war.name = gameVariables.Civilizations[civilizationIndex].CivilizationAdjective + "-"
             + gameVariables.Civilizations[targetCivilizationIndex].CivilizationAdjective + " War";
 
+        bringBelligerentAlliesIntoWar (new_war, civilizationIndex);
+
+        bringBelligerentAlliesIntoWar (new_war, targetCivilizationIndex);
+
         gameVariables.wars.push_back (new_war);
 
          Event war_started;
@@ -2796,11 +2793,9 @@ void Game::declareWar (int civilizationIndex, int targetCivilizationIndex) {
 
         war_started.ResponseChoices.push_back ("I knew they couldn't be trusted!");
 
-        war_started.test_canBeTriggered = true;
-
         war_started.targetCivilizationIndex = targetCivilizationIndex;
 
-        gameVariables.gameEvents.push_back (war_started);
+        gameVariables.gameEvents.push_back (&war_started);
 
         /// These civilizations are at war, they don't like each other.
         gameVariables.Civilizations[civilizationIndex].relationsWithOtherCivilizations[targetCivilizationIndex] -= 60;
@@ -2808,5 +2803,71 @@ void Game::declareWar (int civilizationIndex, int targetCivilizationIndex) {
 
 
     }
+
+}
+
+void Game::bringBelligerentAlliesIntoWar (War &war, int belligerentCivilizationIndex) {
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations.size (); i++) {
+
+        if (civilizationsAreAllies (belligerentCivilizationIndex, i) && i != belligerentCivilizationIndex) {
+
+            for (unsigned int j = 0; j < war.defenderCivilizationIndices.size (); j++) {
+
+                if (war.defenderCivilizationIndices [j] == belligerentCivilizationIndex) {
+
+                    war.defenderCivilizationIndices.push_back (i);
+
+                }
+
+            }
+
+            for (unsigned int j = 0; j < war.offenderCivilizationIndices.size (); j++) {
+
+                if (war.offenderCivilizationIndices [j] == belligerentCivilizationIndex) {
+
+                    war.offenderCivilizationIndices.push_back (i);
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+bool Game::civilizationsAreAllies (int civilizationIndex, int otherCivilizationIndex) {
+
+    for (unsigned int i = 0; i < gameVariables.alliances.size (); i++) {
+
+        bool firstCivilizationIsInAlliance = false, secondCivilizationIsInAlliance = false;
+
+        for (unsigned int j = 0; j < gameVariables.alliances [i].memberCivilizationIndices.size (); j++) {
+
+            if (gameVariables.alliances [i].memberCivilizationIndices [j] == civilizationIndex) {
+
+                firstCivilizationIsInAlliance = true;
+
+            }
+
+            if (gameVariables.alliances [i].memberCivilizationIndices [j] == otherCivilizationIndex) {
+
+                secondCivilizationIsInAlliance = true;
+
+            }
+
+        }
+
+        if (firstCivilizationIsInAlliance && secondCivilizationIsInAlliance) {
+
+            return true;
+
+        }
+
+    }
+
+    return false;
 
 }

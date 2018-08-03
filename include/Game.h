@@ -143,6 +143,10 @@ class Game
 
         void declareWar (int civilizationIndex, int targetCivilizationIndex);
 
+        void bringBelligerentAlliesIntoWar (War &war, int belligerentCivilizationIndex);
+
+        bool civilizationsAreAllies (int civilizationIndex, int otherCivilizationIndex);
+
 };
 
 #endif // GAME_H

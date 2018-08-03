@@ -591,7 +591,7 @@ void AI::decideIfCivilizationShouldOfferLoan (int civilizationIndex, GameVariabl
 
         loanEvent.targetCivilizationIndex = temp_loan.debtorCivilizationIndex;
 
-        gameVariables.gameEvents.push_back (loanEvent);
+        gameVariables.gameEvents.push_back (&loanEvent);
 
 
     }

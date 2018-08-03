@@ -1,7 +1,4 @@
 #include "Event.h"
-#include "sharedMethods.h"
-#include "Alliance.h"
-#include <iostream>
 
 Event::Event()
 {
@@ -13,24 +10,17 @@ Event::~Event()
     //dtor
 }
 
-enum choiceResponseCodes : int {
+void Event::listen (int civilizationIndex, GameVariables &gameVariables) {
 
-    YES = 1,
-    NO = 2,
+    if (this->targetCivilizationIndex == civilizationIndex) {
 
-};
+        if (gameVariables.Civilizations[civilizationIndex].playedByHumans == true) {
 
-void Event::listen (int civilizationIndex, std::vector<Civilization> &Civilizations) {
-
-    if (test_canBeTriggered == true && targetCivilizationIndex == civilizationIndex) {
-
-        if (Civilizations[civilizationIndex].playedByHumans == true) {
-
-            trigger (Civilizations);
+            this->trigger (gameVariables);
 
         } else {
 
-            trigger_ai (Civilizations);
+            this->trigger_ai (gameVariables);
 
         }
 
@@ -40,18 +30,18 @@ void Event::listen (int civilizationIndex, std::vector<Civilization> &Civilizati
 
 }
 
-void Event::responseLogic (int Choice, std::vector<Civilization> &Civilizations) {
+void Event::responseLogic (int Choice, GameVariables &gameVariables) {
 
 }
 
-void Event::trigger (std::vector<Civilization> &Civilizations) {
+void Event::trigger (GameVariables &gameVariables) {
 
-    std::cout << "\n\n[====== " << EventName << " ======]" << std::endl;
-    std::cout << "\n" << EventMessage << std::endl;
+    std::cout << "\n\n[====== " << this->EventName << " ======]" << std::endl;
+    std::cout << "\n" << this->EventMessage << std::endl;
 
-    for (unsigned int i = 1; i <= ResponseChoices.size(); i++) {
+    for (unsigned int i = 1; i <= this->ResponseChoices.size(); i++) {
 
-        std::cout << "[" << i << "] " << ResponseChoices[i-1] << std::endl;
+        std::cout << "[" << i << "] " << this->ResponseChoices[i-1] << std::endl;
 
     }
 
@@ -59,28 +49,11 @@ void Event::trigger (std::vector<Civilization> &Civilizations) {
 
         int Choice = sharedMethods::bindIntegerInputToRange(1, ResponseChoices.size(), 1);
 
-        responseLogic(Choice, Civilizations);
+        this->responseLogic(Choice, gameVariables);
 
     }
 }
 
-void Event::trigger_ai (std::vector<Civilization> &Civilizations) {
-
-    int Choice = 0;
-    if (eventType == "alliance") {
-
-        if (Civilizations[targetCivilizationIndex].relationsWithOtherCivilizations[initializerCivilization] >= -10) {
-
-            Choice = choiceResponseCodes::YES;
-
-        } else {
-
-            Choice = choiceResponseCodes::NO;
-
-        }
-
-    }
-
-    responseLogic(Choice, Civilizations);
+void Event::trigger_ai (GameVariables &gameVariables) {
 
 }

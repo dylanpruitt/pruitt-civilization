@@ -506,7 +506,7 @@ void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
                 tradeAccepted.targetCivilizationIndex = gameVariables.trades[i].traderIndex;
 
-                gameVariables.gameEvents.push_back (tradeAccepted);
+                gameVariables.gameEvents.push_back (&tradeAccepted);
 
 
                 gameVariables.Civilizations[gameVariables.trades[i].traderIndex].Gold -= gameVariables.trades[i].goldSumFromTrader;
@@ -555,7 +555,7 @@ void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
                 tradeDenied.targetCivilizationIndex = gameVariables.trades[i].traderIndex;
 
-                gameVariables.gameEvents.push_back (tradeDenied);
+                gameVariables.gameEvents.push_back (&tradeDenied);
 
 
             }
@@ -576,7 +576,7 @@ void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
                 tradeAccepted.targetCivilizationIndex = gameVariables.trades[i].traderIndex;
 
-                gameVariables.gameEvents.push_back (tradeAccepted);
+                gameVariables.gameEvents.push_back (&tradeAccepted);
 
                 gameVariables.Civilizations[gameVariables.trades[i].traderIndex].Gold -= gameVariables.trades[i].goldSumFromTrader;
 
@@ -622,7 +622,7 @@ void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
                 tradeDenied.targetCivilizationIndex = gameVariables.trades[i].traderIndex;
 
-                gameVariables.gameEvents.push_back (tradeDenied);
+                gameVariables.gameEvents.push_back (&tradeDenied);
 
             }
 
@@ -664,9 +664,9 @@ void updateEvents (int civilizationIndex, GameVariables &gameVariables) {
 
     for (unsigned int e = 0; e < gameVariables.gameEvents.size(); e++) {
 
-        gameVariables.gameEvents[e].listen(civilizationIndex, gameVariables.Civilizations);
+        gameVariables.gameEvents[e]->listen(civilizationIndex, gameVariables);
 
-        if (gameVariables.gameEvents[e].hasBeenTriggered == true) {
+        if (gameVariables.gameEvents[e]->hasBeenTriggered == true) {
 
             gameVariables.gameEvents.erase(gameVariables.gameEvents.begin() + e);
 
