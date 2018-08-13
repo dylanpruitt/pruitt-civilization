@@ -96,8 +96,8 @@ void tracePath(cell cellDetails[WORLDSIZE][WORLDSIZE*4], position dest, Unit &un
 
     unit.moveDirectionQueue.clear();
 
-    while (!(cellDetails[row][col].parentX == row
-             && cellDetails[row][col].parentY == col ))
+    while (!(unit.position.x == row
+             && unit.position.y == col ))
     {
         int temp_row = cellDetails[row][col].parentX;
         int temp_col = cellDetails[row][col].parentY;
@@ -124,6 +124,7 @@ void tracePath(cell cellDetails[WORLDSIZE][WORLDSIZE*4], position dest, Unit &un
 
         row = temp_row;
         col = temp_col;
+
     }
 
     std::reverse (unit.moveDirectionQueue.begin(), unit.moveDirectionQueue.end());
@@ -183,7 +184,6 @@ void aStarSearch(int grid[WORLDSIZE][WORLDSIZE*4], position src, position dest, 
 
         if (isValid(i-1, j) == true)
         {
-
             if (isDestination(i-1, j, dest) == true)
             {
                 cellDetails[i-1][j].parentX = i;
@@ -320,8 +320,6 @@ void aStarSearch(int grid[WORLDSIZE][WORLDSIZE*4], position src, position dest, 
         }
 
     }
-
-
 
     if (foundDest == false)
         std::cout << "Failed to find destination cell!" << std::endl;

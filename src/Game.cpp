@@ -1669,8 +1669,8 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
 
             if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civilizationIndex) {
 
-                std::cout << x << ": " << gameVariables.UnitsInGame[i].name << " - " << gameVariables.UnitsInGame[i].position.x << ", "
-                << gameVariables.UnitsInGame[i].position.y << " | MOVEMENT LEFT : " << gameVariables.UnitsInGame[i].movementPoints << std::endl;
+                std::cout << x << ": " << gameVariables.UnitsInGame[i].name << " - " << gameVariables.UnitsInGame[i].position.y << ", "
+                << gameVariables.UnitsInGame[i].position.x << " | MOVEMENT LEFT : " << gameVariables.UnitsInGame[i].movementPoints << std::endl;
                 x++; int y = i; unitIndices.push_back(y);
 
                 militarypower += (gameVariables.UnitsInGame[i].combatStrength * gameVariables.UnitsInGame[i].combatStrength);

@@ -619,6 +619,18 @@ void AI::think (int civilizationIndex, GameVariables &gameVariables) {
 
     groupUnits (civilizationIndex, gameVariables);
 
+    if (returnGroupSizeFromName (civilizationIndex, "training", gameVariables) > 0) {
+
+        int trainingGroupIndex = returnGroupIndexFromName (civilizationIndex, "training", gameVariables);
+
+        for (unsigned int i = 0; i < gameVariables.Civilizations [civilizationIndex].unitGroups [trainingGroupIndex].memberUnitIndices.size (); i++) {
+
+            updateUnitTraining (gameVariables.Civilizations [civilizationIndex].unitGroups [trainingGroupIndex].memberUnitIndices [i], gameVariables);
+
+        }
+
+    }
+
     if (gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.researchName == "") {
 
         setResearchPriority (civilizationIndex, gameVariables);
@@ -925,5 +937,107 @@ bool AI::civilizationIsBehindTargetAmountOfUnits (int civilizationIndex, GameVar
         return false;
 
     }
+
+}
+
+void AI::updateUnitTraining (int unitIndex, GameVariables &gameVariables) {
+
+    if (!gameVariables.UnitsInGame [unitIndex].destinationHasBeenAssigned) {
+
+        assignUnitToTrain (unitIndex, gameVariables);
+
+    }
+
+    if (gameVariables.UnitsInGame[unitIndex].moveDirectionQueue.size() == 0 && !gameVariables.UnitsInGame[unitIndex].isTraining) {
+
+        gameVariables.UnitsInGame [unitIndex].isTraining = true;
+
+    }
+
+}
+
+void AI::assignUnitToTrain (int unitIndex, GameVariables &gameVariables) {
+
+    int mostOccuringTileCode = returnMostOccuringTileCodeInCivilizationTerritory (gameVariables.UnitsInGame [unitIndex].parentCivilizationIndex,
+                                                                                        gameVariables);
+
+    Position destination = returnLocationOfNearestTileType (mostOccuringTileCode, unitIndex, gameVariables);
+
+    mapUnitPath (destination.x, destination.y, gameVariables, unitIndex); std::cout << "unit path assigned!" << std::endl;
+
+}
+
+Position AI::returnLocationOfNearestTileType (int tileCode, int unitIndex, GameVariables &gameVariables) {
+
+    int closestXCoordinate = 0, closestYCoordinate = 0; int closestDistance = 10000;
+
+    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
+
+        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
+
+            if (gameVariables.worldMap.featureMap [i][j] == tileCode) {
+
+                int distance = sharedMethods::getDistance (i, j, gameVariables.UnitsInGame [unitIndex].position.x,
+                                                            gameVariables.UnitsInGame [unitIndex].position.y);
+
+                if (distance < closestDistance) {
+
+                    closestDistance = distance;
+
+                    closestXCoordinate = i;
+                    closestYCoordinate = j;
+
+                }
+
+            }
+
+        }
+
+    }
+
+    Position position;
+
+    position.x = closestXCoordinate;
+    position.y = closestYCoordinate;
+
+    return position;
+
+}
+
+int AI::returnMostOccuringTileCodeInCivilizationTerritory (int civilizationIndex, GameVariables &gameVariables) {
+
+    int tileCodeOccurances [8] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+    for (int i = 0; i < gameVariables.worldMap.worldSize; i++) {
+
+        for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
+
+            if (gameVariables.worldMap.WorldTerritoryMap [i][j] == civilizationIndex+1) {
+
+                tileCodeOccurances [gameVariables.worldMap.featureMap [i][j]] ++;
+
+            }
+
+        }
+
+    }
+
+    int mostOccuringTileCode = 2, highestAmountOfOccurances = tileCodeOccurances [0];
+
+    for (int i = 0; i < 8; i++) {
+
+        if (tileCodeOccurances [i] > highestAmountOfOccurances && i >= 2) {
+
+            highestAmountOfOccurances = tileCodeOccurances [i];
+
+            mostOccuringTileCode = i;
+
+        }
+
+    }
+
+    std::cout << mostOccuringTileCode << " occurs da most" << std::endl;
+
+    return mostOccuringTileCode;
 
 }

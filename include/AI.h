@@ -91,6 +91,14 @@ class AI
 
         int calculatePotentialLoanValue (int civilizationIndex, int potentialCivilizationIndex, GameVariables &gameVariables);
 
+        void updateUnitTraining (int unitIndex, GameVariables &gameVariables);
+
+        void assignUnitToTrain (int unitIndex, GameVariables &gameVariables);
+
+        Position returnLocationOfNearestTileType (int tileCode, int unitIndex, GameVariables &gameVariables);
+
+        int returnMostOccuringTileCodeInCivilizationTerritory (int civilizationIndex, GameVariables &gameVariables);
+
 };
 
 #endif // AI_H
