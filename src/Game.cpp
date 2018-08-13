@@ -1418,21 +1418,7 @@ void Game::offerLoan (int civilizationIndex) {
 
         gameVariables.activeLoans.push_back (temp_loan);
 
-
-
-        LoanEvent loanEvent;
-
-        loanEvent.LoanID = gameVariables.activeLoans.size() - 1;
-
-        loanEvent.EventName = "Loan Request from " + gameVariables.Civilizations[civilizationIndex].CivName;
-        loanEvent.EventMessage = "A foreign civilization has offered to loan us " + std::to_string(temp_loan.amountDue) + " gold.";
-
-        loanEvent.ResponseChoices.push_back ("We'll take all the help we can get.");
-        loanEvent.ResponseChoices.push_back ("We do not need help from lesser civilizations.");
-
-        loanEvent.targetCivilizationIndex = temp_loan.debtorCivilizationIndex;
-
-        gameVariables.gameEvents.push_back (&loanEvent);
+        sharedMethods::createNewLoanEventNotification (civilizationIndex, gameVariables, temp_loan);
 
     } else {
 
@@ -2091,7 +2077,7 @@ void Game::requestAlliance (int civilizationIndex, int targetCivilizationIndex) 
 
     alliance->initializerCivilization = civilizationIndex; alliance->targetCivilizationIndex = targetCivilizationIndex;
 
-    gameVariables.gameEvents.push_back(alliance);
+    gameVariables.gameEvents.push_back (alliance);
 
 }
 
@@ -2769,17 +2755,17 @@ void Game::declareWar (int civilizationIndex, int targetCivilizationIndex) {
 
         gameVariables.wars.push_back (new_war);
 
-         Event war_started;
+        Event *war_started = new Event;
 
-        war_started.EventName = "Declaration of War";
+        war_started->EventName = "Declaration of War";
 
-        war_started.EventMessage = gameVariables.Civilizations[civilizationIndex].CivName + " has declared war on you!";
+        war_started->EventMessage = gameVariables.Civilizations[civilizationIndex].CivName + " has declared war on you!";
 
-        war_started.ResponseChoices.push_back ("I knew they couldn't be trusted!");
+        war_started->ResponseChoices.push_back ("I knew they couldn't be trusted!");
 
-        war_started.targetCivilizationIndex = targetCivilizationIndex;
+        war_started->targetCivilizationIndex = targetCivilizationIndex;
 
-        gameVariables.gameEvents.push_back (&war_started);
+        gameVariables.gameEvents.push_back (war_started);
 
         /// These civilizations are at war, they don't like each other.
         gameVariables.Civilizations[civilizationIndex].relationsWithOtherCivilizations[targetCivilizationIndex] -= 60;

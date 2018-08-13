@@ -73,6 +73,8 @@ namespace sharedMethods
 
         extern int returnNumberOfCitiesCivilizationOwns (int civilizationIndex, GameVariables &gameVariables);
 
+        extern void createNewLoanEventNotification (int civilizationIndex, GameVariables &gameVariables, Loan temp_loan);
+
 };
 
 #endif // SHAREDMETHODS_H

@@ -577,22 +577,7 @@ void AI::decideIfCivilizationShouldOfferLoan (int civilizationIndex, GameVariabl
 
         gameVariables.activeLoans.push_back (temp_loan);
 
-
-
-        LoanEvent loanEvent;
-
-        loanEvent.LoanID = gameVariables.activeLoans.size() - 1;
-
-        loanEvent.EventName = "Loan Request from " + gameVariables.Civilizations[civilizationIndex].CivName;
-        loanEvent.EventMessage = "A foreign civilization has offered to loan us " + std::to_string(temp_loan.amountDue) + " gold.";
-
-        loanEvent.ResponseChoices.push_back ("We'll take all the help we can get.");
-        loanEvent.ResponseChoices.push_back ("We do not need help from lesser civilizations.");
-
-        loanEvent.targetCivilizationIndex = temp_loan.debtorCivilizationIndex;
-
-        gameVariables.gameEvents.push_back (&loanEvent);
-
+        sharedMethods::createNewLoanEventNotification (civilizationIndex, gameVariables, temp_loan);
 
     }
 
@@ -619,6 +604,8 @@ int AI::calculatePotentialLoanValue (int civilizationIndex, int potentialCiviliz
     return loan_value;
 
 }
+
+
 
 void AI::think (int civilizationIndex, GameVariables &gameVariables) {
 

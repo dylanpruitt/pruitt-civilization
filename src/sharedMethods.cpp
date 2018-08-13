@@ -1,4 +1,5 @@
 #include "sharedMethods.h"
+#include "LoanEvent.h"
 #include <math.h>
 #include <iostream>
 #include <thread>
@@ -746,6 +747,24 @@ int returnNumberOfCitiesCivilizationOwns (int civilizationIndex, GameVariables &
     } std::cout << numberOfCitiesOwnedByCivilization << std::endl;
 
     return numberOfCitiesOwnedByCivilization;
+
+}
+
+void createNewLoanEventNotification (int civilizationIndex, GameVariables &gameVariables, Loan temp_loan) {
+
+    LoanEvent *loanEvent = new LoanEvent;
+
+    loanEvent->LoanID = gameVariables.activeLoans.size() - 1;
+
+    loanEvent->EventName = "Loan Request from " + gameVariables.Civilizations[civilizationIndex].CivName;
+    loanEvent->EventMessage = "A foreign civilization has offered to loan us " + std::to_string(temp_loan.amountDue) + " gold.";
+
+    loanEvent->ResponseChoices.push_back ("We'll take all the help we can get.");
+    loanEvent->ResponseChoices.push_back ("We do not need help from lesser civilizations.");
+
+    loanEvent->targetCivilizationIndex = temp_loan.debtorCivilizationIndex;
+
+    gameVariables.gameEvents.push_back (loanEvent);
 
 }
 

@@ -513,15 +513,15 @@ void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
             if (Choice == 'a' || Choice == 'A') {
 
-                Event tradeAccepted;
+                Event *tradeAccepted = new Event;
 
-                tradeAccepted.EventName = "Trade Accepted";
+                tradeAccepted->EventName = "Trade Accepted";
 
-                tradeAccepted.EventMessage = "Your trade request has been accepted.";
+                tradeAccepted->EventMessage = "Your trade request has been accepted.";
 
-                tradeAccepted.targetCivilizationIndex = gameVariables.trades[i].traderIndex;
+                tradeAccepted->targetCivilizationIndex = gameVariables.trades[i].traderIndex;
 
-                gameVariables.gameEvents.push_back (&tradeAccepted);
+                gameVariables.gameEvents.push_back (tradeAccepted);
 
 
                 gameVariables.Civilizations[gameVariables.trades[i].traderIndex].Gold -= gameVariables.trades[i].goldSumFromTrader;
@@ -562,15 +562,15 @@ void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
             } else {
 
-                Event tradeDenied;
+                Event *tradeDenied = new Event;
 
-                tradeDenied.EventName = "Trade Denied";
+                tradeDenied->EventName = "Trade Denied";
 
-                tradeDenied.EventMessage = "Your trade request has been denied.";
+                tradeDenied->EventMessage = "Your trade request has been denied.";
 
-                tradeDenied.targetCivilizationIndex = gameVariables.trades[i].traderIndex;
+                tradeDenied->targetCivilizationIndex = gameVariables.trades[i].traderIndex;
 
-                gameVariables.gameEvents.push_back (&tradeDenied);
+                gameVariables.gameEvents.push_back (tradeDenied);
 
 
             }
@@ -583,15 +583,15 @@ void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
             if (ai.returnTradeValue (gameVariables.trades[i], gameVariables) >= 0) {
 
-                Event tradeAccepted;
+                Event *tradeAccepted = new Event;
 
-                tradeAccepted.EventName = "Trade Accepted";
+                tradeAccepted->EventName = "Trade Accepted";
 
-                tradeAccepted.EventMessage = "Your trade request has been accepted.";
+                tradeAccepted->EventMessage = "Your trade request has been accepted.";
 
-                tradeAccepted.targetCivilizationIndex = gameVariables.trades[i].traderIndex;
+                tradeAccepted->targetCivilizationIndex = gameVariables.trades[i].traderIndex;
 
-                gameVariables.gameEvents.push_back (&tradeAccepted);
+                gameVariables.gameEvents.push_back (tradeAccepted);
 
                 gameVariables.Civilizations[gameVariables.trades[i].traderIndex].Gold -= gameVariables.trades[i].goldSumFromTrader;
 
@@ -629,15 +629,15 @@ void updateTrades (int civilizationIndex, GameVariables &gameVariables, AI ai) {
 
             } else {
 
-                Event tradeDenied;
+                Event *tradeDenied = new Event;
 
-                tradeDenied.EventName = "Trade Denied";
+                tradeDenied->EventName = "Trade Denied";
 
-                tradeDenied.EventMessage = "Your trade request has been denied.";
+                tradeDenied->EventMessage = "Your trade request has been denied.";
 
-                tradeDenied.targetCivilizationIndex = gameVariables.trades[i].traderIndex;
+                tradeDenied->targetCivilizationIndex = gameVariables.trades[i].traderIndex;
 
-                gameVariables.gameEvents.push_back (&tradeDenied);
+                gameVariables.gameEvents.push_back (tradeDenied);
 
             }
 
