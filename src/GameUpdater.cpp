@@ -214,6 +214,8 @@ void updateCityUnitProduction (int cityIndex, int civilizationIndex, GameVariabl
 
         std::cout << gameVariables.Cities[cityIndex].cityName << " finished its production!" << std::endl;
 
+        gameVariables.Cities[cityIndex].lastProductionType = "unit";
+
     }
 
 }
@@ -255,6 +257,8 @@ void updateCityBuildingProduction (int cityIndex, int civilizationIndex, GameVar
         gameVariables.Cities[cityIndex].isProducingUnit = false;
 
         std::cout << gameVariables.Cities[cityIndex].cityName << " finished its production!" << std::endl;
+
+        gameVariables.Cities[cityIndex].lastProductionType = "building";
 
     }
 

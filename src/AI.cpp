@@ -379,7 +379,7 @@ void AI::produceUnit (int civilizationIndex, int cityIndex, std::string unitName
 
 int AI::returnBuildingPotential (int civilizationIndex, Building building, GameVariables &gameVariables) {
 
-    int potential; const int OVERALL_SCALE = 8;
+    int potential = 0; const int OVERALL_SCALE = 8;
 
     potential += (building.aiFocus_defense * gameVariables.Civilizations[civilizationIndex].aiFocus_defense);
     potential += (building.aiFocus_diplomatic * gameVariables.Civilizations[civilizationIndex].aiFocus_diplomatic);
@@ -415,6 +415,13 @@ void AI::produce (int civilizationIndex, int cityIndex, GameVariables &gameVaria
         Unit unit = gameVariables.Units[sharedMethods::getUnitIndexByName(gameVariables.Civilizations[civilizationIndex].AvailableUnitsToCreate[i], gameVariables)];
 
         int potential = returnUnitPotential (civilizationIndex, unit, gameVariables);
+
+        if (gameVariables.Cities[cityIndex].lastProductionType != "unit" && civilizationIsBehindTargetAmountOfUnits (civilizationIndex, gameVariables)
+            && unitProductionMode == "gradual") {
+
+            potential += 100;
+
+        }
 
         if (potential > HighestUnitPotential) {
 
@@ -457,7 +464,6 @@ void AI::produce (int civilizationIndex, int cityIndex, GameVariables &gameVaria
     }
 
 }
-
 int AI::returnTradeValue (Trade trade, GameVariables &gameVariables) {
 
     int totalTraderItemValue = 0, TraderGoldValue = 0, TraderResourceValue = 0;
@@ -492,7 +498,7 @@ int AI::returnTradeValue (Trade trade, GameVariables &gameVariables) {
 
 bool AI::hasLowHappiness (int civilizationIndex, GameVariables &gameVariables) {
 
-    if (gameVariables.Civilizations[civilizationIndex].Happiness <= 70) {
+    if (gameVariables.Civilizations[civilizationIndex].Happiness <= 40) {
 
         return true;
 
@@ -896,3 +902,28 @@ std::string AI::returnGroupNameFromIndex (int civilizationIndex, int groupIndex,
 
 }
 
+bool AI::civilizationIsBehindTargetAmountOfUnits (int civilizationIndex, GameVariables &gameVariables) {
+
+    int amountOfUnitsOwned = 0;
+
+    for (unsigned int i = 0; i < gameVariables.UnitsInGame.size (); i++) {
+
+        if (gameVariables.UnitsInGame [i].parentCivilizationIndex == civilizationIndex) {
+
+            amountOfUnitsOwned++;
+
+        }
+
+    }
+
+    if (amountOfUnitsOwned < targetAmountOfUnits) {
+
+        return true;
+
+    } else {
+
+        return false;
+
+    }
+
+}

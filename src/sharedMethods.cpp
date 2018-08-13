@@ -744,7 +744,7 @@ int returnNumberOfCitiesCivilizationOwns (int civilizationIndex, GameVariables &
 
         }
 
-    } std::cout << numberOfCitiesOwnedByCivilization << std::endl;
+    }
 
     return numberOfCitiesOwnedByCivilization;
 

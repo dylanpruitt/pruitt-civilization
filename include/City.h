@@ -51,6 +51,8 @@ class City
 
         Building buildingBeingProduced;
 
+        std::string lastProductionType = "none";
+
         std::vector<std::string> AvailableBuildingsToCreate;
 
         std::vector<std::string> buildings;

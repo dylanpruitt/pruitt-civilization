@@ -21,9 +21,11 @@ class AI
 
         int targetAmountOfUnits = 3;
 
-        /// ORGANIZE FUNCTIONS LATER
+        std::string unitProductionMode = "gradual";
 
         void updateTargetAmountOfUnits (int civilizationIndex, GameVariables &gameVariables);
+
+        bool civilizationIsBehindTargetAmountOfUnits (int civilizationIndex, GameVariables &gameVariables);
 
 
 
