@@ -69,7 +69,9 @@ namespace sharedMethods
 
         void civilizationTakeCity (int civilizationIndex, int cityIndex, GameVariables &gameVariables);
 
-        int getCityIndexAtPosition (int x, int y, GameVariables &GameVariables);
+        int getCityIndexAtPosition (int x, int y, GameVariables &gameVariables);
+
+        extern int returnNumberOfCitiesCivilizationOwns (int civilizationIndex, GameVariables &gameVariables);
 
 };
 

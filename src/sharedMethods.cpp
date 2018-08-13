@@ -731,5 +731,23 @@ int returnIndexOfWarContainingCivilizations (int civilizationIndex, int targetCi
 
 }
 
+int returnNumberOfCitiesCivilizationOwns (int civilizationIndex, GameVariables &gameVariables) {
+
+    int numberOfCitiesOwnedByCivilization = 0;
+
+    for (unsigned int i = 0; i < gameVariables.Cities.size (); i++) {
+
+        if (gameVariables.Cities [i].parentIndex == civilizationIndex) {
+
+            numberOfCitiesOwnedByCivilization++;
+
+        }
+
+    } std::cout << numberOfCitiesOwnedByCivilization << std::endl;
+
+    return numberOfCitiesOwnedByCivilization;
+
+}
+
 }
 

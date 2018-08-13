@@ -243,7 +243,7 @@ void Game::setupWorld () {
 
         for (unsigned int j = 0; j < gameVariables.Civilizations.size(); j++) {
 
-            gameVariables.Civilizations[i].hasMetCivilizations.push_back (true);
+            gameVariables.Civilizations[i].hasMetCivilizations.push_back (false);
 
         }
 
@@ -1055,7 +1055,7 @@ void Game::spawnInNewCivilization (std::vector<Civilization> civs) {
                 warrior.position.setCoordinates(civ.startingX, civ.startingY);
                 warrior.parentCivilizationIndex = gameVariables.Civilizations.size() - 1;
 
-                gameVariables.UnitsInGame.push_back(warrior);
+                gameVariables.UnitsInGame.push_back(warrior); gameVariables.UnitsInGame.push_back (warrior);
 
 
         }
@@ -2594,7 +2594,7 @@ void Game::combat (Unit &attacker, Unit &defender) {
     unsigned int attackerMaxDamage = ((attacker.combatStrength * attacker.health * attackingModifier * 2.6) / (defender.combatStrength * defender.health * defenseModifier)) + 1;
     unsigned int defenderMaxDamage = ((defender.combatStrength * defender.health * defenseModifier * 2.6) / (attacker.combatStrength * attacker.health * attackingModifier)) + 1;
 
-    int attackerDamage = rand () % attackerMaxDamage + 190;
+    int attackerDamage = rand () % attackerMaxDamage;
     int defenderDamage = rand () % defenderMaxDamage;
 
     attacker.health -= defenderDamage;
@@ -2614,17 +2614,7 @@ void Game::combat (Unit &attacker, Unit &defender) {
 
         gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
 
-        Event unit_died;
-
-        unit_died.EventName = "Unit died in battle";
-
-        unit_died.EventMessage = "Your " + attacker.name + " died attacking a " + defender.name + ".";
-
-        unit_died.ResponseChoices.push_back ("Okay.");
-
-        unit_died.targetCivilizationIndex = attacker.parentCivilizationIndex;
-
-        gameVariables.gameEvents.push_back (&unit_died);
+        createUnitDeathNotification (attacker, defender, true);
 
     }
 
@@ -2634,17 +2624,7 @@ void Game::combat (Unit &attacker, Unit &defender) {
 
         gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
 
-        Event unit_died;
-
-        unit_died.EventName = "Unit died in battle";
-
-        unit_died.EventMessage = "Your " + defender.name + " died defending against a " + attacker.name + ".";
-
-        unit_died.ResponseChoices.push_back ("Okay.");
-
-        unit_died.targetCivilizationIndex = defender.parentCivilizationIndex;
-
-        gameVariables.gameEvents.push_back (&unit_died);
+        createUnitDeathNotification (defender, attacker, false);
 
     }
 
@@ -2682,17 +2662,7 @@ void Game::rangedCombat (Unit &attacker, Unit &defender) {
 
         gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
 
-        Event unit_died;
-
-        unit_died.EventName = "Unit died in battle";
-
-        unit_died.EventMessage = "Your " + attacker.name + " died attacking a " + defender.name + ".";
-
-        unit_died.ResponseChoices.push_back ("Okay.");
-
-        unit_died.targetCivilizationIndex = attacker.parentCivilizationIndex;
-
-        gameVariables.gameEvents.push_back (&unit_died);
+        createUnitDeathNotification (attacker, defender, true);
 
     }
 
@@ -2702,19 +2672,33 @@ void Game::rangedCombat (Unit &attacker, Unit &defender) {
 
         gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
 
-        Event unit_died;
-
-        unit_died.EventName = "Unit died in battle";
-
-        unit_died.EventMessage = "Your " + defender.name + " died defending against a " + attacker.name + ".";
-
-        unit_died.ResponseChoices.push_back ("Okay.");
-
-        unit_died.targetCivilizationIndex = defender.parentCivilizationIndex;
-
-        gameVariables.gameEvents.push_back (&unit_died);
+        createUnitDeathNotification (attacker, defender, false);
 
     }
+
+}
+
+void Game::createUnitDeathNotification (Unit &target, Unit &opponent, bool isAttacking) {
+
+        Event *unit_died = new Event;
+
+        unit_died->EventName = "Unit died in battle";
+
+        if (isAttacking) {
+
+            unit_died->EventMessage = "Your " + target.name + " died attacking a " + opponent.name + ".";
+
+        } else {
+
+            unit_died->EventMessage = "Your " + target.name + " died defending against a " + opponent.name + ".";
+
+        }
+
+        unit_died->ResponseChoices.push_back ("Okay.");
+
+        unit_died->targetCivilizationIndex = target.parentCivilizationIndex;
+
+        gameVariables.gameEvents.push_back (unit_died);
 
 }
 

@@ -369,6 +369,21 @@ void startRevolt (int cityIndex, int civilizationIndex, GameVariables &gameVaria
 
     gameVariables.wars.push_back (city_revolt);
 
+
+
+    Event *revolt_started = new Event;
+
+    revolt_started->EventName = "Revolt Started";
+
+    revolt_started->EventMessage = "The city " + revolting_civilization.CivName + " has revolted against us!";
+
+    revolt_started->targetCivilizationIndex = civilizationIndex;
+
+    revolt_started->ResponseChoices.push_back ("To arms!");
+
+    gameVariables.gameEvents.push_back (revolt_started);
+
+
 }
 
 void updateRevolts (GameVariables &gameVariables) {

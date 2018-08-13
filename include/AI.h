@@ -19,6 +19,14 @@ class AI
     protected:
     private:
 
+        int targetAmountOfUnits = 3;
+
+        /// ORGANIZE FUNCTIONS LATER
+
+        void updateTargetAmountOfUnits (int civilizationIndex, GameVariables &gameVariables);
+
+
+
         bool positionIsOnMap (int x, int y, GameVariables &gameVariables);
 
         bool unitCanMoveOnTerrain (int x, int y, int unitIndex, GameVariables &gameVariables);
@@ -72,6 +80,8 @@ class AI
         bool groupDoesNotExist (int civilizationIndex, std::string groupName, GameVariables &gameVariables);
 
         int returnGroupIndexFromName (int civilizationIndex, std::string groupName, GameVariables &gameVariables);
+
+        int returnGroupSizeFromName (int civilizationIndex, std::string groupName, GameVariables &gameVariables);
 
         std::string returnGroupNameFromIndex (int civilizationIndex, int groupIndex, GameVariables &gameVariables);
 

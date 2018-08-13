@@ -622,6 +622,8 @@ int AI::calculatePotentialLoanValue (int civilizationIndex, int potentialCiviliz
 
 void AI::think (int civilizationIndex, GameVariables &gameVariables) {
 
+    updateTargetAmountOfUnits (civilizationIndex, gameVariables);
+
     groupUnits (civilizationIndex, gameVariables);
 
     if (gameVariables.Civilizations[civilizationIndex].technologyBeingResearched.researchName == "") {
@@ -772,7 +774,19 @@ void AI::mapUnitPath (int x, int y, GameVariables &gameVariables, int unitIndex)
 
 }
 
+void AI::updateTargetAmountOfUnits (int civilizationIndex, GameVariables &gameVariables) {
+
+    int standardAmount = sharedMethods::returnNumberOfCitiesCivilizationOwns (civilizationIndex, gameVariables) + 1;
+
+    int totalAmount = standardAmount;
+
+    targetAmountOfUnits = totalAmount;
+
+}
+
 void AI::groupUnits (int civilizationIndex, GameVariables &gameVariables) {
+
+    int numberOfUnitsNeededForGarrison = sharedMethods::returnNumberOfCitiesCivilizationOwns (civilizationIndex, gameVariables);
 
     for (unsigned int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
 
@@ -782,13 +796,15 @@ void AI::groupUnits (int civilizationIndex, GameVariables &gameVariables) {
 
             if (gameVariables.UnitsInGame[i].name == "Explorer") { assignUnitToGroup (civilizationIndex, i, "exploration", gameVariables); }
 
-            if (gameVariables.UnitsInGame[i].aiFocus_offense > gameVariables.UnitsInGame[i].aiFocus_defense) {
+            int garrisonSize = returnGroupSizeFromName (civilizationIndex, "garrison", gameVariables);
 
-                assignUnitToGroup (civilizationIndex, i, "offense", gameVariables);
+            if (garrisonSize < numberOfUnitsNeededForGarrison && unitIsNotAssignedToGroup (i, gameVariables)) {
 
-            } else {
+                assignUnitToGroup (civilizationIndex, i, "garrison", gameVariables);
 
-                assignUnitToGroup (civilizationIndex, i, "defense", gameVariables);
+            } else if (unitIsNotAssignedToGroup (i, gameVariables)) {
+
+                assignUnitToGroup (civilizationIndex, i, "training", gameVariables);
 
             }
 
@@ -808,13 +824,13 @@ void AI::assignUnitToGroup (int civilizationIndex, int unitIndex, std::string gr
 
             gameVariables.Civilizations[civilizationIndex].addNewGrouping (groupName, rgb);
 
-        } else {
-
-            gameVariables.Civilizations[civilizationIndex].unitGroups[returnGroupIndexFromName(civilizationIndex, groupName, gameVariables)].memberUnitIndices.push_back (unitIndex);
-
         }
 
+        gameVariables.Civilizations[civilizationIndex].unitGroups[returnGroupIndexFromName(civilizationIndex, groupName, gameVariables)].memberUnitIndices.push_back (unitIndex);
+
         gameVariables.UnitsInGame[unitIndex].parentGroupingIndex = returnGroupIndexFromName (civilizationIndex, groupName, gameVariables);
+
+        std::cout << gameVariables.Civilizations [civilizationIndex].CivName << " added " << gameVariables.UnitsInGame[unitIndex].name << " to " << groupName << std::endl;
 
     }
 
@@ -860,6 +876,22 @@ int AI::returnGroupIndexFromName (int civilizationIndex, std::string groupName, 
     }
 
     return -1; /// Can't find the group
+
+}
+
+int AI::returnGroupSizeFromName (int civilizationIndex, std::string groupName, GameVariables &gameVariables) {
+
+    if (groupDoesNotExist (civilizationIndex, groupName, gameVariables)) {
+
+        return 0;
+
+    } else {
+
+        int groupIndex = returnGroupIndexFromName (civilizationIndex, groupName, gameVariables);
+
+        return gameVariables.Civilizations [civilizationIndex].unitGroups [groupIndex].memberUnitIndices.size ();
+
+    }
 
 }
 

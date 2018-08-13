@@ -127,6 +127,8 @@ class Game
 
         void rangedCombat (Unit &attacker, Unit &defender);
 
+        void createUnitDeathNotification (Unit &target, Unit &opponent, bool isAttacking = true);
+
         void displayLikelyCombatOutcome (Unit &attacker, Unit &defender);
 
         void displayAlliances ();
