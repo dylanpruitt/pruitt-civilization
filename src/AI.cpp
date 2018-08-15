@@ -419,7 +419,13 @@ void AI::produce (int civilizationIndex, int cityIndex, GameVariables &gameVaria
         if (gameVariables.Cities[cityIndex].lastProductionType != "unit" && civilizationIsBehindTargetAmountOfUnits (civilizationIndex, gameVariables)
             && unitProductionMode == "gradual") {
 
-            potential += 100;
+            potential += 450;
+
+        }
+
+        if (unitProductionMode == "accelerated") {
+
+            potential += 450;
 
         }
 
@@ -1079,6 +1085,17 @@ void AI::updateThreatLevel (int civilizationIndex, GameVariables &gameVariables)
     }
 
     gameVariables.Civilizations [civilizationIndex].ai_threatened_level += threatChange;
+
+    if (gameVariables.Civilizations [civilizationIndex].ai_threatened_level >= 65) {
+
+        unitProductionMode = "accelerated";
+
+
+    } else {
+
+        unitProductionMode = "gradual";
+
+    }
 
     std::cout << "threat " << gameVariables.Civilizations [civilizationIndex].ai_threatened_level <<  " | " << threatChange << std::endl;
 
