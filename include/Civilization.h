@@ -80,6 +80,8 @@ struct Civilization
 
         int ai_fairness = 5;
 
+        int ai_threatened_level = 0;
+
         int GoldPerTurn = 5;
 
         std::vector<Research> technologiesToResearch;

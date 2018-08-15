@@ -99,6 +99,12 @@ class AI
 
         int returnMostOccuringTileCodeInCivilizationTerritory (int civilizationIndex, GameVariables &gameVariables);
 
+        void updateThreatLevel (int civilizationIndex, GameVariables &gameVariables);
+
+        int returnNumberOfUnitsFromCivilizationBorderingTerritory (int civilizationIndex, int unitOwnerIndex, GameVariables &gameVariables);
+
+        bool unitIsBorderingTerritory (int unitIndex, int civilizationIndex, GameVariables &gameVariables);
+
 };
 
 #endif // AI_H

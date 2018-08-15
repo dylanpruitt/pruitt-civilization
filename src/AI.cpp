@@ -615,6 +615,8 @@ int AI::calculatePotentialLoanValue (int civilizationIndex, int potentialCiviliz
 
 void AI::think (int civilizationIndex, GameVariables &gameVariables) {
 
+    updateThreatLevel (civilizationIndex, gameVariables);
+
     updateTargetAmountOfUnits (civilizationIndex, gameVariables);
 
     groupUnits (civilizationIndex, gameVariables);
@@ -781,9 +783,17 @@ void AI::mapUnitPath (int x, int y, GameVariables &gameVariables, int unitIndex)
 
 void AI::updateTargetAmountOfUnits (int civilizationIndex, GameVariables &gameVariables) {
 
-    int standardAmount = sharedMethods::returnNumberOfCitiesCivilizationOwns (civilizationIndex, gameVariables) + 1;
+    int standardAmount = sharedMethods::returnNumberOfCitiesCivilizationOwns (civilizationIndex, gameVariables) + 1, defenseAmount = 0;
 
-    int totalAmount = standardAmount;
+    if (gameVariables.Civilizations [civilizationIndex].ai_threatened_level >= 35) {
+
+        double targetSizeMultiplier = 1 + (gameVariables.Civilizations [civilizationIndex].aiFocus_defense / 10);
+
+        defenseAmount = sharedMethods::returnNumberOfCitiesCivilizationOwns (civilizationIndex, gameVariables) * targetSizeMultiplier;
+
+    }
+
+    int totalAmount = standardAmount + defenseAmount;
 
     targetAmountOfUnits = totalAmount;
 
@@ -1039,5 +1049,105 @@ int AI::returnMostOccuringTileCodeInCivilizationTerritory (int civilizationIndex
     std::cout << mostOccuringTileCode << " occurs da most" << std::endl;
 
     return mostOccuringTileCode;
+
+}
+
+void AI::updateThreatLevel (int civilizationIndex, GameVariables &gameVariables) {
+
+    int threatChange = -2; /// AI relaxes if there isn't anything still threatening it
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations.size (); i++) {
+
+        if (civilizationIndex != i) {
+
+            threatChange += 2 * returnNumberOfUnitsFromCivilizationBorderingTerritory (civilizationIndex, i, gameVariables);
+
+        }
+
+    }
+
+    if (gameVariables.Civilizations [civilizationIndex].ai_threatened_level < 0) {
+
+        gameVariables.Civilizations [civilizationIndex].ai_threatened_level = 0;
+
+    }
+
+    if (gameVariables.Civilizations [civilizationIndex].ai_threatened_level > 100) {
+
+        gameVariables.Civilizations [civilizationIndex].ai_threatened_level = 100;
+
+    }
+
+    gameVariables.Civilizations [civilizationIndex].ai_threatened_level += threatChange;
+
+    std::cout << "threat " << gameVariables.Civilizations [civilizationIndex].ai_threatened_level <<  " | " << threatChange << std::endl;
+
+}
+
+int AI::returnNumberOfUnitsFromCivilizationBorderingTerritory (int civilizationIndex, int unitOwnerIndex, GameVariables &gameVariables) {
+
+    int unitCount = 0;
+
+    for (unsigned int i = 0; i < gameVariables.UnitsInGame.size (); i++) {
+
+        if (gameVariables.UnitsInGame [i].parentCivilizationIndex == unitOwnerIndex && unitIsBorderingTerritory (i, civilizationIndex, gameVariables)) {
+
+            unitCount ++; std::cout << unitOwnerIndex << std::endl;
+
+        }
+
+    } std::cout << unitCount << " units bordering " << std::endl;
+
+    return unitCount;
+
+}
+
+bool AI::unitIsBorderingTerritory (int unitIndex, int civilizationIndex, GameVariables &gameVariables) {
+
+    int unitX = gameVariables.UnitsInGame [unitIndex].position.x, unitY = gameVariables.UnitsInGame [unitIndex].position.y;
+
+    if (gameVariables.UnitsInGame [unitIndex].parentCivilizationIndex == civilizationIndex ) { return false; }
+
+    if (unitX > 0) {
+
+        if (gameVariables.worldMap.WorldTerritoryMap [unitX-1][unitY] == civilizationIndex+1) {
+
+            return true;
+
+        }
+
+    }
+
+    if (unitX < gameVariables.worldMap.worldSize-1) {
+
+        if (gameVariables.worldMap.WorldTerritoryMap [unitX+1][unitY] == civilizationIndex+1) {
+
+            return true;
+
+        }
+
+    }
+
+    if (unitY > 0) {
+
+        if (gameVariables.worldMap.WorldTerritoryMap [unitX][unitY-1] == civilizationIndex+1) {
+
+            return true;
+
+        }
+
+    }
+
+    if (unitY < gameVariables.worldMap.worldSize-1) {
+
+        if (gameVariables.worldMap.WorldTerritoryMap [unitX][unitY+1] == civilizationIndex+1) {
+
+            return true;
+
+        }
+
+    }
+
+    return false;
 
 }
