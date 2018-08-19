@@ -1220,6 +1220,26 @@ int AI::returnClosestOwnedCityIndex (int civilizationIndex, int cityIndex, GameV
 
     int closestOwnedCityIndex = -1, closestDistance = 10000;
 
+    for (unsigned int i = 0; i < gameVariables.Cities.size (); i++) {
+
+        if (gameVariables.Cities [i].parentIndex == civilizationIndex) {
+
+            int distance = sharedMethods::getDistance (gameVariables.Cities [i].position.x, gameVariables.Cities [i].position.x,
+                gameVariables.Cities [cityIndex].position.x, gameVariables.Cities [cityIndex].position.y);
+
+            if (distance < closestDistance) {
+
+                closestDistance = distance;
+                closestOwnedCityIndex = i;
+
+            }
+
+        }
+
+    }
+
+    return closestOwnedCityIndex;
+
 }
 
 int AI::calculatePotentialInvasionValue (int civilizationIndex, int cityIndex, GameVariables &gameVariables) {

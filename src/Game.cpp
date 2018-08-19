@@ -2602,6 +2602,8 @@ void Game::combat (Unit &attacker, Unit &defender) {
 
         createUnitDeathNotification (attacker, defender, true);
 
+        removeDeadUnitFromGrouping (attacker.parentCivilizationIndex, unitIndex);
+
     }
 
     if (defender.health <= 0) {
@@ -2611,6 +2613,8 @@ void Game::combat (Unit &attacker, Unit &defender) {
         gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
 
         createUnitDeathNotification (defender, attacker, false);
+
+        removeDeadUnitFromGrouping (defender.parentCivilizationIndex, unitIndex);
 
     }
 
@@ -2650,6 +2654,8 @@ void Game::rangedCombat (Unit &attacker, Unit &defender) {
 
         createUnitDeathNotification (attacker, defender, true);
 
+        removeDeadUnitFromGrouping (attacker.parentCivilizationIndex, unitIndex);
+
     }
 
     if (defender.health <= 0) {
@@ -2659,6 +2665,29 @@ void Game::rangedCombat (Unit &attacker, Unit &defender) {
         gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
 
         createUnitDeathNotification (attacker, defender, false);
+
+        removeDeadUnitFromGrouping (defender.parentCivilizationIndex, unitIndex);
+
+    }
+
+}
+
+void Game::removeDeadUnitFromGrouping (int civilizationIndex, int unitIndex) {
+
+    for (unsigned int i = 0; i < gameVariables.Civilizations [civilizationIndex].unitGroups.size (); i++) {
+
+        for (unsigned int j = 0; j < gameVariables.Civilizations [civilizationIndex].unitGroups [i].memberUnitIndices.size (); j++) {
+
+            if (gameVariables.Civilizations [civilizationIndex].unitGroups [i].memberUnitIndices [j] == unitIndex) {
+
+                j = gameVariables.Civilizations [civilizationIndex].unitGroups [i].memberUnitIndices.size ();
+
+                gameVariables.Civilizations [civilizationIndex].unitGroups [i].memberUnitIndices.erase (
+                    gameVariables.Civilizations [civilizationIndex].unitGroups [i].memberUnitIndices.begin () + j);
+
+            }
+
+        }
 
     }
 

@@ -149,6 +149,8 @@ class Game
 
         bool civilizationsAreAllies (int civilizationIndex, int otherCivilizationIndex);
 
+        void removeDeadUnitFromGrouping (int civilizationIndex, int unitIndex);
+
 };
 
 #endif // GAME_H
