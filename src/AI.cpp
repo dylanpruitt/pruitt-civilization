@@ -649,15 +649,7 @@ void AI::think (int civilizationIndex, GameVariables &gameVariables) {
 
     decideIfCivilizationShouldOfferLoan (civilizationIndex, gameVariables);
 
-    for (unsigned int a = 0; a < gameVariables.Cities.size(); a++) {
-
-        if (gameVariables.Cities[a].parentIndex == civilizationIndex && gameVariables.Cities[a].isProducing == false) {
-
-            produce (civilizationIndex, a, gameVariables);
-
-        }
-
-    }
+    thinkAboutInvadingOtherCivilizations (civilizationIndex, gameVariables);
 
 }
 
@@ -789,7 +781,7 @@ void AI::mapUnitPath (int x, int y, GameVariables &gameVariables, int unitIndex)
 
 void AI::updateTargetAmountOfUnits (int civilizationIndex, GameVariables &gameVariables) {
 
-    int standardAmount = sharedMethods::returnNumberOfCitiesCivilizationOwns (civilizationIndex, gameVariables) + 1, defenseAmount = 0;
+    int standardAmount = sharedMethods::returnNumberOfCitiesCivilizationOwns (civilizationIndex, gameVariables) + 1, defenseAmount = 0, offenseAmount = 0;
 
     if (gameVariables.Civilizations [civilizationIndex].ai_threatened_level >= 35) {
 
@@ -799,7 +791,15 @@ void AI::updateTargetAmountOfUnits (int civilizationIndex, GameVariables &gameVa
 
     }
 
-    int totalAmount = standardAmount + defenseAmount;
+    if (gameVariables.Civilizations [civilizationIndex].isPlanningOffensive) {
+
+        double targetSizeMultiplier = 1.5 + (gameVariables.Civilizations [civilizationIndex].aiFocus_offense / 10);
+
+        offenseAmount = sharedMethods::returnNumberOfCitiesCivilizationOwns (civilizationIndex, gameVariables) * targetSizeMultiplier;
+
+    }
+
+    int totalAmount = standardAmount + defenseAmount + offenseAmount;
 
     targetAmountOfUnits = totalAmount;
 
@@ -818,10 +818,15 @@ void AI::groupUnits (int civilizationIndex, GameVariables &gameVariables) {
             if (gameVariables.UnitsInGame[i].name == "Explorer") { assignUnitToGroup (civilizationIndex, i, "exploration", gameVariables); }
 
             int garrisonSize = returnGroupSizeFromName (civilizationIndex, "garrison", gameVariables);
+            int offensiveArmySize = returnGroupSizeFromName (civilizationIndex, "offense", gameVariables);
 
             if (garrisonSize < numberOfUnitsNeededForGarrison && unitIsNotAssignedToGroup (i, gameVariables)) {
 
                 assignUnitToGroup (civilizationIndex, i, "garrison", gameVariables);
+
+            } else if (offensiveArmySize < numberOfUnitsNeededForGarrison && unitIsNotAssignedToGroup (i, gameVariables)) {
+
+                assignUnitToGroup (civilizationIndex, i, "offense", gameVariables);
 
             } else if (unitIsNotAssignedToGroup (i, gameVariables)) {
 
@@ -1086,7 +1091,7 @@ void AI::updateThreatLevel (int civilizationIndex, GameVariables &gameVariables)
 
     gameVariables.Civilizations [civilizationIndex].ai_threatened_level += threatChange;
 
-    if (gameVariables.Civilizations [civilizationIndex].ai_threatened_level >= 65) {
+    if (gameVariables.Civilizations [civilizationIndex].ai_threatened_level >= 65 || gameVariables.Civilizations [civilizationIndex].isPreparingOffensive) {
 
         unitProductionMode = "accelerated";
 
@@ -1166,5 +1171,115 @@ bool AI::unitIsBorderingTerritory (int unitIndex, int civilizationIndex, GameVar
     }
 
     return false;
+
+}
+
+void AI::thinkAboutInvadingOtherCivilizations (int civilizationIndex, GameVariables &gameVariables) {
+
+    int highestInvasionValue = 0; int bestTargetCityIndex = -1;
+
+    for (int i = 0; i < gameVariables.Cities.size (); i++) {
+
+        if (gameVariables.Cities [i].parentIndex != civilizationIndex) {
+
+            int invasionValue = calculatePotentialInvasionValue (civilizationIndex, i, gameVariables);
+
+            if (invasionValue > highestInvasionValue) {
+
+                highestInvasionValue = invasionValue;
+                bestTargetCityIndex = i;
+
+            }
+
+        }
+
+    }
+
+    if (highestInvasionValue >= 250 && bestTargetCityIndex > -1) {
+
+        gameVariables.Civilizations [civilizationIndex].isPlanningOffensive = true;
+
+        gameVariables.Civilizations [civilizationIndex].cityIndexToInvade = bestTargetCityIndex;
+
+        planInvasionAgainstCivilization (civilizationIndex, gameVariables.Cities [bestTargetCityIndex].parentIndex, gameVariables);
+
+        std::cout << gameVariables.Civilizations [civilizationIndex].CivName << " is preparing an offensive!" << std::endl;
+
+    }
+
+}
+
+void AI::planInvasionAgainstCivilization (int civilizationIndex, int targetCivilizationIndex, GameVariables &gameVariables) {
+
+    gameVariables.Civilizations [civilizationIndex].ai_fallbackCityIndex = returnClosestOwnedCityIndex (civilizationIndex,
+        gameVariables.Civilizations [civilizationIndex].cityIndexToInvade, gameVariables);
+
+}
+
+int AI::returnClosestOwnedCityIndex (int civilizationIndex, int cityIndex, GameVariables &gameVariables) {
+
+    int closestOwnedCityIndex = -1, closestDistance = 10000;
+
+}
+
+int AI::calculatePotentialInvasionValue (int civilizationIndex, int cityIndex, GameVariables &gameVariables) {
+
+    int potentialEnemyIndex = gameVariables.Cities [cityIndex].parentIndex; int potentialInvasionValue = 0;
+
+    int valueFromDistance = 200 - returnDistanceFromClosestCity (civilizationIndex, cityIndex, gameVariables);
+    potentialInvasionValue += valueFromDistance;
+
+    int valueFromMilitaryStrength = 100 * ((returnCivilizationMilitaryMight (civilizationIndex, gameVariables) /
+        returnCivilizationMilitaryMight (potentialEnemyIndex, gameVariables)));
+    potentialInvasionValue += valueFromMilitaryStrength;
+
+    potentialInvasionValue *= (double)(gameVariables.Civilizations [civilizationIndex].aiFocus_offense / 10.00);
+
+
+    return potentialInvasionValue;
+
+}
+
+int AI::returnDistanceFromClosestCity (int civilizationIndex, int cityIndex, GameVariables &gameVariables) {
+
+    int closestDistance = 205;
+
+    for (unsigned int i = 0; i < gameVariables.Cities.size (); i++) {
+
+        if (gameVariables.Cities [i].parentIndex == civilizationIndex && i != cityIndex) {
+
+            int distance = sharedMethods::getDistance (gameVariables.Cities [i].position.x, gameVariables.Cities [i].position.y,
+                                                       gameVariables.Cities [cityIndex].position.x, gameVariables.Cities [cityIndex].position.y);
+
+            if (distance < closestDistance) {
+
+                closestDistance = distance;
+
+            }
+
+        }
+
+    }
+
+    return closestDistance;
+
+}
+
+int AI::returnCivilizationMilitaryMight (int civilizationIndex, GameVariables &gameVariables) {
+
+    int militaryPower = 0;
+
+
+    for (unsigned int i = 0; i < gameVariables.UnitsInGame.size(); i++) {
+
+        if (gameVariables.UnitsInGame[i].parentCivilizationIndex == civilizationIndex) {
+
+                militaryPower += (gameVariables.UnitsInGame[i].combatStrength * gameVariables.UnitsInGame[i].combatStrength);
+
+        }
+
+    }
+
+    return militaryPower;
 
 }

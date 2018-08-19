@@ -266,7 +266,7 @@ void updateCityBuildingProduction (int cityIndex, int civilizationIndex, GameVar
 
 void updateCityRevoltChances (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
 
-    int baseChance = 100;
+    int baseChance = 1;
 
     if (gameVariables.Cities[cityIndex].isCapital) {
 

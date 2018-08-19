@@ -92,6 +92,12 @@ struct Civilization
 
         bool isAtWar = false;
 
+        bool isPlanningOffensive = false;
+
+        int cityIndexToInvade = -1;
+
+        int ai_fallbackCityIndex = -1;
+
         void addNewGrouping (std::string name, int rgb[3]) {
 
             UnitGrouping newGroup;

@@ -27,8 +27,6 @@ class AI
 
         bool civilizationIsBehindTargetAmountOfUnits (int civilizationIndex, GameVariables &gameVariables);
 
-
-
         bool positionIsOnMap (int x, int y, GameVariables &gameVariables);
 
         bool unitCanMoveOnTerrain (int x, int y, int unitIndex, GameVariables &gameVariables);
@@ -104,6 +102,18 @@ class AI
         int returnNumberOfUnitsFromCivilizationBorderingTerritory (int civilizationIndex, int unitOwnerIndex, GameVariables &gameVariables);
 
         bool unitIsBorderingTerritory (int unitIndex, int civilizationIndex, GameVariables &gameVariables);
+
+        void thinkAboutInvadingOtherCivilizations (int civilizationIndex, GameVariables &gameVariables);
+
+        void planInvasionAgainstCivilization (int civilizationIndex, int targetCivilizationIndex, GameVariables &gameVariables);
+
+        int returnClosestOwnedCityIndex (int civilizationIndex, int cityIndex, GameVariables &gameVariables);
+
+        int calculatePotentialInvasionValue (int civilizationIndex, int cityIndex, GameVariables &gameVariables);
+
+        int returnDistanceFromClosestCity (int civilizationIndex, int cityIndex, GameVariables &gameVariables);
+
+        int returnCivilizationMilitaryMight (int civilizationIndex, GameVariables &gameVariables);
 
 };
 
