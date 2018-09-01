@@ -94,7 +94,7 @@ void tracePath(cell cellDetails[WORLDSIZE][WORLDSIZE*4], position dest, Unit &un
     int row = dest.first;
     int col = dest.second;
 
-    unit.moveDirectionQueue.clear();
+    unit.moveQueue.clear();
 
     while (!(unit.position.x == row
              && unit.position.y == col ))
@@ -107,27 +107,16 @@ void tracePath(cell cellDetails[WORLDSIZE][WORLDSIZE*4], position dest, Unit &un
         int deltaX = temp_row - row;
         int deltaY = temp_col - col;
 
-        int direction = 0;
+        Position position; position.setCoordinates (temp_row, temp_col);
 
-        /// 1=north,2=west,3=south,4=east
-        if (deltaX == -1 && deltaY == 0) { direction = 1; }
-        if (deltaX == 0 && deltaY == -1) { direction = 2; }
-        if (deltaX == 1 && deltaY == 0) { direction = 3; }
-        if (deltaX == 0 && deltaY == 1) { direction = 4; }
-
-        /// Make sure Direction number is 1-4
-        if (direction >= 1 && direction <= 4) {
-
-            unit.moveDirectionQueue.push_back(direction);
-
-        }
+        unit.moveQueue.push_back(position);
 
         row = temp_row;
         col = temp_col;
 
     }
 
-    std::reverse (unit.moveDirectionQueue.begin(), unit.moveDirectionQueue.end());
+    std::reverse (unit.moveQueue.begin(), unit.moveQueue.end());
 
     return;
 }

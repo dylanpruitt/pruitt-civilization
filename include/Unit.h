@@ -56,7 +56,7 @@ class Unit
 
         int aiFocus_overall_importance = 1;
 
-        std::vector<int> moveDirectionQueue;
+        std::vector<Position> moveQueue;
 
         std::vector<std::string> accolades;
 

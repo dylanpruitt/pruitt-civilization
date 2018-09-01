@@ -115,6 +115,10 @@ class AI
 
         int returnCivilizationMilitaryMight (int civilizationIndex, GameVariables &gameVariables);
 
+        void assignOffensiveUnitsToBorder (int civilizationIndex, int targetCityIndex, GameVariables &gameVariables);
+
+        bool positionBordersCivilization (int x, int y, int targetCivilizationIndex, GameVariables &gameVariables);
+
 };
 
 #endif // AI_H

@@ -213,9 +213,11 @@ int getCityIndexAtPosition (int x, int y, GameVariables &gameVariables) {
 
 }
 
-void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civilization &civ, GameVariables &gameVariables) {
+void moveUnit (Unit &unit, int deltaX, int deltaY, GameVariables &gameVariables) {
 
     bool isFlatTerrain = true;
+
+    int xPositionToMoveTo = unit.position.x + deltaX, yPositionToMoveTo = unit.position.y + deltaY;
 
     if (unitCanMoveToTile (unit, xPositionToMoveTo, yPositionToMoveTo, gameVariables)) {
 
@@ -227,9 +229,9 @@ void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civiliz
 
         if (isFlatTerrain) { unit.movementPoints--; } else { unit.movementPoints -= unit.terrainMoveCost; }
 
-        unit.position.setCoordinates(xPositionToMoveTo, yPositionToMoveTo);
+        unit.position.setCoordinates(unit.position.x + deltaX, unit.position.y + deltaY);
 
-        getAncientRuinBenefits (unit, civ, gameVariables.worldMap);
+        getAncientRuinBenefits (unit, gameVariables.Civilizations [unit.parentCivilizationIndex], gameVariables.worldMap);
 
         if (areCivsAtWar(unit.parentCivilizationIndex, gameVariables.worldMap.WorldTerritoryMap[xPositionToMoveTo][yPositionToMoveTo]-1, gameVariables)) {
 
@@ -251,7 +253,7 @@ void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civiliz
         for (int j = 0; j < gameVariables.worldMap.worldSize*4; j++) {
 
             if (getDistance(i,j,unit.position.x,unit.position.y) <= 2) {
-                civ.WorldExplorationMap[i][j] = 1;
+                gameVariables.Civilizations [unit.parentCivilizationIndex].WorldExplorationMap[i][j] = 1;
             }
 
         }

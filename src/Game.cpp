@@ -610,11 +610,12 @@ void Game::saveGame (std::string filename) {
 
             file << gameVariables.UnitsInGame[i].destinationHasBeenAssigned << "\n";
 
-            file << gameVariables.UnitsInGame[i].moveDirectionQueue.size() << "\n";
+            file << gameVariables.UnitsInGame[i].moveQueue.size() << "\n";
 
-            for (unsigned int j = 0; j < gameVariables.UnitsInGame[j].moveDirectionQueue.size(); j++) {
+            for (unsigned int j = 0; j < gameVariables.UnitsInGame[j].moveQueue.size(); j++) {
 
-                file << gameVariables.UnitsInGame[i].moveDirectionQueue[j] << "\n";
+                file << gameVariables.UnitsInGame[i].moveQueue[j].x << "\n";
+                file << gameVariables.UnitsInGame[i].moveQueue[j].y << "\n";
 
             }
 
@@ -1720,9 +1721,8 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
                 if (d == 1 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.x < gameVariables.worldMap.worldSize) {
 
                     sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]],
-                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.x+1,
-                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.y,
-                        gameVariables.Civilizations[civilizationIndex],
+                        1,
+                        0,
                         gameVariables);
 
                 }
@@ -1730,9 +1730,8 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
                 if (d == 2 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.y < gameVariables.worldMap.worldSize*4) {
 
                     sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]],
-                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.x,
-                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.y+1,
-                        gameVariables.Civilizations[civilizationIndex],
+                        0,
+                        1,
                         gameVariables);
 
                 }
@@ -1740,9 +1739,8 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
                 if (d == 3 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.x > 0) {
 
                     sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]],
-                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.x-1,
-                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.y,
-                        gameVariables.Civilizations[civilizationIndex],
+                        -1,
+                        0,
                         gameVariables);
 
                 }
@@ -1750,9 +1748,8 @@ void Game::getPlayerChoiceAndReact (int civilizationIndex) {
                 if (d == 4 && gameVariables.UnitsInGame[unitIndices[whichOne]].position.y > 0) {
 
                     sharedMethods::moveUnit(gameVariables.UnitsInGame[unitIndices[whichOne]],
-                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.x,
-                        gameVariables.UnitsInGame[unitIndices[whichOne]].position.y-1,
-                        gameVariables.Civilizations[civilizationIndex],
+                        0,
+                        -1,
                         gameVariables);
 
                 }

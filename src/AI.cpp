@@ -218,13 +218,21 @@ void AI::moveUnit (int unitIndex, int civilizationIndex, GameVariables &gameVari
 
             mapUnitPathToRuin (civilizationIndex, gameVariables, unitIndex);
 
+        } else if (returnGroupNameFromIndex(civilizationIndex, gameVariables.UnitsInGame[unitIndex].parentGroupingIndex, gameVariables) == "garrison") {
+
+            mapUnitPath (gameVariables.Civilizations [civilizationIndex].startingX,
+                gameVariables.Civilizations [civilizationIndex].startingY,
+                gameVariables,
+                unitIndex);
+
         }
 
     }
 
-    int directionToMoveIn = -1;
+    Position target; target.setCoordinates (gameVariables.UnitsInGame[unitIndex].position.x,
+                gameVariables.UnitsInGame[unitIndex].position.y);
 
-    if (gameVariables.UnitsInGame[unitIndex].moveDirectionQueue.size() == 0) {
+    if (gameVariables.UnitsInGame[unitIndex].moveQueue.size() == 0) {
 
         if (gameVariables.UnitsInGame[unitIndex].name == "Settler" && gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned == true) {
 
@@ -234,35 +242,29 @@ void AI::moveUnit (int unitIndex, int civilizationIndex, GameVariables &gameVari
 
             gameVariables.UnitsInGame.erase (gameVariables.UnitsInGame.begin() + unitIndex);
 
+        } else {
+
+            std::cout << gameVariables.UnitsInGame[unitIndex].name << std::endl;
+
         }
 
     } else {
 
-        directionToMoveIn = gameVariables.UnitsInGame[unitIndex].moveDirectionQueue[0];
+        target = gameVariables.UnitsInGame[unitIndex].moveQueue[0];
 
-        gameVariables.UnitsInGame[unitIndex].moveDirectionQueue.erase (gameVariables.UnitsInGame[unitIndex].moveDirectionQueue.begin());
-
-    }
-
-    switch (directionToMoveIn) {
-
-        case directions::NORTH:
-            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x-1, gameVariables.UnitsInGame[unitIndex].position.y, gameVariables.Civilizations[civilizationIndex], gameVariables);
-        break;
-        case directions::WEST:
-            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x, gameVariables.UnitsInGame[unitIndex].position.y-1, gameVariables.Civilizations[civilizationIndex], gameVariables);
-        break;
-        case directions::SOUTH:
-            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x+1, gameVariables.UnitsInGame[unitIndex].position.y, gameVariables.Civilizations[civilizationIndex], gameVariables);
-        break;
-        case directions::EAST:
-            sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], gameVariables.UnitsInGame[unitIndex].position.x, gameVariables.UnitsInGame[unitIndex].position.y+1, gameVariables.Civilizations[civilizationIndex], gameVariables);
-        break;
-        case -1:
-            gameVariables.UnitsInGame[unitIndex].movementPoints = 0;
-        break;
+        gameVariables.UnitsInGame[unitIndex].moveQueue.erase (gameVariables.UnitsInGame[unitIndex].moveQueue.begin());
 
     }
+
+    int deltaX = target.x - gameVariables.UnitsInGame[unitIndex].position.x,
+        deltaY = target.y - gameVariables.UnitsInGame[unitIndex].position.y;
+
+    sharedMethods::moveUnit (gameVariables.UnitsInGame[unitIndex], deltaX, deltaY, gameVariables);
+
+    if (gameVariables.UnitsInGame[unitIndex].parentGroupingIndex != -1) {
+    std::cout << gameVariables.UnitsInGame[unitIndex].name << " | " << gameVariables.Civilizations [civilizationIndex].unitGroups [gameVariables.UnitsInGame[unitIndex].parentGroupingIndex].name
+     << " | " << gameVariables.UnitsInGame[unitIndex].position.x << ", " << gameVariables.UnitsInGame[unitIndex].position.y << std::endl;
+     }
 
     if (sharedMethods::UnitisOnAnAncientRuin(gameVariables.UnitsInGame[unitIndex], gameVariables.worldMap)) {
 
@@ -649,7 +651,11 @@ void AI::think (int civilizationIndex, GameVariables &gameVariables) {
 
     decideIfCivilizationShouldOfferLoan (civilizationIndex, gameVariables);
 
-    thinkAboutInvadingOtherCivilizations (civilizationIndex, gameVariables);
+    if (!gameVariables.Civilizations [civilizationIndex].isPlanningOffensive) {
+
+        thinkAboutInvadingOtherCivilizations (civilizationIndex, gameVariables);
+
+    }
 
 }
 
@@ -969,7 +975,7 @@ void AI::updateUnitTraining (int unitIndex, GameVariables &gameVariables) {
 
     }
 
-    if (gameVariables.UnitsInGame[unitIndex].moveDirectionQueue.size() == 0 && !gameVariables.UnitsInGame[unitIndex].isTraining) {
+    if (gameVariables.UnitsInGame[unitIndex].moveQueue.size() == 0 && !gameVariables.UnitsInGame[unitIndex].isTraining) {
 
         gameVariables.UnitsInGame [unitIndex].isTraining = true;
 
@@ -1091,7 +1097,7 @@ void AI::updateThreatLevel (int civilizationIndex, GameVariables &gameVariables)
 
     gameVariables.Civilizations [civilizationIndex].ai_threatened_level += threatChange;
 
-    if (gameVariables.Civilizations [civilizationIndex].ai_threatened_level >= 65 || gameVariables.Civilizations [civilizationIndex].isPreparingOffensive) {
+    if (gameVariables.Civilizations [civilizationIndex].ai_threatened_level >= 65 || gameVariables.Civilizations [civilizationIndex].isPlanningOffensive) {
 
         unitProductionMode = "accelerated";
 
@@ -1203,7 +1209,13 @@ void AI::thinkAboutInvadingOtherCivilizations (int civilizationIndex, GameVariab
 
         planInvasionAgainstCivilization (civilizationIndex, gameVariables.Cities [bestTargetCityIndex].parentIndex, gameVariables);
 
-        std::cout << gameVariables.Civilizations [civilizationIndex].CivName << " is preparing an offensive!" << std::endl;
+        std::cout << gameVariables.Civilizations [civilizationIndex].CivName << " is preparing an offensive!" << gameVariables.Cities [bestTargetCityIndex].parentIndex << std::endl;
+
+    }
+
+    if (gameVariables.Civilizations [civilizationIndex].isPlanningOffensive) {
+
+        assignOffensiveUnitsToBorder (civilizationIndex, gameVariables.Civilizations [civilizationIndex].cityIndexToInvade, gameVariables); std::cout << "assigning to border" << std::endl;
 
     }
 
@@ -1246,10 +1258,16 @@ int AI::calculatePotentialInvasionValue (int civilizationIndex, int cityIndex, G
 
     int potentialEnemyIndex = gameVariables.Cities [cityIndex].parentIndex; int potentialInvasionValue = 0;
 
-    int valueFromDistance = 200 - returnDistanceFromClosestCity (civilizationIndex, cityIndex, gameVariables);
+    if (potentialEnemyIndex >= gameVariables.Civilizations.size ()) {
+
+        return 0;
+
+    }
+
+    int valueFromDistance = 300 - returnDistanceFromClosestCity (civilizationIndex, cityIndex, gameVariables);
     potentialInvasionValue += valueFromDistance;
 
-    int valueFromMilitaryStrength = 100 * ((returnCivilizationMilitaryMight (civilizationIndex, gameVariables) /
+    int valueFromMilitaryStrength = 200 * ((returnCivilizationMilitaryMight (civilizationIndex, gameVariables) /
         returnCivilizationMilitaryMight (potentialEnemyIndex, gameVariables)));
     potentialInvasionValue += valueFromMilitaryStrength;
 
@@ -1301,5 +1319,78 @@ int AI::returnCivilizationMilitaryMight (int civilizationIndex, GameVariables &g
     }
 
     return militaryPower;
+
+}
+
+void AI::assignOffensiveUnitsToBorder (int civilizationIndex, int targetCityIndex, GameVariables &gameVariables) {
+
+    int offensiveGroupIndex = returnGroupIndexFromName (civilizationIndex, "offense", gameVariables);
+
+    int unitGroupSize = gameVariables.Civilizations [civilizationIndex].unitGroups [offensiveGroupIndex].memberUnitIndices.size (),
+        numberOfUnitsAssigned = 0;
+
+    std::cout << " target city  " << targetCityIndex << std::endl;
+
+    int cityX = gameVariables.Cities [targetCityIndex].position.x, cityY = gameVariables.Cities [targetCityIndex].position.y;
+
+    while (numberOfUnitsAssigned < unitGroupSize) {
+
+        for (int i = -3; i < 4; i++) {
+
+            for (int j = -3; j < 4; j++) {
+
+                if (positionBordersCivilization (cityX+i, cityY+j, gameVariables.Cities [targetCityIndex].parentIndex, gameVariables)) {
+
+                    position destination = std::make_pair (cityX+i, cityY+j);
+
+                    int unitIndex = gameVariables.Civilizations [civilizationIndex].unitGroups [offensiveGroupIndex].memberUnitIndices [numberOfUnitsAssigned];
+
+                    position Source = std::make_pair (gameVariables.UnitsInGame[unitIndex].position.x,
+
+                    gameVariables.UnitsInGame[unitIndex].position.y);
+
+                    AStar::aStarSearch (gameVariables.worldMap.featureMap, Source, destination, gameVariables.UnitsInGame[unitIndex]);
+
+                    gameVariables.UnitsInGame[unitIndex].destinationHasBeenAssigned = true;
+
+                    numberOfUnitsAssigned++;
+
+                    if (numberOfUnitsAssigned >= unitGroupSize) {
+
+                        return;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+bool AI::positionBordersCivilization (int x, int y, int targetCivilizationIndex, GameVariables &gameVariables) {
+
+    for (int i = -1; i < 2; i++) {
+
+        for (int j = -1; j < 2; j++) {
+
+            if ((i != 0 || j != 0) && x+i >= 0 && y+j >= 0 && x+i < gameVariables.worldMap.worldSize && y+j < gameVariables.worldMap.worldSize*4) {
+
+                if (gameVariables.worldMap.WorldTerritoryMap [x+i][y+j] == targetCivilizationIndex+1 && gameVariables.worldMap.featureMap [x+i][y+j] >= 2) {
+
+                    return true;
+
+                }
+
+            }
+
+        }
+
+    }
+
+    return false;
 
 }

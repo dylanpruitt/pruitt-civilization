@@ -19,7 +19,7 @@ namespace sharedMethods
 
         extern bool unitIsNotTrespassing (int civilizationIndex, int xPositionToMoveTo, int yPositionToMoveTo, WorldMap worldMap);
 
-        extern void moveUnit (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, Civilization &civ, GameVariables &gameVariables);
+        extern void moveUnit (Unit &unit, int deltaX, int deltaY, GameVariables &gameVariables);
 
         bool enemyUnitIsNotOnTile (Unit &unit, int xPositionToMoveTo, int yPositionToMoveTo, GameVariables &gameVariables);
 
