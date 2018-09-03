@@ -119,6 +119,16 @@ class AI
 
         bool positionBordersCivilization (int x, int y, int targetCivilizationIndex, GameVariables &gameVariables);
 
+        int returnNonCivilizationUnitsInArea (int x, int y, int civilizationIndex, GameVariables &gameVariables);
+
+        int calculateCityPriority (int cityIndex, int civilizationIndex, GameVariables &gameVariables);
+
+        static bool isGreater (int x, int y);
+
+        std::vector <int> calculateCityPriorityIndices (int civilizationIndex, GameVariables &gameVariables);
+
+        void assignGarrisonPositions (int civilizationIndex, GameVariables &gameVariables);
+
 };
 
 #endif // AI_H

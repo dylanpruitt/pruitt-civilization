@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <math.h>
 #include <vector>
 #include "AI.h"
@@ -217,13 +218,6 @@ void AI::moveUnit (int unitIndex, int civilizationIndex, GameVariables &gameVari
         } else if (returnGroupNameFromIndex(civilizationIndex, gameVariables.UnitsInGame[unitIndex].parentGroupingIndex, gameVariables) == "exploration") {
 
             mapUnitPathToRuin (civilizationIndex, gameVariables, unitIndex);
-
-        } else if (returnGroupNameFromIndex(civilizationIndex, gameVariables.UnitsInGame[unitIndex].parentGroupingIndex, gameVariables) == "garrison") {
-
-            mapUnitPath (gameVariables.Civilizations [civilizationIndex].startingX,
-                gameVariables.Civilizations [civilizationIndex].startingY,
-                gameVariables,
-                unitIndex);
 
         }
 
@@ -650,6 +644,8 @@ void AI::think (int civilizationIndex, GameVariables &gameVariables) {
     tradingLogic (civilizationIndex, gameVariables);
 
     decideIfCivilizationShouldOfferLoan (civilizationIndex, gameVariables);
+
+    assignGarrisonPositions (civilizationIndex, gameVariables);
 
     if (!gameVariables.Civilizations [civilizationIndex].isPlanningOffensive) {
 
@@ -1392,5 +1388,122 @@ bool AI::positionBordersCivilization (int x, int y, int targetCivilizationIndex,
     }
 
     return false;
+
+}
+
+int AI::returnNonCivilizationUnitsInArea (int x, int y, int civilizationIndex, GameVariables &gameVariables) {
+
+    int numberOfUnits = 0;
+
+    for (unsigned int i = 0; i < gameVariables.UnitsInGame.size (); i++) {
+
+        if (gameVariables.UnitsInGame [i].parentCivilizationIndex != civilizationIndex
+            && sharedMethods::getDistance(x, y, gameVariables.UnitsInGame [i].position.x, gameVariables.UnitsInGame [i].position.y) < 6) {
+
+            numberOfUnits++;
+
+        }
+
+    }
+
+    return numberOfUnits;
+
+}
+
+int AI::calculateCityPriority (int cityIndex, int civilizationIndex, GameVariables &gameVariables) {
+
+    int priority = 0;
+
+    if (gameVariables.Cities [cityIndex].parentIndex == civilizationIndex) {
+
+        priority += 15;
+
+        if (gameVariables.Cities [cityIndex].isCapital) {
+
+            priority += 85;
+
+        }
+
+        priority += 10 * returnNonCivilizationUnitsInArea (gameVariables.Cities [cityIndex].position.x, gameVariables.Cities [cityIndex].position.y,
+            civilizationIndex, gameVariables);
+
+    }
+
+    return priority;
+
+}
+
+bool AI::isGreater (int x, int y) {
+
+    return (x > y);
+
+}
+
+std::vector <int> AI::calculateCityPriorityIndices (int civilizationIndex, GameVariables &gameVariables) {
+
+    std::vector <int> civilizationCityIndices; std::vector <int> cityPriorities; std::vector <int> cityPriorityIndices; std::vector <int> sortedIndices;
+
+    for (unsigned int i = 0; i < gameVariables.Cities.size (); i++) {
+
+        if (gameVariables.Cities [i].parentIndex == civilizationIndex) {
+
+            civilizationCityIndices.push_back (i);
+
+        }
+
+    }
+
+    for (unsigned int i = 0; i < civilizationCityIndices.size (); i++) {
+
+        int tempPriority = calculateCityPriority (civilizationCityIndices [i], civilizationIndex, gameVariables);
+
+        cityPriorities.push_back (tempPriority);
+
+    }
+
+
+    for (unsigned int i = 0; i < cityPriorities.size (); i++) {
+
+        cityPriorityIndices.push_back (cityPriorities [i]);
+
+    }
+
+    std::sort (cityPriorities.begin (), cityPriorities.end (), isGreater);
+
+    for (unsigned int i = 0; i < cityPriorities.size (); i++) {
+
+        for (unsigned int j = 0; j < cityPriorityIndices.size (); j++) {
+
+            if (cityPriorities [i] == cityPriorityIndices [j]) {
+
+                sortedIndices.push_back (civilizationCityIndices [j]);
+
+            }
+
+        }
+
+    }
+
+    return sortedIndices;
+}
+
+void AI::assignGarrisonPositions (int civilizationIndex, GameVariables &gameVariables) {
+
+    std::vector <int> cityPriorityIndices = calculateCityPriorityIndices (civilizationIndex, gameVariables);
+
+    for (unsigned int i = 0; i < gameVariables.UnitsInGame.size (); i++) {
+
+        if (!gameVariables.UnitsInGame [i].destinationHasBeenAssigned
+            && gameVariables.UnitsInGame [i].parentCivilizationIndex == civilizationIndex
+            && returnGroupNameFromIndex (civilizationIndex, gameVariables.UnitsInGame [i].parentGroupingIndex, gameVariables) == "garrison") {
+
+            mapUnitPath (gameVariables.Cities [cityPriorityIndices [0]].position.x,
+                gameVariables.Cities [cityPriorityIndices [0]].position.y,
+                gameVariables,
+                i);
+
+        }
+
+    }
 
 }
